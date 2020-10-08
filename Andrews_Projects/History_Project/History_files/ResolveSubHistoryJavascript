@@ -1,0 +1,3 @@
+var RRInvalidDate = "Invalid Date"; 
+var RRFromDateInvalid = "From Date must be before To Date."; 
+var RRMaximumDateRange = "Maximum date range is 366 days"; 

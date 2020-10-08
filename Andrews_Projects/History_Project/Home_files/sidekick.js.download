@@ -1,0 +1,1492 @@
+(function(){'use strict';function e(){throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs')}// Object.assign
+// Array.includes
+// String.endsWidth
+// String.startsWith
+function t(e){if(null==this)throw new TypeError('Array.prototype.find called on null or undefined');if('function'!=typeof e)throw new TypeError('predicate must be a function');// eslint-disable-line no-bitwise
+for(var t,n=Object(this),a=n.length>>>0,s=arguments[1],r=0;r<a;r++)if(t=n[r],e.call(s,t,r,n))return t}function n(e){if(null==this)throw new TypeError('Array.prototype.findIndex called on null or undefined');if('function'!=typeof e)throw new TypeError('predicate must be a function');// eslint-disable-line no-bitwise
+for(var t,n=Object(this),a=n.length>>>0,s=arguments[1],r=0;r<a;r++)if(t=n[r],e.call(s,t,r,n))return r;return-1}// Number.isInteger polyfill
+/////
+// helper functions
+//
+/////
+// Run the polyfills
+//
+function a(e,t,n){var a=document.createElement(e);return Object.keys(t).sort().forEach(function(e){return a.setAttribute(e,t[e])}),n.appendChild(a),a}function s(e,t,n,a,s){return('\n\t\t@font-face {\n\t\t\tfont-family: \''+e+'\';\n\t\t\tsrc: url(\''+zt+'/font/'+t+'.eot?#iefix\') format(\'embedded-opentype\'),\n\t\t\t\turl(\''+zt+'/font/'+t+'.woff\') format(\'woff\'),\n\t\t\t\turl(\''+zt+'/font/'+t+'.ttf\') format(\'truetype\'),\n\t\t\t\turl(\''+zt+'/font/'+t+'.svg#'+n+'\') format(\'svg\');\n\t\t\tfont-weight: '+a+';\n\t\t\tfont-style: '+s+';\n\t\t}\n\t').replace(/[\t\n]+/g,' ').replace(/^\s+|\s+$/g,'')}/////
+// Other Open-Sans fonts that might be needed
+//
+// Open Sans: regular italic
+// fontFaceCss('open-sans', 'opensans-italic-webfont', 'open_sansitalic', 400, 'italic') +
+// Open Sans: light
+// fontFaceCss('open-sans', 'opensans-light-webfont', 'open_sanslight', 300, 'normal') +
+// Open Sans: light italic
+// fontFaceCss('open-sans', 'opensans-lightitalic-webfont', 'open_sanslight_italic', 300, 'italic') +
+// Open Sans: semi-bold italic
+// fontFaceCss('open-sans', 'opensans-semibolditalic-webfont', 'open_sanssemibold_italic', 600, 'italic') +
+// Open Sans: bold italic
+// fontFaceCss('open-sans', 'opensans-bolditalic-webfont', 'open_sansbold_italic', 700, 'italic') +
+// Open Sans: extra-bold
+// fontFaceCss('open-sans', 'opensans-extrabold-webfont', 'open_sansextrabold', 800, 'normal') +
+// Open Sans: extra-bold italic
+// fontFaceCss('open-sans', 'opensans-extrabolditalic-webfont', 'open_sansextrabold_italic', 800, 'italic') +
+/**
+	 * Common string helper functions
+	 * @module Sidekick.StringHelpers
+	 * @memberOf Sidekick
+	 *//**
+	 * Turns a space delimited string to dash delimited.
+	 * @function toDashCase
+	 * @instance
+	 * @param  {String} txt - String to transform
+	 */function r(e){return l(e).join('-')}/**
+	 * Turns a space delimited string to camel case.
+	 * @function toDashCase
+	 * @instance
+	 * @param  {String} txt - String to transform
+	 */function o(e){return l(e).map(function(e,t){return 0===t?e:e.charAt(0).toUpperCase()+e.substr(1)}).join('')}function l(e){return e.toString().replace(/[\s_-]/g,'{!}').replace(/([A-Z])/g,'{!}$1').toLowerCase().split('{!}').filter(function(e){return!!e.length})}/**
+	 * @module Sidekick.EasyDom
+	 * @memberOf Sidekick
+	 *//**
+	 * Creates a new {@link EasyDom} element from the Element.
+	 * @function element
+	 * @instance
+	 * @param {Element} el - Element from which to wrap in {@link EasyDom}
+	 * @return {EasyDom} the new {@link EasyDom} element
+	 */function d(e){var t=!!(1<arguments.length&&void 0!==arguments[1])&&arguments[1],n=t||document,a=/^..*[\.\# ]+.+$/,s=a.test(e),i={"#":'ById',".":'sByClassName',"@":'sByName',"=":'sByTagName'}[e[0]];return i=null==i||s?'querySelectorAll':'getElement'+i,'querySelectorAll'!==i&&(e=e.slice(1)),c(n[i](e),function(e){return new Ht(e)})}function c(e,t){return Array.prototype.map.call(e,t)}function u(e,t){var n=2<arguments.length&&arguments[2]!==void 0?arguments[2]:'DEPRECATED => '+e+' is being removed! Use '+t+' instead.';console&&console.error&&console.error(n)}function p(e){var t=1<arguments.length&&arguments[1]!==void 0?arguments[1]:'REMOVED => '+e+' is being removed! Do not use it!';console&&console.error&&console.error(t)}function g(){var e=0<arguments.length&&arguments[0]!==void 0?arguments[0]:{},t=e.obj,n=e.attr,a=e.objLoc,s=a===void 0?'':a,i=e.newLoc,r=i===void 0?null:i,o=arguments[1],l='function'==typeof o?o:function(){return o};// clear out the attr if it was previously defined
+t.hasOwnProperty(n)&&delete t[n],Object.defineProperty(t,n,{get:function(){var e=s?'.':'',t=''+s+e+n;return null==r?p(t):u(t,r),l()}})}function m(e,t){return Object.prototype.toString.call(e)// => "[object Type]"
+.split(' ')[1]// => "Type]"
+.slice(0,-1)// => "Type"
+.toLowerCase()===t.toLowerCase();// => "type === type"
+}function f(e){return function(){for(var t=arguments.length,n=Array(t),a=0;a<t;a++)n[a]=arguments[a];var s=n[0];/* eslint-disable no-console */s.startsWith('_')&&console&&console.error&&en('the event "'+s+'" is internal and not to be used'),Zt.hasOwnProperty(s)&&u('The "'+s+'" event','"'+Zt[s]+'"'),e.apply(null,n)}}function h(e){return function(){for(var t=arguments.length,n=Array(t),a=0;a<t;a++)n[a]=arguments[a];var s=n[0];return null==s?void(console&&console.error&&console.error('SIDEKICK.STORE: the first parameter %ckey<String>%c is required.','color:blue;font-weight:bold;','')):(s.startsWith('_')&&console&&console.error&&console.error('SIDEKICK.STORE: "'+s+'" is internal and not to be used'),e.apply(null,n));/* eslint-disable no-console *//* eslint-enable no-console */}}/**
+	 * Internationalization (i18n) for Sidekick
+	 * @module Sidekick.Translations
+	 * @memberOf Sidekick
+	 *//**
+	 * Sets the language to use.
+	 * @function init
+	 * @instance
+	 * @param  {String} newLang=en - Language to set. Defaults to English.
+	 */function v(e){return y(),e=e.toLowerCase(),null==vn[e]&&0<=e.indexOf('-')&&(e=e.split('-')[0],null==vn[e]&&(e='en')),mn=e,'en'===mn?void(fn={}):void(fn=vn[mn])}/**
+	 * Takes an English string and will look up the translation based on the current language.
+	 * @function i18n
+	 * @instance
+	 * @param  {String} str - String to transform
+	 * @return {String} Returns the translation if exists. Otherwise returns the str passed in.
+	 */function k(e){/* eslint-enable no-console */return!hn.includes(e)&&console&&console.error&&console.error('SIDEKICK: "'+e+'" is not a valid language token'),'en'===mn?e:null==fn[e]?e:fn[e]}function y(){var e=Object.keys(vn);hn=Object.keys(vn[e[0]]).sort();var t=hn.join('#');e.forEach(function(e){var n=Object.keys(vn[e]).sort().join('#');/* eslint-disable no-console */n!==t&&console&&console.error&&console.error('SIDEKICK: Internationalization language signatures are inconsistent ('+e+')')}/* eslint-enable no-console */)}/**
+	 * Container class
+	 * @class Sidekick.Header
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 */function b(e){var t=Ft(cn('sk-config').appElement),n=e.find('.sk--impersonation-exit'),a=At(n,1),s=a[0];tn('header.visible',function(n){t.toggleClass('sk-header-hidden',!n),e.toggleClass('sk-hidden',!n)},!0);// impersonation v2 overrides regular impersonation modes
+var i=!1,r='';un('idm',function(e){var t=e.idGatewayUrl,n=e.isImpersonatingV2,a=n!==void 0&&n;i=a,r=t.endsWith('/')?t.slice(0,-1):t,a&&sn('_header.impersonation',a)},{greedy:!0}),tn('header.impersonation',function(e){i||sn('_header.impersonation',e)},{greedy:!0,terminal:!0}),tn('_header.impersonation',function(e){return t.toggleClass('sk-impersonation',e)},!0),s.on('click',function(e){e.stopPropagation(),e.preventDefault(),i?window.location.href=r+'/impersonate/v2/user/end':sn('header.end-impersonation')})}function _(e,t){var n=e.toLowerCase();return t[n]||n}function S(e){var t=/\/\/idgatewayaws(.*?)\.flqa\.net/gi,n=t.exec(e);return null===n?'prod':n[1]}function w(e,t){var n=2<arguments.length&&arguments[2]!==void 0?arguments[2]:null;try{var a=t(e);return'undefined'==typeof a?n:a}catch(e){return n}}// called multiple times but doesn't truly execute untill all data is available (like Promise.all())
+function E(){// if we don't have all the data we need yet, wait till we do
+// get this users permitted actions so that we can personalize the extended nav
+// the full extended nav (pre-permissions)
+if(null!=_n&&null!=wn&&null!=Sn&&null!=En)// locate environment specific urls
+// bailout if this is an internal product
+{var e='true'===sessionStorage.getItem('automation-no-platform-nav');if(!e){tn('_location.path-change',function(){return Vt(function(){var e=0<Cn.find('.sk--platform-menu.highlight').length;Cn.toggleClass('sk--platform-has-highlight',e)})});var t=cn('fl-internal-product-ids')||[],n=cn('idm'),a=S(n.idGatewayUrl),s=bn[a],i=s.ecSand,r=Rt(),l=Sn,d=l.productId,c=_(d,s.productIdMap);if(!t.includes(c)){var u=window.location.href.startsWith(r),p=w(Sn,function(e){return e.userContext.OrganizationId},''),g=[{title:En('System Configuration'),icon:'fa-li-settings-sliders',routeMatcher:['^/'+c+'-useraccess'],children:[// {
+//     title: i18n('Manage User Access'),
+//     url: `${urlIsUiModule ? '' : ssBaseUrl}/${pId}-useraccess/`,
+//     visible: hasPermittedAction('users', 'view')
+// }
+]},{title:En('Global Directory'),icon:'fa-nav-users',routeMatcher:['^/'+c+'-directory'],url:(u?'':r)+'/'+c+'-directory/',visible:function(e){var t=e.flags;return t.checkState('data-integration')}},{title:En('Additional Resources'),icon:'fa-li-hand-papers',routeMatcher:['^/'+c+'-includedcontent'],url:(u?'':r)+'/'+c+'-includedcontent/',visible:function(e){var t=e.flags;return!t.checkState('hide-additional-resources')}// EXAMPLE VISIBLE FUNCTIONS
+// visible: ({flags}) => flags.checkState('someFlagValue'),
+// visible: ({permittedActions}) => permittedActions['groupName'].includes('itemName'),
+},{title:En('Resource Library'),icon:'fa-li-hand-papers',routeMatcher:['^/'+c+'-resource-library'],visible:function(e){var t=e.flags;return t.checkState('sk-resource-library-sidenav-update')},// EXAMPLE VISIBLE FUNCTIONS
+// visible: ({flags}) => flags.checkState('someFlagValue'),
+// visible: ({permittedActions}) => permittedActions['groupName'].includes('itemName'),
+children:[{title:En('Library'),children:[{title:En('Browse Library'),routeMatcher:['^/'+c+'-resource-library/library'],url:(u?'':r)+'/'+c+'-resource-library/library'},{title:En('My History'),routeMatcher:['^/'+c+'-resource-library/history'],url:(u?'':r)+'/'+c+'-resource-library/history'},{title:En('My Groups'),routeMatcher:['^/'+c+'-resource-library/groups'],url:(u?'':r)+'/'+c+'-resource-library/groups'}]},{title:En('Administration'),children:[{title:En('My Organization Resources'),routeMatcher:['^/'+c+'-resource-library/my-resources'],url:(u?'':r)+'/'+c+'-resource-library/my-resources'}]}]}];_n(i+'/PermissionAPI/api/ActionPermissions?organizationId='+p,function(e){var t=w(e,function(e){return e.data.attributes.objects},[]).reduce(function(e,t){return Object.assign(e,xt({},t.type,t.permittedActions.map(function(e){return o(e)})))},{}),n=function e(n){// return the menu with deleted items removed
+return n.forEach(function(a,s){// if this item has a permission function that returns false (no-access) we
+// should remove the item, otherwise, leave it alone
+var i=w(a,function(e){return null==e.visible||!0===e.visible({permittedActions:t,flags:wn})},!1);i?a.children&&(a.children=e(a.children),0===a.children.length&&delete n[s]):delete n[s]}),n.filter(function(e){return void 0!==e})}(g);// remove everything this user doesn't have access to
+dn('_platform-nav-items',n)})}}}}/**
+	* @module Sidekick.KeyPressHelper
+	* @memberOf Sidekick
+	*//**
+	 * Determines if the specified key was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if the specified key was pressed. False otherwise
+	 */function C(e,t,n){if(null==e)return!1;var a=e.key&&e.key.toLowerCase()===t,s=e.which===n;return a||s}/**
+	 * Utility function that maps a key name to a keyCode value before passing the event to isKey
+	 *
+	 * @param {Object} evt
+	 * @param {String} keyName
+	 *
+	 * @return {Boolean}
+	 */function I(e,t){return C(e,t,xn[t])}/**
+	 * Determines if ENTER was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if ENTER was pressed. False otherwise
+	 */function x(e){return I(e,'enter')}/**
+	 * Determines if ESCAPE was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if ESCAPE was pressed. False otherwise
+	 */function A(e){return I(e,'escape')}/**
+	 * Determines if TAB was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if TAB was pressed. False otherwise
+	 */function O(e){return I(e,'tab')}/**
+	 * Determines if LEFT was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if LEFT was pressed. False otherwise
+	 */function N(e){return I(e,'arrowleft')}/**
+	 * Determines if UP was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if UP was pressed. False otherwise
+	 */function L(e){return I(e,'arrowup')}/**
+	 * Determines if RIGHT was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if RIGHT was pressed. False otherwise
+	 */function z(e){return I(e,'arrowright')}/**
+	 * Determines if DOWN was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if DOWN was pressed. False otherwise
+	 */function R(e){return I(e,'arrowdown')}/**
+	 * Determines if SPACE was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if SPACE was pressed. False otherwise
+	 */function T(e){return I(e,' ')}/* globals ambient *//**
+	 * Top level navigation
+	 * @class Sidekick.Navigation
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs - Any attributes present on the "elem" dom node
+	 * @param {Object} ctx - Context object containing nav data
+	 * @param {Function} i18n - translation function
+	 */function D(e,t,n,a){function s(){document.activeElement&&document.activeElement.blur(),g?d(!1):c()}function i(){g||(h=!k.hasClass('sk-nav-expanded'),An.setItem('sk-leftnav-expanded',h),sn('_nav.expand-arrow',h)),d()}function r(t){var a=!!(1<arguments.length&&void 0!==arguments[1])&&arguments[1],s=e.find('.sk--menu-items'),i=At(s,1),r=i[0],o=n.menuItems.map(function(e){return Object.assign(e,{isPlatformMenu:!1})}),l=t.length?['-']:[],d=t.map(function(e){return Object.assign(e,{isPlatformMenu:!0})}),u=[].concat(Ot(o),l,Ot(d)).map(function(e){if('-'===e)return qt('<li class="sk--menu-divider"></li>');// create the base element
+var t=qt('<li sk-nav-item></li>');// add menuName value if present
+return'string'==typeof e.menuName&&t.data('menu-name',e.menuName),t._.context=e,Vt(function(){var n=t.find('.sk--main-menu-item-container')[0];(!e.url||e.children&&e.children.length)&&n.on('click',function(e){return e.preventDefault()}),e.children&&e.children.length?n.on('click',function(){return p(t)}):n.on('click',c)}),t});r.empty().append(u),a&&window.sidekick.cycle(),Vt(function(){var t=z._.getBoundingClientRect().bottom+P._.getBoundingClientRect().height-e._.getBoundingClientRect().top;e.css('min-height',t+'px')})}/////
+// helper functions
+//
+// compare the current path to the location and emit an event if path has changed
+function o(){if(m!==window.location.href){var e=m;m=window.location.href;var t=window.location.host,n=m.substr(m.indexOf(t)+t.length);sn('_location.path-change',n,m,e)}}function l(e){var t=a(e?'Minimize Navigation':'Expand Navigation');O.attr('content',t),Vt(function(){var e=O.find('.sk-tip-content')[0];null!=e&&(e._.textContent=t)})}function d(t){null==t&&(t=!k.hasClass('sk-nav-expanded'));var n=t&&!g;n!==X&&(sn('nav.expanded-footprint',n),X=n),t&&(sn('sk-menu-open',null),e.removeClass('sk-nav-collapsed')),l(t),Vt(function(){k.hasClass('sk-nav-submenu-active')&&c(),k.toggleClass('sk-nav-expanded',t),t||setTimeout(function(){k.hasClass('sk-nav-expanded')||e.addClass('sk-nav-collapsed')},300),setTimeout(function(){K.attr('tabindex',t?null:'-1'),G.attr('tabindex',t?'-1':null)},300)})}function c(){k.removeClass('sk-nav-submenu-active'),jt('.sidekick.sk-nav .sk-submenu-active').forEach(function(e){return e.removeClass('sk-submenu-active')}),setTimeout(function(){return k.addClass('sk-nav-submenu-collapsed')},300)}function u(e){g=e,e?d(!1):d(h)}// the menu item gains attention
+function p(e){sn('sk-menu-open',null);// close other menus
+var t=e.find('.sk-nav-item-mega-menu,.sk-nav-item-submenu'),n=At(t,1),a=n[0];a.on('keydown',function(t){switch(!0){case A(t):a.removeClass('sk-submenu-active'),e.removeClass('sk-submenu-active');var n=e.find('a'),s=At(n,1),i=s[0];null!=i&&i._.focus(),t.stopPropagation();}}),Vt(function(){k.removeClass('sk-nav-submenu-collapsed'),Vt(function(){e.toggleClass('sk-submenu-active'),e.hasClass('sk-submenu-active')?(k.addClass('sk-nav-submenu-active'),null!=a&&a._.focus(),jt('.sidekick.sk-nav .sk-submenu-active').filter(function(t){return t!==e}).forEach(function(e){return e.removeClass('sk-submenu-active')})):c()})})}In(e,a);var g=ambient.isActive('sk-auto-collapse-nav'),m='',f=cn('sk-config'),h='false'!==An.getItem('sk-leftnav-expanded'),v=Ft(f.appElement),k=Ft(document.body),y=e.find('.sk--content-dimmer'),b=At(y,1),_=b[0],S=e.find('.sk--nav-arrow'),w=At(S,1),E=w[0],C=e.find('.sk--nav-arrow-tooltip'),I=At(C,1),O=I[0],N=e.find('.sk--top-section'),L=At(N,1),z=L[0],R=e.find('.sk--bottom-section'),D=At(R,1),P=D[0],U=e.find('.sk--org-brand-small'),M=At(U,1),F=M[0],j=e.find('.sk--org-brand-large'),q=At(j,1),V=q[0],B=P.find('.sk--full-logo > a'),H=At(B,1),K=H[0],Y=P.find('.sk--small-logo > a'),W=At(Y,1),G=W[0];// stores the expanded state of the user preference
+/////
+// dom elements we require access to
+//
+/////
+// init styles
+//
+/////
+// register event listeners and handlers
+//
+if(z.on('click',function(e){return e.stopPropagation()}),P.on('click',function(e){return e.stopPropagation()}),k.on('click',c),_.on('click',function(){return g?d(!1):c()}),tn('sk-menu-open',function(e){null===e||(g&&d(!1),c())}),pn('org-branding-data',function(t){if(null!=t){var n=t.rectangleImagePublicUrl,a=t.squareImagePublicUrl;null==n||null==a||(F.css('background-image','url('+a+')'),V.css('background-image','url('+n+')'),e.addClass('sk--has-org-branding'))}}),tn('nav.menu-item-clicked',s),tn('nav.plat-menu-item-clicked',s),tn('nav.visible',function(e){v.toggleClass('sk-nav-hidden',!e)},!0),E.on('click',function(e){i(e)}// evt.target.blur();
+),E.on('keydown',function(e){switch(!0){case x(e):case T(e):i(e);}}),ambient.on('enter','sk-auto-collapse-nav',function(){return u(!0)}),ambient.on('leave','sk-auto-collapse-nav',function(){return u(!1)}),setInterval(o,500),pn('idm-data',function(e){null==e.session.State||null==e.session.State.prefLeftNavExpanded||(h=e.session.State.prefLeftNavExpanded,An.setItem('sk-leftnav-expanded',h),!g&&d(h))}),k.addClass('sk-nav-submenu-collapsed'),g&&e.addClass('sk-nav-collapsed'),null!=n.menuItems){// if extended nav data is not loaded yet, wait for data and re-render nav
+var $=cn('_platform-nav-items');// if the extended nav isn't available yet, setup another render call for when it shows up
+null==$&&pn('_platform-nav-items',function(e){return r(e,!0)}),r($||[]),g||d(h);var X=null}}function P(e,t,n){function s(e){var t=e.every(function(e){return Yt(e.children)}),n=i(e);return t&&30>=n}function i(e){// children must be an array
+return Yt(e)?e.reduce(function(e,t){return++e,Yt(t.children)&&(e+=t.children.length),e},0):0}n.url=n.url||n.route||null,n.isPlatformMenu&&e.addClass('sk--platform-menu');var r=null;if(n.children&&n.children.length){var o=s(n.children)?'mega-menu':'submenu';r=qt('<div sk-nav-item-'+o+' sub-level="1" tabindex="-1"></div>'),r._.context=n.children,e.append(r),e.addClass('sk--has-children')}else{var l=e.find('.sk--main-menu-item-container')[0];n.target&&l.attr('target',n.target),e.addClass('sk--menu-action');var a=n.isPlatformMenu?'plat-menu-item':'menu-item';e.on('click',function(e){return sn('nav.'+a+'-clicked',n,e)})}if(null!=n.badgeEvent){var d=e.find('.sk--badge')[0];tn(n.badgeEvent,function(e){if(d.css('display','none'),d.removeClass('sk--max'),!0===e)d.css('display','block'),d.addClass('sk--empty');else if(bt(e)){if(1>e)return;d.css('display','block'),d.css('display','block'),d._.innerHTML=Math.min(e,99),99<e&&(d.addClass('sk--max'),d._.innerHTML+='+')}},!0)}tn('_location.path-change',function(t){var a=Nn(t,n.url,n.routeMatcher);e.toggleClass('highlight',a)})}/**
+	 * @module Sidekick.ComponentCommon
+	 * @memberOf Sidekick
+	 *//**
+	 * Sets up common <code>on</code> handlers for a menu item
+	 * @function cmptMenuItem
+	 * @instance
+	 * @param  {Element} domCmpt
+	 * @param  {Element} domHandle
+	 * @param  {Element} mItem
+	 */function U(e,t,n,a){a.find('[role=menuitem]').forEach(function(e){e.on('focus',function(){e.attr('aria-selected',!0)}),e.on('blur',function(){e.attr('aria-selected',!1)})}),a.on('keydown',function(e){var t=!1;switch(!0){case O(e):break;case N(e):case z(e):break;case L(e):case R(e):var s=Array.prototype.slice.call(n._.children),i=s.indexOf(a._);if(i===(L(e)?0:s.length-1)){t=!0;break}var r=i+(L(e)?-1:1),o=s[r].querySelector('[role=menuitem]');o.focus(),e.stopPropagation(),t=!0;}t&&e.preventDefault()})}/**
+	 * Sets up common <code>on</code> handlers for a menu
+	 * @function cmptMenu
+	 * @instance
+	 * @param  {Element} domCmpt
+	 * @param  {Element} domHandle
+	 * @param  {Element} domMenu
+	 */function M(e,t,n){function a(n){var a=t.hasClass('ss-menu-open');sn('sk-menu-'+(a?'close':'open'),e,n)}e.on('click',function(t){e.hasClass('sk-no-click')||t.stopPropagation()}),t.on('click',a),t.on('keydown',function(e){var t=!1;switch(!0){case x(e):case T(e):case R(e):case L(e):a(e),t=!0;}t&&e.preventDefault()}),n.attr('tabindex','-1'),n.on('keydown',function(a){var s=!1;switch(!0){case R(a):case L(a):n.find('[role=menuitem]').forEach(function(e,t,n){var s=L(a)?n.length-1:0,i=t===s?'focus':'blur';e._[i]()});break;case A(a):sn('sk-menu-close',e),t._.focus(),s=!0;}s&&a.preventDefault()}),Ft(window).on('blur',function(){null!=document.activeElement&&'IFRAME'===document.activeElement.tagName&&sn('sk-menu-close',e)}),Ft(document).on('click',function(){return sn('sk-menu-close',e)}),tn('sk-menu-open',function(a,s){if(a!==e)sn('sk-menu-close',e);else{if(t.addClass('ss-menu-open'),t.attr('aria-pressed','true'),n.addClass('ss-menu-open'),n.attr('aria-hidden','false'),R(s)||L(s))return void n.find('[role=menuitem]').forEach(function(e,t,n){var a=L(s)?n.length-1:0;e._[t===a?'focus':'blur']()});n._.focus()}}),tn('sk-menu-close',function(a){// if this close event was for another menu, ignore
+if(a===e){t.removeClass('ss-menu-open'),t.attr('aria-pressed','false'),n.removeClass('ss-menu-open'),n.attr('aria-hidden','true');var s=n.find('[role=menuitem]');s.map(function(e){return e.attr('aria-selected',!1)})}// close the menu
+})}/**
+	 * handle the clear button functionality for an sk-input element
+	 * @function cmptInputClear
+	 * @instance
+	 * @param {Element} domInput
+	 * @param {Element} domClearBtn
+	 * @param {Boolean} clearOnEscape - Adds an event handler to run when you press escape
+	 */function F(e,t,n){function a(){e._.value='',e._.focus(),s()}// toggle sk-hidden based on the content
+var s=function(){t.toggleClass('sk-hidden',!e._.value.length)};e.on('input',s),t.on('click',a),n&&e.on('keydown',function(e){// bail out if this was not the ESCAPE key
+A(e)&&a()}),s()}// re-calculate the measurements because adjustments have been made
+function j(){// decide what elements could be on the screen based on if we are impersonating
+var e=Rn?Un:Pn,t=Rn?Fn:Mn,n=e.reduce(function(e,t){var n=Tn[t]&&parseFloat(Tn[t].css('width'));return e+(n||0)},Rn?48:5),a=t.filter(function(e){return null!=Dn[e]}).map(function(e){return Dn[e]}).map(function(t){return Object.assign({},t,{width:q(t.text,t.font)})}),s=a.reduce(function(n,t){return n+(t.width+t.adjustment)},0);// calculate the total width of all static elements on the screen
+// give the header an extra 43 pixels for impersonation mode to accommodate the X
+// figure out what dyamic elements are on screen currently
+// calculate the total width of all dymanic elements based on their text width
+// apply the corrent percent width calculation for each dynamic element
+a.forEach(function(t){var e=n+zn,a=St(100*((t.width+t.adjustment)/s));t.elem.css('max-width','calc('+a+'% - '+e*(a/100)+'px)')})}// measure how many px this text will take up
+function q(e){var t=1<arguments.length&&void 0!==arguments[1]?arguments[1]:'normal 15px';return qn.font=t+' \'Open Sans\',\'Helvetica Neue\',Helvetica,Arial,sans-serif',qn.measureText(e).width}// if we switch to or from impersonation mode, we should recalculate header space
+// if roles are filled, we need to make sure the role name is not longer
+// than the user's name, if it is, we need to use it for calculations instead
+function V(){un('roles',function(e){var t=e.roles.find(function(t){return t.id===e.currentRole}).name,n=Dn['user-info'],a=q(n.text,n.font),s=q(t,'600 13px');s>a&&(n.text=t,n.font='600 13px'),j()})}// listen to other header elements and readjust when they show up
+function B(e,t){Tn[e]=t,j()}/**
+	 * Displays notifications
+	 * @class Sidekick.Notifications
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 * @emits notification.delete
+	 * @emits notification.mark-as-read
+	 * @listens store notifications
+	 * @example Array of notifications
+	 * title: Notification Title
+	 * content: Notification Content
+	 * unread: Optional. Shows the unread dot
+	 * timestamp: Optional. Shows a timestamp
+	 * {
+		title: 'this is notification 1',
+		content: 'You got notified...',
+		unread: true
+	}, {
+		title: 'this is notification 2',
+		content: 'You got notified... again!',
+		timestamp: 'TODAY'
+	}
+	 */function H(t,e,n,a){/////
+// update function for when notification list changes
+//
+/**
+	  * Updates the display with the new notifications being passed in.
+	  * @param  {Array} nArr - New context object with new notifications.
+	  */function s(e){// no items to display
+return'[object Array]'===Object.prototype.toString.call(e)&&(e={items:e}),n.items!==e.items&&(n=e),i(),0===n.items.length?void l.children(o):void(l.children(n.items.map(function(e){var t=qt('\n\t\t\t\t<li class="menulist-item '+(e.unread?'unread':'')+'">\n\t\t\t\t\t\t<h4 class="subject">\n\t\t\t\t\t\t\t'+(e.unread?'<a class="mark-read" href="#" aria-label="mark as read"></a>':'')+'\n\t\t\t\t\t\t\t'+e.title+'\n\t\t\t\t\t\t</h4>\n\t\t\t\t\t\t<div>'+e.content+'</div>\n\t\t\t\t\t\t'+(e.timestamp?'<small>'+e.timestamp+'</small>':'')+'\n\t\t\t\t\t\t<button type="button" class="remove fa-li-close" aria-label="remove notification"></button>\n\t\t\t\t\t</a>\n\t\t\t\t</li>\n\t\t\t');return t.find('.remove')[0].on('click',function(t){t.preventDefault(),t.stopPropagation(),sn('notification.delete',e)}),e.unread&&(t.find('.mark-read')[0].on('click',function(t){t.preventDefault(),t.stopPropagation(),sn('notification.mark-as-read',e),i()}),t.on('click',function(t){t.stopPropagation(),sn('notification.mark-as-read',e)})),t.on('click',function(t){t.stopPropagation(),sn('notification.action',e)}),t})),!d.hasClass('ss-menu-open')&&(l.find('=a').forEach(function(e){return e.attr('tabindex','-1')}),l.find('=button').forEach(function(e){return e.attr('tabindex','-1')})));// process the list of items to display
+}function i(){var e=n.items.filter(function(e){return!0===e.unread}).length;r(e)}function r(e){t.toggleClass('has-unread',0<e),p.css('display','none'),p.removeClass('sk--max'),0<e&&(99<e&&(p.addClass('sk--max'),e=99),p._.innerHTML=e,p.css('display','block'))}var o=qt('<li class="menulist-item notifications-empty"><div>'+a('You have no notifications')+'</div></li>'),l=t.find('.menulist')[0],d=t.find('.menu')[0],c=t.find('.control')[0],u=t.find('.ss-ctrl-clear')[0],p=c.find('.sk--unread')[0];/////
+// find dom elements that we care about
+//
+/////
+// handle iniital state and data changes
+//
+// if url is present just make the button a link
+return null==n.url?void(un('notifications',s),M(t,c,d),u.on('click',function(){return sn('sk-menu-close',t)}),tn('sk-menu-close',function(n){n!==t||(l.find('=a').forEach(function(e){return e.attr('tabindex','-1')}),l.find('=button').forEach(function(e){return e.attr('tabindex','-1')}))}),tn('sk-menu-open',function(n){n!==t||(l.find('=a').forEach(function(e){return e.attr('tabindex','0')}),l.find('=button').forEach(function(e){return e.attr('tabindex','0')}))})):(c.attr('target',n.target),void tn('notifications.unread-count',r,!0))}function K(e,t,n){var a=t.subLevel,s=e.find('.menu-group')[0];e.addClass('sub-level-'+a);var i=[],r=n.map(function(t){t.url=t.url||t.route||null;var n,s=t.url||'#',r=t.url&&t.target?' target="'+t.target+'"':'',o=t.children,l=!!(o&&o.length),d=qt('\n\t\t\t<li class="sub-menu-item">\n\t\t\t\t<a class="sub-menu-item-container" title="'+t.title+'" href="'+s+'"'+r+' role="menu-item">\n\t\t\t\t\t<span>'+t.title+'</span>\n\t\t\t\t\t'+(l?'<i class="sk--more-items fa fa-angle-right"></i>':'')+'\n\t\t\t\t</a>\n\t\t\t</li>\n\t\t');return l?(n=qt('<div sk-nav-item-submenu sub-level="'+(parseInt(a,10)+1)+'" tabindex="-1"></div>'),n._.context=o,i.push(n),n.on('keydown',function(e){switch(!0){case A(e):n.removeClass('sk-submenu-active'),d.removeClass('sk-submenu-active');var t=d.find('a'),a=At(t,1),s=a[0];null!=s&&s._.focus(),e.stopPropagation();}})):d.addClass('sk--menu-action'),'string'==typeof t.menuName&&d.data('menu-name',t.menuName),d.find('.sub-menu-item-container')[0].on('click',function(a){l||sn('nav.menu-item-clicked',t,a),l&&a.preventDefault(),e.find('.sk-submenu-active').forEach(function(e){e!==d&&e!==n&&e.removeClass('sk-submenu-active')}),l&&(n.toggleClass('sk-submenu-active'),n._.focus(),d.toggleClass('sk-submenu-active'))}),d});s.children(r),e.append(i),tn('_location.path-change',function(e){null==e||r.forEach(function(t,a){var s=n[a],i=Nn(e,s.url,s.routeMatcher);t.toggleClass('highlight',i)})})}/**
+	 * User info component.
+	 * @class Sidekick.UserInfo
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx - user data object
+	 * @param {Boolean} [ctx.firstName] - First Name to show
+	 * @param {Boolean} [ctx.lastName] - Last Name to show
+	 * @param {Boolean} [ctx.showAcctSettings=true] - Show/hide the Account Settings button
+	 * @param {Boolean} [ctx.showSignOut=true] - Show/hide the Signout button
+	 * @param {Function} i18n - translation function
+	 * @emits header.user-info.role - Role to switch to
+	 * @emits header.user-info.account-settings
+	 * @emits session.logout
+	 * @listens roles - Accepts a collection of roles
+	 * @example
+	 * currentRole: ID of the current role that is in the roles array
+	 * roles: List of roles pertaining to the app
+	 * {
+	 	currentRole: 1,
+	 	roles: [{
+			'id': 1,
+			'name': 'Admin'
+		}]
+	}
+	 */function Y(e,t,n){// button display controls
+var a=!1!==n.showAcctSettings,s=!1!==n.showSignOut,i=e.find('.sk--control'),r=At(i,1),o=r[0],l=o.find('.sk--user-name'),d=At(l,1),c=d[0],u=o.find('.sk--current-role'),p=At(u,1),g=p[0],m=e.find('.sk--menu'),f=At(m,1),h=f[0],v=e.find('.sk--settings'),k=At(v,1),y=k[0],b=e.find('.sk--logout'),_=At(b,1),S=_[0],w=e.find('.sk--roles'),E=At(w,1),C=E[0],I=e.find('.sk--blocks'),x=At(I,1),A=x[0],O=e.find('.sk--fl-account-header'),N=At(O,1),L=N[0];/////
+// find dom elements that we care about
+//
+/////
+// helper functions
+//
+/**
+	  * Updates the display with the new data being passed in.
+	  * @param  {Object} data - New roles
+	  *//////
+// handle iniital state and data changes
+//
+un('roles',function(t){// validate data structure
+if(null!=t.currentRole&&null!=t.roles&&0!==t.roles.length&&!t.roles.filter(function(e){return null==e.id||null==e.name}).length){var a=t.currentRole,s=t.roles,i=s.find(function(e){return e.id===a}).name;g._.innerHTML=i||'',null!=i&&o.attr('aria-label',n.firstName+' '+n.lastName+' - '+i),null==s||0===s.length?(C.css('display','none'),C.children(),g.css('display','none'),g.children()):1===s.length?(g.css('display','block'),C.css('display','none'),C.children()):(C.css('display','block'),g.css('display','block'),C.children(s.map(function(t){var n=t.id===a,s=n.toString(),i=n?'fa-li-checkmark-after active':'',r=qt('\n\t\t\t\t\t<li>\n\t\t\t\t\t\t<a role="menuitem" aria-current="'+s+'" aria-selected="false" class="active-state-link '+i+'" href="#">'+t.name+'</a>\n\t\t\t\t\t</li>\n\t\t\t\t');return t.id!==a&&r.on('click',function(n){n.stopPropagation(),n.preventDefault(),sn('header.user-info.role',t),sn('sk-menu-close',e)}),U(e,o,C,r),r})))}}),pn('idm-data',function(){var e=0<arguments.length&&arguments[0]!==void 0?arguments[0]:{},t=e.user;// if this use is an SSO user (not a frontline account) we need to hide
+// the settings link that normally takes them to the IDM settings page
+t.isFrontlineUser||(y.parent().css('display','none'),L.css('display','none'))}),jn('user-info',e,c._.innerText,45),M(e,o,h),tn('sk-menu-open',function(t){t!==e||c.removeClass('fa-angle-down-after').addClass('fa-angle-up-after')}),tn('sk-menu-close',function(t){t!==e||c.addClass('fa-angle-down-after').removeClass('fa-angle-up-after')}),!1==a&&!1==s?A.css('display','none'):(a?(y.on('click',function(t){t.stopPropagation(),t.preventDefault(),sn('header.user-info.account-settings'),sn('sk-menu-close',e)}),U(e,o,A,Ft(y._.parentNode))):y.parent().css('display','none'),s?(S.on('click',function(t){t.stopPropagation(),t.preventDefault(),sn('session.logout'),sn('sk-menu-close',e)}),U(e,o,A,Ft(S._.parentNode))):S.parent().css('display','none'))}/**
+	 * Displays articles, and helper blocks
+	 * @class Sidekick.Help
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 * @emits header.help.article.click - Thrown when an article is clicked that doesn't have a url
+	 * @emits header.help.block.click - Thrown when an block is clicked that doesn't have a url
+	 * @example
+	 * articles: List of articles pertaining to the app
+	 * blocks: List of other links to different sections of the app.
+	 * title: Text to show the user
+	 * icon: Icon to show the user
+	 * url: Optional. If passed article/block will open a new window to that url. If omitted then
+	 * 	header.help.article.click/header.help.block.click will be thrown and the item will be the article/block. Extra
+	 * 	params can optionally be added to the item when building the nav menu and they will be included back to you when the
+	 * 	nav item is clicked.
+	 * {
+		'articles': [{
+			'title': 'Getting Started with Frontline Central',
+			'url': '/getting_started',
+			'icon': 'file-text'
+		}],
+		'blocks': [{
+			'title': 'Learn more about Frontline Central',
+			'url': 'http://help1.frontlinek12.com/?b_id=13067',
+			'icon': 'learning_center_logo'
+		}]
+	}
+	 */function W(e,t,n){/////
+// helper functions
+//
+/**
+	  * Updates the display with the new data being passed in.
+	  * @param  {Object} newCtx - New context object with the new data.
+	  */function a(t){n!==t&&(n=t);// articles
+var a=n.articles;null==a||0===a.length?h.css('display','none'):(h.css('display','block'),h.children(a.slice(0,3).map(function(t){var n;if(null==t.url||0===t.url.length)n=qt('<li><a class="'+t.icon+'" href="#">'+t.title+'</a></li>'),n.on('click',function(n){n.stopPropagation(),n.preventDefault(),sn('header.help.article.click',t),sn('sk-menu-close',e)});else{// perform string replacement on the URL
+var a=Object.keys(v).reduce(function(e,t){return e.replace('{'+t+'}',v[t].toString())},t.url);n=qt('<li><a role="menuitem" aria-selected="false" class="'+t.icon+'" href="'+a+'" target="_blank">'+t.title+'</a></li>')}// bind common keydown handlers to menu item
+return U(e,o,h,n),n})));// blocks
+var s=n.blocks;null==s||0===s.length?g.css('display','none'):(g.css('display','block'),g.children(s.map(function(t){var n;return null==t.url||0===t.url.length?(n=qt('<li><a role="menuitem" aria-selected="false" class="'+t.icon+'" href="#">'+t.title+'</a></li>'),n.on('click',function(n){n.stopPropagation(),n.preventDefault(),sn('header.help.block.click',t),sn('sk-menu-close',e)})):n=qt('<li><a role="menuitem" aria-selected="false" class="'+t.icon+'" href="'+t.url+'" target="_blank">'+t.title+'</a></li>'),U(e,o,g,n),n})))}/**
+	  * Extract values for URL "template" string from IDM data. Use default values if the data is not provided.
+	  * @param  {Object} [idmData] - IDM data object
+	  * @param  {Object} {idmData.userContext} IDM user context object
+	  * @param  {Object} {idmData.product} IDM product object
+	  */function s(){var e=0<arguments.length&&arguments[0]!==void 0?arguments[0]:{},t=e.identities,n=e.userContext,a=e.product,s=e.user,i=a&&a.AssociatedRoles.map(function(e){return e.Type})||[],r=Array.isArray(t)&&t.find(function(e){return i.includes(e.Type)}),o=r&&r.Id||'',l=n&&n.OrganizationId||'',d=s&&s.profileId||'';// these names must match the placeholders values in the URL, which we control
+return{userKey:o,orgId:l,sub:d}}/////
+// find dom elements that we care about
+//
+var i=e.find('.control'),r=At(i,1),o=r[0],l=e.find('.menu'),d=At(l,1),c=d[0],u=e.find('.blocks'),p=At(u,1),g=p[0],m=e.find('.articles'),f=At(m,1),h=f[0],v=s();// initialize with default values
+/////
+// handle initial state and data changes
+//
+a(n),un('help',a),un('idm-data',function(e){v=s(e),a(n)}),M(e,o,c)}/**
+	 * Performs a search. Listens for results.
+	 * @class Sidekick.Search
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Number} [ctx.limit=20] - Count of items to show before view all appears
+	 * @param {String[]} [ctx.searchTypes=type-ahead] - An array of options of how to search. Defaults to type-ahead.
+	 *        'type-ahead' Type ahead search
+	 *        'search-on-enter' Search when pressing enter
+	 * @param {String} [ctx.placeHolderText=Search] - Default text put in the search box
+	 * @param {Function} i18n - translation function
+	 * @emits header.search - Fired when a search is done. Passes the search value
+	 * @emits header.search.item-clicked - Fired when a search result is clicked
+	 * @listens header.search.results - Array of HTML to display in the result list.
+	 */function G(e,t,n,a){/////
+// update function for when help list changes
+//
+/**
+	  * Resets button and menu state.
+	  */function s(){Vt(i)}/**
+	  * Restore focus to search box, selecting the value if populated
+	  *//**
+	  * Restore focus to search box, selecting the value if populated
+	  *//**
+	  * Closes the menu when escape is pressed
+	  *//**
+	  * Submit the search value to request type-ahead results
+	  *//**
+	  * Changes focus to a typeahead search result
+	  *//**
+	  * Makes a search only when enter is pressed.
+	  *//**
+	  * Makes a search.
+	  * @emits header.search - Passes the search value
+	  */function i(){if(y.empty(),!c.hasFocus())return h.removeClass('ss-menu-open'),void c.attr('aria-expanded','false');var e=c._.value.length;0<e?(h.addClass('ss-menu-open'),c.attr('aria-expanded','true'),S.css('display','block'),sn('header.search',c._.value)):(h.removeClass('ss-menu-open'),c.attr('aria-expanded','false'),sn('header.search.no-query'))}/**
+	  * Updates the result list.
+	  * @param  {Array} results - Accepts an array of HTML to display in the result list.
+	  * @listens header.search.results - Array of HTML to display in the result list.
+	  */var r=qt('\n\t\t<ul id="sk-search-results" class="sk--menulist" role="listbox" aria-live="polite" aria-labelledby="sk-search-results-title">\n\t\t\t<li class="sk-list-empty" role="option" tabindex="0">'+a('No Results Found')+'</li>\n\t\t</ul>\n\t'),o=n.limit||20,l=e.find('.search'),d=At(l,1),c=d[0],u=e.find('.ss-ctrl-clear'),p=At(u,1),g=p[0],m=e.find('.sk--menu'),f=At(m,1),h=f[0],v=e.find('.sk--search-content'),k=At(v,1),y=k[0],b=e.find('.sk--loader'),_=At(b,1),S=_[0];/////
+// find dom elements that we care about
+//
+/////
+// handle iniital state and data changes
+//
+c.attr('placeholder',n.placeHolderText||a('Search')),c.attr('aria-label',n.placeHolderText||a('Search')),tn('header.search.results',function(t){if(S.css('display','none'),!!c.hasFocus()){var n=t instanceof Array;if(null==t||n&&0===t.length)return void y.children(r);if('string'==typeof t)e.addClass('sk--hide-instruction'),y.children(qt(t)),h.addClass('ss-menu-open');else{// process the list of blocks to display
+var a=qt('<ul id="sk-search-results" class="sk--menulist" role="listbox" aria-live="polite" aria-labelledby="sk-search-results-title"></ul>');a.children(t.slice(0,o).map(function(e,t){var n=qt(e);n.attr('role','option'),n.attr('tabindex','0');var a=qt('<li role="presentation"></li>');return a.append(n),a.on('click',function(e){e.stopPropagation(),e.preventDefault(),h.removeClass('ss-menu-open'),sn('header.search.item-clicked',t)}),a})),y.children(a)}}}),e.on('click',function(e){return e.stopPropagation()}),Ft(document).on('click',s),tn('header.search.reset',s),tn('sk-menu-open',function(t){t!==e&&s()}),Ft(window).on('blur',function(){null!=document.activeElement&&'IFRAME'===document.activeElement.tagName&&s()}),F(c,g,!0),g.on('click',s),c.on('keydown',function(e){// bail out if this was not the ESCAPE key
+A(e)&&s()}),c.on('focus',function(e){var t=e.target;''===t.value||t.setSelectionRange(0,t.value.length)}),'string'==typeof n.searchTypes?n.searchTypes=[n.searchTypes]:(null==n.searchTypes||0===n.searchTypes.length)&&(n.searchTypes=['type-ahead']),n.searchTypes.includes('search-on-enter')&&c.on('keydown',function(e){// bail out if this was not the ENTER key
+if(x(e)){y.empty();var t=c._.value.length;g.css('display',0<t?'block':'none'),0<t&&(sn('header.search',c._.value),c._.value='',g.addClass('sk-hidden')),document.activeElement&&document.activeElement.blur()}}),n.searchTypes.includes('type-ahead')&&(!n.searchTypes.includes('search-on-enter')&&c.on('keydown',function(e){// bail out if this was not the ENTER key
+x(e)&&sn('header.search.enter-pressed',c._.value)}),c.attr('aria-expanded','false'),c.attr('aria-autocomplete','list'),c.attr('aria-owns','sk-search-results'),c.on('input',i),c.on('click',function(){sn('sk-menu-open',e),i()}),e.on('keydown',function(e){// bail out if this was not the ESCAPE key
+A(e)&&document.activeElement!==c._&&c._.focus()}),e.on('keydown',function(e){// bail out if this was not the UP or DOWN key
+// bail out if the currently focused element is not a search result
+if(L(e)||R(e)){var t=y.find('[role=option]').map(function(e){return e._});// restore focus to search box when moving beyond first or last result
+if(0!==t.length){if(e.preventDefault(),c.hasFocus()){// select the first (down) or last (up) result
+var n=L(e)?t.length-1:0;return void t[n].focus()}var a=t.indexOf(document.activeElement);if(-1!==a){if(0===a&&L(e))return c._.focus();if(a===t.length-1&&R(e))return c._.focus();var s=L(e)?a-1:a+1;t[s].focus()}}}}))}/**
+	 * SuperSuit Loader
+	 * @class Sidekick.Loader
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {String} attrs.statusText - text to show above the finger loader
+	 * @param {Null} attrs.fill - undefined if not in "fill" mode, not undefined if in fill mode
+	 * @param {Null} ctx - not used
+	 * @param {Function} i18n - translation function
+	 * @listens loader.show - show/hide the loader
+	 */function $(e,t){t.fill!==void 0&&e.addClass('sk-fill-container')}/**
+	 * Displays allowed organizations
+	 * @class Sidekick.OrganizationSwitcher
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx - org switcher context object
+	 * @param {Function} i18n - translation function
+	 * @emits header.org-switcher.change - Passes selected organization
+	 */function X(e,t,n,a){/////
+// helper functions
+//
+/**
+	  * Filters orgs
+	  */function s(e){var t=E._.value;// no search filter
+return!t.length||-1!==e.name.toLowerCase().indexOf(t.toLowerCase());// serach filter
+}/**
+	  * Processes the access data to populate the list
+	  */function i(){var t=n.orgs,i=n.currentOrg;// no access, don't show, we are done
+if(null==i||0===t.length)return void e.css('display','none');e.css('display','inline-block');// render out our current org name in the header
+var o=t.find(function(e){return e.id===i}).name;if(d.attr('aria-label',o+' - '+a('Switch Organizations')),p._.innerHTML=o,p.attr('title',o),jn('org-switcher',e,o,30),1===t.length)// no need to continue, we only have 1 org. No picker is needed.
+return e.addClass('sk-no-click'),d.attr('tabindex','-1'),d.attr('disabled','disabled'),d.attr('aria-disabled','true'),p.removeClass('fa-angle-down-after'),void f.css('display','none');// Sort by name
+e.removeClass('sk-no-click'),d.attr('tabindex','0'),d.attr('disabled',null),d.attr('aria-disabled','false'),p.addClass('fa-angle-down-after'),_.css('display',10<t.length?'block':'none'),t.sort(function(e,t){return e.name.localeCompare(t.name)});var l=t.filter(s);0<l.length?k.children(l.map(function(t){var n=t.id===i,a=n.toString(),s=n?'active':'',r=n?'fa-li-checkmark-after active':'',o=t.url||'#',l=t.url&&t.target?' target="'+t.target+'"':'',c=qt('\n\t\t\t\t\t<li class="'+s+'">\n\t\t\t\t\t\t<a role="menuitem" aria-current="'+a+'" aria-selected="false" class="active-state-link '+r+'" href="'+o+'"'+l+'>'+t.name+'</a>\n\t\t\t\t\t</li>\n\t\t\t\t');return c.on('click',function(n){t.url||(n.stopPropagation(),n.preventDefault(),sn('header.org-switcher.change',t)),sn('sk-menu-close',e)}),U(e,d,k,c),c})):k.children(r)}var r=qt('<li class="sk-list-empty">No Organizations Found</li>'),o=e.find('.control'),l=At(o,1),d=l[0],c=d.find('.content'),u=At(c,1),p=u[0],g=e.find('.menu'),m=At(g,1),f=m[0],h=e.find('.menulist'),v=At(h,1),k=v[0],y=e.find('.search'),b=At(y,1),_=b[0],S=e.find('.search-org'),w=At(S,1),E=w[0],C=e.find('.ss-ctrl-clear'),I=At(C,1),x=I[0];/////
+// find dom elements that we care about
+//
+/////
+// wait to handle this initial state until the current org is specified
+//
+un('current-org',function(e){n.orgs.filter(function(t){return t.id.toString()===e.id.toString()}).filter(function(e){return e.name.startsWith('IDM ADMIN:')}).forEach(function(t){return t.name=e.name}),i()}),i(),M(e,d,f),F(E,x),E.on('input',i),x.on('click',i)}/**
+	 * Displays allowed organizations
+	 * @class Sidekick.ApplicationSwitcher
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx - app switcher data object
+	 * @param {Function} i18n - translation function
+	 * @emits header.app-switcher.change - Passes selected product id
+	 */function Q(e,t,n,a){/////
+// find dom elements that we care about
+//
+var s=e.find('.app-title'),i=At(s,1),r=i[0],o=r.find('.sk--content'),l=At(o,1),d=l[0],c=e.find('.sk--menu'),u=At(c,1),p=u[0],g=e.find('.sk--menulist'),m=At(g,1),f=m[0];/////
+// listen for events and take action
+//
+M(e,r,p);/**
+	  * Processes the access data to populate the list
+	  * @param  {Object} app
+	  */var h=n.currentApp,v=n.apps,k=v.find(function(e){return e.id===h}),y=null==k?'':k.name;r.attr('aria-label',y+' - '+a('Switch Apps')),d.attr('title',y),d._.innerHTML=y,tn('_header.impersonation',function(t){var n=e.find('.sk--skip-nav-link'),a=At(n,1),s=a[0];null==s||s.css('display',t?'none':null)},{greedy:!0}),2>v.length?(e.addClass('sk-no-click'),r.attr('tabindex','-1'),r.attr('disabled','disabled'),r.attr('aria-disabled','true'),d.removeClass('fa-angle-down-after')):(e.removeClass('sk-no-click'),r.attr('tabindex','0'),r.attr('disabled',null),r.attr('aria-disabled','false'),d.addClass('fa-angle-down-after'),v.sort(function(e,t){return e.name.localeCompare(t.name)}),f.children(v.map(function(t){var n=t.id===h,a=null!=t.legacyName&&t.legacyName.length,s=a?' <i class="sk--formerly">formerly '+t.legacyName+'</i>':'',i=n.toString(),o=n?'active':'',l=n?'fa-li-checkmark-after':'',d=t.url||'#',c=t.url&&t.target?' target="'+t.target+'"':'',u=qt('\n\t\t\t\t<li>\n\t\t\t\t\t<a role="menuitem" aria-current="'+i+'" aria-selected="false" class="active-state-link '+o+'" href="'+d+'"'+c+'><span class="sk--name '+l+'">'+t.name+'</span>'+s+'</a>\n\t\t\t\t</li>\n\t\t\t');return n&&u.addClass('active'),a&&u.addClass('sk--has-legacy'),u.on('click',function(n){t.url||(n.stopPropagation(),n.preventDefault(),sn('header.app-switcher.change',t)),sn('sk-menu-close',e)}),U(e,r,f,u),u})))}/**
+	 * Displays Organization information
+	 * @class Sidekick.ContactOrg
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 * @listens current-org - Accepts an organization to update the information
+	 */function J(e,t){/////
+// helper functions
+//
+function n(e){if('string'==typeof e||'number'==typeof e)return parseInt(e,10).toString().length===e.toString().length&&(e+='px'),e}// position: bottom, top, left, right
+var a=t.position||'bottom',s=n(t.distance)||'-3px',i=null;(function(t){if(null!=t){var s=e.find('.sk-tip-chevron')[0];t=n(t);var i=['left','right'].includes(a)?'Y':'X';s.css({transform:'translate'+i+'('+t+') rotate(45deg)'})}})(t.arrowShift),function(t){var s=e.parent()._.getBoundingClientRect(),i=['left','right'].includes(a)?'Y':'X',r='Y'===i?'50%':'5px',o=window.innerWidth-s.right<s.left?'right':'left',l='Y'===i?'top':o;t=n(t)||r,e.css(xt({},l,t)),'X'==i&&e.find('.sk-tip-chevron')[0].css(xt({},l,'18px'))}(t.tipShift),e.addClass('sk-tip-pos-'+a),e.css(xt({},'margin-'+{left:'right',right:'left',top:'bottom',bottom:'top'}[a],s)),e.parent().addClass('sk-tooltip-container'),e.parent().on('mouseenter',function(){i=setTimeout(function(){e.parent().addClass('sk--hover')},1e3)}),e.parent().on('mouseleave',function(){clearTimeout(i),i=null,e.parent().removeClass('sk--hover')})}function Z(e,t,n){var a=n.access,s=n.productId,i=n.orgId,r=Ln();/////
+// helper functions
+//
+null!=r.orgId&&(i=r.orgId),null!=r.productId&&(s=r.productId);var o=s.toUpperCase(),l=e.find('.search')[0],d=e.find('.ss-ctrl-clear')[0],c=e.find('.sk--org-app-list')[0],u=e.find('.sk--filtered-app-name')[0],p=[],g='';/////
+// get handle on elements we need
+//
+// if we are left with just 1, pick it
+return null!=i&&(p=a.filter(function(e){return e.OrganizationId===i})),0===p.length&&(p=a.filter(function(e){return e.ProductId.toUpperCase()===o}),p.length&&(g=p[0].ProductName)),0===p.length&&(p=a),p=function(e){return e.filter(function(e,t,n){var a=n.findIndex(function(t){return t.OrganizationId===e.OrganizationId});return a===t})}(p),1===p.length?void Vt(function(){sn('_pick-org.org-id-selected',p[0].OrganizationId)}):void(g.length?(u._.innerHTML=g,u.removeClass('sk-hidden')):e.addClass('sk--orgs-not-filtered'),p.sort(function(e,t){var n=e.OrganizationName.toLowerCase(),a=t.OrganizationName.toLowerCase();return n>a?1:n<a?-1:0}),c.children(p.map(function(e){var t=qt('\n\t\t\t<li>\n\t\t\t\t<a href="#" data-org-id="'+e.OrganizationId+'">\n\t\t\t\t\t'+e.OrganizationName+'\n\t\t\t\t</a>\n\t\t\t</li>\n\t\t');return t.on('click',function(t){t.preventDefault(),sn('_pick-org.org-id-selected',e.OrganizationId)}),t})),F(l,d))}function ee(e,t,n){/////
+// helper functions
+//
+function a(e){return e.filter(function(e,t,n){var a=n.findIndex(function(t){return t.ProductId.toUpperCase()===e.ProductId.toUpperCase()});return a===t})}function s(e){var t=i.filter(function(t){return t.OrganizationId.toString()===e.toString()&&t.ProductId.toUpperCase()===l});// if we are left with just 1, pick it
+// show the screen
+return(0===t.length&&(t=i.filter(function(t){return t.OrganizationId.toString()===e.toString()})),t=a(t),1===t.length)?(Vt(function(){sn('_pick-app.product-id-selected',t[0].ProductId)}),!1):(t.sort(function(e,t){var n=e.ProductName.toLowerCase(),a=t.ProductName.toLowerCase();return n>a?1:n<a?-1:0}),c.children(t.map(function(e){var t='string'==typeof e.ProductLegacyName&&e.ProductLegacyName.length?'<small>formerly '+e.ProductLegacyName+'</small>':'',n=qt('\n\t\t\t\t<li>\n\t\t\t\t\t<a href="#" data-app-id="'+e.ProductId+'">\n\t\t\t\t\t\t<span>'+e.ProductName+'</span>'+t+'\n\t\t\t\t\t</a>\n\t\t\t\t</li>\n\t\t\t');return n.on('click',function(t){t.preventDefault(),sn('_pick-app.product-id-selected',e.ProductId)}),n})),!0)}var i=n.access,r=n.productId,o=Ln();null!=o.productId&&(r=o.productId);var l=r.toUpperCase(),d=e.parent().find('.sk-pick-org')[0],c=e.find('.sk--org-app-list')[0],u=e.find('.sk--filtered-org-name')[0];/////
+// get handle on elements we need
+//
+/////
+// listen and react to events
+//
+tn('_pick-org.org-id-selected',function(t){if(null!=t){var a=n.access.find(function(){var e=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},n=e.OrganizationId;return null!=n&&n.toString()===t.toString()});if(null!=a){u._.innerHTML=a.OrganizationName,d.css('display','none');var i=s(t);i&&Vt(function(){e.css('display','block'),Vt(function(){return e.css('opacity',1)})})}}})}function te(e){var t=e.find('.sk--user-name')[0];jn('impersonated-user',e,t._.innerText,30,'bold 18px')}/**
+	 * Container class
+	 * @class Sidekick.ActivityIndicator
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {String} ctx.url - URL that clicking this should go to if passed in
+	 * @param {Function} i18n
+	 * @emits activity-indicator.clicked - Indicates the activity indicator has been clicked if URL not specified
+	 * @listens activity-indicator.visible - true/false - show hide the indicator
+	 */function ne(e,t,n){e.addClass('sk-hidden');/////
+// dom elements we require access to
+//
+var a=e.find('a')[0];/////
+// listen for events and take action
+//
+tn('activity-indicator.visible',function(t){return e.toggleClass('sk-hidden',!t)}),n.url=n.url||'#','#'===n.url&&a.on('click',function(e){e.stopPropagation(),e.preventDefault(),sn('activity-indicator.clicked')})}/* globals ambient */function ae(e,t,n){function a(t){// store the current state
+var n=i;// check the new state
+i=t>=s,n!==i&&e.toggleClass('sk--two-column',!i)}// height values for different measurements
+var s=n.reduce(function(e,t){return e+54+30*t.children.length},90),i=!0,r=e.find('.mega')[0],o=n.map(function(e,t){e.url=e.url||e.route||null;var n=qt('<ul class="menu-group" role="menu"><li class="group-title">'+e.title+'</li></ul>');// add menuName value if present
+return'string'==typeof e.menuName&&n.data('menu-name',e.menuName),n.append(e.children.map(function(e,n){e.url=e.url||e.route||null;var a=e.url||'#',s=e.url&&e.target?' target="'+e.target+'"':'',i=qt('\n\t\t\t\t<li class="sub-menu-item sk--child-'+t+'-'+n+'">\n\t\t\t\t\t<a class="sub-menu-item-container" title="'+e.title+'" href="'+a+'"'+s+' role="menu-item">\n\t\t\t\t\t\t<span>'+e.title+'</span>\n\t\t\t\t\t</a>\n\t\t\t\t</li>\n\t\t\t');// add menuName value if present
+return'string'==typeof e.menuName&&i.data('menu-name',e.menuName),i.find('.sub-menu-item-container')[0].on('click',function(t){sn('nav.menu-item-clicked',e,t)}),i})),n});r.children(o),ambient.on('update','sk-adjust-menu-columns',function(e,t,n){return a(n.height)}),a(ambient.getPluginValue('height')),tn('_location.path-change',function(t){null==t||n.forEach(function(n,a){n.children.forEach(function(n,s){var i=Nn(t,n.url,n.routeMatcher);e.find('.sk--child-'+a+'-'+s)[0].toggleClass('highlight',i)})})})}/**
+	 * Launches a modal window with a countdown until sessions times out.
+	 * @class Sidekick.SessionTimeout
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 * @emits session.logout - Thrown when the logout button is clicked
+	 * @emits session.extend - Thrown when the stay signed in button is clicked
+	 * @listens session-timeout.clear - Clears the countdown and hides the modal
+	 * @example
+	 * timer: seconds to countdown
+	 * {
+		'timer': 180
+	}
+	 */function se(e){/////
+// helper functions
+//
+// timer defaults to 3 minutes
+function t(){var t=Math.max,s=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},r=s.timer,o=void 0===r?180:r,d=o;// show the main component (which starts out hidden)
+return e.addClass('show'),0>=o?void n():void(l._.innerHTML=a(t(d,0)),clearInterval(i),i=setInterval(function(){l._.innerHTML=a(t(--d,0)),0>=d&&(clearInterval(i),n())},1e3));// fill the countdown timer and show it
+}function n(){d.addClass('show'),sn('sk-menu-close',e)}function a(e){var t=e,n=St(t/60);return t-=60*n,10>t&&(t='0'+t),n+':'+t}function s(){clearInterval(i),d.removeClass('show'),e.removeClass('show')}var i=void 0,r=e.find('.sk--logout')[0],o=e.find('.sk--extend')[0],l=e.find('.sk--timer')[0],d=e.find('.sk--signed-out')[0],c=e.find('.sk--sign-in-link')[0];/////
+// find dom elements that we care about
+//
+/////
+// handle initial state and data changes
+//
+un('session-timeout',t),tn('session-timeout.clear',s),c.on('click',function(e){e.stopPropagation(),e.preventDefault(),window.location.reload()}),r.on('click',function(t){t.stopPropagation(),t.preventDefault(),clearInterval(i),sn('session.logout'),sn('sk-menu-close',e)}),o.on('click',function(t){t.stopPropagation(),t.preventDefault(),s(),sn('session.extend'),sn('sk-menu-close',e)})}/**
+	 * Lodas a generic error page
+	 * @class Sidekick.SiteErrors
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 * @emits session.logout - Thrown when the logout button is clicked
+	 * @listens site-errors -
+	 */function ie(e){/////
+// find dom elements that we care about
+//
+var t=e.find('.sk--sign-in-link')[0];/////
+// listen for events and take action
+//
+tn('site-errors',function(){e.addClass('show')}),tn('site-errors.clear',function(){e.removeClass('show')}),t.on('click',function(e){e.stopPropagation(),e.preventDefault(),window.location.reload()})}function re(e,t,n){var a=n.mainElement,s=e.find('.sk--skip-nav-link'),i=At(s,1),r=i[0];null==r||(r.on('focus',function(){e.addClass('sk-skip-nav-focused')}),r.on('blur',function(){e.removeClass('sk-skip-nav-focused')}),r.on('click',function(e){e.preventDefault();var t;a instanceof Element?t=a:(t=document.querySelector('main, [role=main]'),null==t&&(t=n.appElement)),-1===t.tabIndex&&null==t.getAttribute('tabindex')&&t.setAttribute('tabindex','-1'),t.focus()}))}function oe(e){var t=ue(),n=t.filter(function(t){return t.rule&&t.rule.test(e)})[0];return n?n.name:null}function le(){var e='undefined'!=typeof process&&process.version;return e&&{name:'node',version:process.version.slice(1),os:process.platform}}function de(e){var t=ce();if(!e)return null;var n=t.map(function(t){var n=t.rule.exec(e),a=n&&n[1].split(/[._]/).slice(0,3);return a&&3>a.length&&(a=a.concat(1==a.length?[0,0]:[0])),n&&{name:t.name,version:a.join('.')}}).filter(Boolean)[0]||null;return n&&(n.os=oe(e)),/alexa|bot|crawl(er|ing)|facebookexternalhit|feedburner|google web preview|nagios|postrank|pingdom|slurp|spider|yahoo!|yandex/i.test(e)&&(n=n||{},n.bot=!0),n}function ce(){return pe([['aol',/AOLShield\/([0-9\._]+)/],['edge',/Edge\/([0-9\._]+)/],['yandexbrowser',/YaBrowser\/([0-9\._]+)/],['vivaldi',/Vivaldi\/([0-9\.]+)/],['kakaotalk',/KAKAOTALK\s([0-9\.]+)/],['samsung',/SamsungBrowser\/([0-9\.]+)/],['chrome',/(?!Chrom.*OPR)Chrom(?:e|ium)\/([0-9\.]+)(:?\s|$)/],['phantomjs',/PhantomJS\/([0-9\.]+)(:?\s|$)/],['crios',/CriOS\/([0-9\.]+)(:?\s|$)/],['firefox',/Firefox\/([0-9\.]+)(?:\s|$)/],['fxios',/FxiOS\/([0-9\.]+)/],['opera',/Opera\/([0-9\.]+)(?:\s|$)/],['opera',/OPR\/([0-9\.]+)(:?\s|$)$/],['ie',/Trident\/7\.0.*rv\:([0-9\.]+).*\).*Gecko$/],['ie',/MSIE\s([0-9\.]+);.*Trident\/[4-7].0/],['ie',/MSIE\s(7\.0)/],['bb10',/BB10;\sTouch.*Version\/([0-9\.]+)/],['android',/Android\s([0-9\.]+)/],['ios',/Version\/([0-9\._]+).*Mobile.*Safari.*/],['safari',/Version\/([0-9\._]+).*Safari/],['facebook',/FBAV\/([0-9\.]+)/],['instagram',/Instagram\s([0-9\.]+)/],['ios-webview',/AppleWebKit\/([0-9\.]+).*Mobile/]])}function ue(){return pe([['iOS',/iP(hone|od|ad)/],['Android OS',/Android/],['BlackBerry OS',/BlackBerry|BB10/],['Windows Mobile',/IEMobile/],['Amazon OS',/Kindle/],['Windows 3.11',/Win16/],['Windows 95',/(Windows 95)|(Win95)|(Windows_95)/],['Windows 98',/(Windows 98)|(Win98)/],['Windows 2000',/(Windows NT 5.0)|(Windows 2000)/],['Windows XP',/(Windows NT 5.1)|(Windows XP)/],['Windows Server 2003',/(Windows NT 5.2)/],['Windows Vista',/(Windows NT 6.0)/],['Windows 7',/(Windows NT 6.1)/],['Windows 8',/(Windows NT 6.2)/],['Windows 8.1',/(Windows NT 6.3)/],['Windows 10',/(Windows NT 10.0)/],['Windows ME',/Windows ME/],['Open BSD',/OpenBSD/],['Sun OS',/SunOS/],['Linux',/(Linux)|(X11)/],['Mac OS',/(Mac_PowerPC)|(Macintosh)/],['QNX',/QNX/],['BeOS',/BeOS/],['OS/2',/OS\/2/],['Search Bot',/(nuhk)|(Googlebot)|(Yammybot)|(Openbot)|(Slurp)|(MSNBot)|(Ask Jeeves\/Teoma)|(ia_archiver)/]])}function pe(e){return e.map(function(e){return{name:e[0],rule:e[1]}})}function ge(e){var t=$n(),n=Wn('browser-warning-dismissed');// console.log('alreadyDismissed =====> ', alreadyDismissed);
+if(!0!==n){var a=w(t,function(e){return e.name.toLowerCase()}),s=w(t,function(e){return e.os.toLowerCase()}),i=w(t,function(e){return parseInt(e.version.split('.')[0],10)},0),r=Jn.some(function(e){return!!a&&(e.name||a)===a&&!!s&&(e.os||s)===s&&!!i&&(e.version||0)<=i});// console.log('NAME =====>', name);
+// console.log('OS =====>', os);
+// console.log('VERSION =====>', version);
+if(!r){Qn('UNSUPPORTED BROWSER DETECTED',{name:a,os:s,version:i,userAgent:w(Xn,function(e){return e.navigator.userAgent},'UserAgent Not Found')});var o=Ft(Xn.document.body),l=e.find('button'),d=At(l,1),c=d[0];o.addClass('sk-unsupported-browser');var u=function(){Yn('browser-warning-dismissed',!0,{expires:null}),e.css({position:'absolute',left:'0'}),Vt(function(){o.addClass('sk-unsupported-browser-dismissed'),setTimeout(function(){return e.css({display:'none'})},550)})};tn('nav.expanded-footprint',function(t){return e.toggleClass('sk--nav-expanded-footprint',t)}),c.on('click',u)}}}/**
+	 * Loads the components
+	 * @module Sidekick.ComponentLoader
+	 * @memberOf Sidekick
+	 *//**
+	 * Sidekick component list
+	 * @private
+	 *//**
+	 * Loads all the components
+	 * @function bootstrapAll
+	 * @instance
+	 */function me(){ea=!0,Gn=!0,Object.keys(Zn).forEach(function(e){return fe(e)}),ea=!1,Gn||setTimeout(me,0)}function fe(e){function t(e,t){return function(a){n(e,t,a),ea||me()}}function n(t,n,a){for(// clean out the existing element content
+var i=t._;i.firstChild;)i.removeChild(i.firstChild);// if we have a template for this component, mix with ctx and fill elem
+Mt[e]&&(i.innerHTML=Mt[e](a,n,k)),Vt(function(){return t.addClass('sk-'+s+'-initialized')}),Zn[e](t,n,a,k),Vt(function(){return sn('_'+s+'-initialized',t,n,a)})}for(var a,s=r(e),l=document.querySelectorAll('[sk-'+s+']'),d=l.length;d--;){a=Ft(l[d]),Gn=!1,a.addClass('sidekick').addClass('sk-'+s),a.attr('sk-'+s,null);/////
+// bootstrap the element
+//
+// parse attrs
+for(var c,u={},p=a._.attributes.length;p--;)c=a._.attributes[p],u[o(c.name)]=c.value;null==a._.context?u.contextStore?pn(u.contextStore,t(a,u)):n(a,u,null):n(a,u,a._.context)}}/**
+	 * @module Sidekick.DomScanner
+	 * @memberOf Sidekick
+	 *//**
+	 * Scans the document title to append app name if not found.
+	 * @function title
+	 * @instance
+	 */function he(){ve(),pn('app-switcher-data',function(){ta=setInterval(function(){if(null!=cn('app-switcher-data')){var e=cn('app-switcher-data'),t=e.currentApp,n=e.apps;if(null!=t&&null!=n&&0!==n.length){var a=n.find(function(e){return e.id===t}).name;document.title.endsWith(a)||(document.title=document.title+' - '+a)}}},500)})}/**
+	 * Stops scanning the title
+	 * @function stopTitle
+	 * @instance
+	 */function ve(){null!=ta&&(clearInterval(ta),ta=null)}/**
+	 * Ajax Calls
+	 * @module Sidekick.Ajax
+	 * @memberOf Sidekick
+	 *//**
+	 * Makes a call
+	 * @function do
+	 * @instance
+	 * @param  {String}   method
+	 * @param  {String}   url
+	 * @param  {Object}   post
+	 * @param  {Function} callback
+	 * @param  {Array}   headers
+	 * @param  {Number}   timeout
+	 * @param  {Boolean}   withCredentials
+	 * @param  {Object}   responseType
+	 * @param  {Array}   eventHandlers
+	 * @param  {Array}   uploadEventHandlers
+	 */function ke(e,t,n,a,s,r,o,l,d,c){var u,p,g=new window.XMLHttpRequest;for(g.open(e,t,!0),p=0;p<s.length;p++){var m=s[p];null!=m.value&&g.setRequestHeader(m.key,m.value)}g.onload=function(){var e=g.statusText||'',t='response'in g?g.response:g.responseText,n=1223===g.status?204:g.status;// responseText is the old-school way of retrieving response (supported by IE9)
+// response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
+// normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
+ye(a,n,t,g.getAllResponseHeaders(),e)};var f=function(){ye(a,-1,null,null,'')};if(g.onerror=f,g.onabort=f,null!=d)for(p=0;p<d.length;p++)u=d[p],g.addEventListener(u.key,u.value);if(null!=c)for(p=0;p<c.length;p++)u=c[p],g.upload.addEventListener(u.key,u.value);if(o&&(g.withCredentials=!0),l)try{g.responseType=l}catch(t){// WebKit added support for the json responseType value on 09/03/2013
+// https://bugs.webkit.org/show_bug.cgi?id=73648. Versions of Safari prior to 7 are
+// known to throw when setting the value "json" as the response type. Other older
+// browsers implementing the responseType
+//
+// The json response type can be ignored if not supported, because JSON payloads are
+// parsed on the client-side regardless.
+if('json'!==l)throw t}g.send(null==n?null:n)}function ye(e,t,n,a,s){e(t,n,a,s)}function be(e){var t=1<arguments.length&&arguments[1]!==void 0?arguments[1]:{};dn('pick-org-app-data',Object.assign({},e,t)),dn('idm-data',Object.assign(e,{userContext:{}}))}function _e(){var e=0<arguments.length&&arguments[0]!==void 0?arguments[0]:function(){};return function(t,n,a,s){// handle error state
+if(400<=t&&500>=t)throw Error(s);e(JSON.parse(n))}}function Se(){// if we could not get the token, assume the user's session has expired
+return!(null!=xe())&&(dn('session-timeout',{timer:0}),!0)}// remove extra access records that share the same OrgId and ProductId
+// these are found in users that have multiple "roles" for a product
+function we(e,t,n){return n.findIndex(function(t){return t.OrganizationId===e.OrganizationId&&t.ProductId===e.ProductId})===t}function Ee(e){var t=e.userContext;return null==t.OrganizationId||!0===t.Internal?{currentOrg:'',orgs:[]}:{currentOrg:e.userContext.OrganizationId.toString(),orgs:e.access.filter(function(e){return!e.Disabled})// remove disabled
+.map(function(e){return e.OrganizationId})// make an array of primitives
+.filter(function(e,t,n){return n.indexOf(e)===t})// so we can remove dupes
+.map(function(t){// then rebuild with id and name
+var n=e.access.find(function(e){return e.OrganizationId===t}),a=n.OrganizationId,s=n.OrganizationName;return{id:a.toString(),name:s}})}}function Ce(e){var t=e.userContext;// if this is an internal app, setup the app switcher
+if(!0===t.Internal)return{currentApp:t.ProductId,apps:[{id:t.ProductId,name:t.ProductName}]};if(null==t.OrganizationId)return{currentApp:'',apps:[]};var n=e.userContext.OrganizationId.toString();return{currentApp:e.userContext.ProductId.toUpperCase(),apps:e.access.filter(function(e){return!e.Disabled})// remove disabled
+.filter(function(e){return e.OrganizationId.toString()===n}).filter(function(e,t,n){return n.findIndex(function(t){return t.ProductId.toUpperCase()===e.ProductId.toUpperCase()})===t}).map(function(e){// then rebuild with id and name
+var t=e.ProductId,n=e.ProductName,a=e.Url;return{id:t.toUpperCase(),name:n,url:a,legacyName:e.ProductLegacyName}})}}function Ie(){var e=cn('idm-data');ca(e.userContext.OrganizationId)}function xe(){var e=cn('idm');// handle old accessToken prop and provide deprecation message
+return null==e.accessToken&&'function'==typeof e.getAccessToken?e.getAccessToken():(console&&console.error&&console.error('DEPRECATED! sidekick.store: idm.accessToken is deprecated, please provide a getAccessToken function that returns the current, valid, idm access token'),e.accessToken)}function Ae(e,t){var n=cn('idm'),a=n.idGatewayUrl;ra(a+'/sessions/state',{prefLeftNavExpanded:e},t)}// common persistence config
+function Oe(t){function e(t,e){Error.captureStackTrace&&Error.captureStackTrace(this,this.constructor),this.message=t,this.code=e}return e.prototype=new Error,e.prototype.name=t,e.prototype.constructor=e,e}function Ne(t){return!(400<=t&&500>t)||400===t||408===t||429===t}function Le(t){return Sa[63&t>>18]+Sa[63&t>>12]+Sa[63&t>>6]+Sa[63&t]}function ze(a,e,n){for(var t,s=[],o=e;o<n;o+=3)t=(16711680&a[o]<<16)+(65280&a[o+1]<<8)+(255&a[o+2]),s.push(Le(t));return s.join('')}function Re(s){for(var e,l=s.length,t=l%3,r=[],o=0,d=l-t;o<d;o+=16383)r.push(ze(s,o,o+16383>d?d:o+16383));return 1==t?(e=s[l-1],r.push(Sa[e>>2]+Sa[63&e<<4]+'==')):2==t&&(e=(s[l-2]<<8)+s[l-1],r.push(Sa[e>>10]+Sa[63&e>>4]+Sa[63&e<<2]+'=')),r.join('')}function Te(t){var e=unescape(encodeURIComponent(t));return _a(De(e))}function De(a){for(var e=[],n=0;n<a.length;n++)e.push(a.charCodeAt(n));return e}function Pe(t){return Te(t).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')}function Ue(t){return JSON.parse(JSON.stringify(t))}function Me(t,e){return La(t,e)}function Fe(t){setTimeout(t,0)}function je(a,s){var e=a.then(function(t){return s&&setTimeout(function(){s(null,t)},0),t},function(t){return s?void setTimeout(function(){s(t,null)},0):Promise.reject(t)});return s?void 0:e}function qe(a){var e={};for(var n in a)a.hasOwnProperty(n)&&(e[n]={value:a[n],version:0});return e}function Ve(a){var e={};for(var n in a)a.hasOwnProperty(n)&&(e[n]=a[n].value);return e}function Be(s,e){for(var n=e.slice(0),t=[],r=s,l=void 0;0<n.length;){for(l=[];0<r;){var d=n.shift();if(!d)break;0>(r-=Pe(JSON.stringify(d)).length)&&0<l.length?n.unshift(d):l.push(d)}r=s,t.push(l)}return t}function He(t){var e=t.version||'2.10.2';return t.userAgent+'/'+e}function Ke(t){return{"X-LaunchDarkly-User-Agent":He(t)}}function Ye(){for(var a=arguments.length,e=Array(a),n=0;n<a;n++)e[n]=arguments[n];return e.reduce(function(t,e){return za({},t,e)},{})}function We(a){if(!a)return a;var e;for(var s in Ra){var t=Ra[s],i=a[t];void 0!==i&&'string'!=typeof i&&((e=e||Object.assign({},a))[t]=i+'')}return e||a}function Ge(l,e,n,d){function r(t){new window.Image().src=t}function t(e,n){var a=JSON.stringify(e);return n?function s(n){var e=Ye({"Content-Type":'application/json',"X-LaunchDarkly-Event-Schema":'3'},Ke(l));return l.httpRequest('POST',c,e,a).promise.then(function(t){if(t)return 400<=t.status&&Ne(t.status)&&n?s(!1):function(a){var e={status:a.status},n=a.header('date');if(n){var t=Date.parse(n);t&&(e.serverTime=t)}return e}(t)}).catch(function(){return n?s(!1):Promise.reject()})}(!0).catch(function(){}):((d||r)(o+'?d='+Pe(a)),Promise.resolve())}var c=e+'/events/bulk/'+n,o=e+'/a/'+n+'.gif',s={};return s.sendEvents=function(n){if(!l.httpRequest)return Promise.resolve();var s,d=l.httpAllowsPost();s=d?[n]:Be(2000-e.length,n);for(var o=[],i=0;i<s.length;i++)o.push(t(s[i],d));return Promise.all(o)},s}function $e(){var a={},l=0,d=0,c={};return a.summarizeEvent=function(t){if('feature'===t.kind){var e=t.key+':'+(null!==t.variation&&void 0!==t.variation?t.variation:'')+':'+(null!==t.version&&void 0!==t.version?t.version:''),n=c[e];n?++n.count:c[e]={count:1,key:t.key,variation:t.variation,version:t.version,value:t.value,default:t.default},(0===l||t.creationDate<l)&&(l=t.creationDate),t.creationDate>d&&(d=t.creationDate)}},a.getSummary=function(){var t={},e=!0;for(var n in c){var i=c[n],a=t[i.key];a||(a={default:i.default,counters:[]},t[i.key]=a);var r={value:i.value,count:i.count};void 0!==i.variation&&null!==i.variation&&(r.variation=i.variation),i.version?r.version=i.version:r.unknown=!0,a.counters.push(r),e=!1}return e?null:{startDate:l,endDate:d,features:t}},a.clearSummary=function(){l=0,d=0,c={}},a}function Xe(a){var e={},s=a.allAttributesPrivate,t=a.privateAttributeNames||[],r={key:!0,custom:!0,anonymous:!0},n={key:!0,secondary:!0,ip:!0,country:!0,email:!0,firstName:!0,lastName:!0,avatar:!0,name:!0,anonymous:!0,custom:!0};return e.filterUser=function(i){if(!i)return null;var o=i.privateAttributeNames||[],e=function(n,e){return Object.keys(n).reduce(function(i,a){var l=i;return e(a)&&(function(n){return!r[n]&&(s||-1!==o.indexOf(n)||-1!==t.indexOf(n))}(a)?l[1][a]=!0:l[0][a]=n[a]),l},[{},{}])},a=e(i,function(t){return n[t]}),u=a[0],p=a[1];if(i.custom){var g=e(i.custom,function(){return!0});u.custom=g[0],p=Ye({},p,g[1])}var l=Object.keys(p);return l.length&&(l.sort(),u.privateAttrs=l),u},e}function Qe(k,e,n,t){function y(){return 0===l||0===St(Math.random()*l)}var r,h=4<arguments.length&&void 0!==arguments[4]?arguments[4]:null,o=5<arguments.length&&void 0!==arguments[5]?arguments[5]:null,i={},a=o||Ge(k,e.eventsUrl,n),u=$e(),s=Xe(e),c=e.inlineUsersInEvents,l=e.samplingInterval,d=e.flushInterval,v=[],b=0,_=!1;return i.enqueue=function(a){if(!_){var e,i=!1,l=!1;if(u.summarizeEvent(a),'feature'===a.kind?y()&&(i=!!a.trackEvents,l=!!(e=a).debugEventsUntilDate&&e.debugEventsUntilDate>b&&e.debugEventsUntilDate>new Date().getTime()):i=y(),i&&v.push(function(t){var e=Ye({},t);return c||'identify'===t.kind?e.user=s.filterUser(t.user):(e.userKey=t.user.key,delete e.user),'feature'===t.kind&&(delete e.trackEvents,delete e.debugEventsUntilDate),e}(a)),l){var d=Ye({},a,{kind:'debug'});delete d.trackEvents,delete d.debugEventsUntilDate,delete d.variation,v.push(d)}}},i.flush=function(){if(_)return Promise.resolve();var s=v,e=u.getSummary();return u.clearSummary(),e&&(e.kind='summary',s.push(e)),0===s.length?Promise.resolve():(v=[],t.debug(ls(s.length)),a.sendEvents(s).then(function(t){t&&(t.serverTime&&(b=t.serverTime),Ne(t.status)||(_=!0),400<=t.status&&Fe(function(){h.maybeReportError(new ma(Qa(t.status,'event posting','some events were dropped')))}))}))},i.start=function(){r=setTimeout(function t(){i.flush(),r=setTimeout(t,d)},d)},i.stop=function(){clearTimeout(r)},i}function Je(a){var e={},s={};return e.on=function(t,e,n){s[t]=s[t]||[],s[t]=s[t].concat({handler:e,context:n})},e.off=function(t,e,n){if(s[t])for(var a=0;a<s[t].length;a++)s[t][a].handler===e&&s[t][a].context===n&&(s[t]=s[t].slice(0,a).concat(s[t].slice(a+1)))},e.emit=function(t){if(s[t])for(var e=0;e<s[t].length;e++)s[t][e].handler.apply(s[t][e].context,Array.prototype.slice.call(arguments,1))},e.getEvents=function(){return Object.keys(s)},e.getEventListenerCount=function(t){return s[t]?s[t].length:0},e.maybeReportError=function(e){e&&(s.error?this.emit('error',e):(a||console).error(e.message))},e}function Ze(s,l,n,t,r){function e(){var a='',s=t.getUser();return s&&(a=n||Te(JSON.stringify(s))),'ld:'+l+':'+a}var a={};return a.loadFlags=function(){return s.get(e()).then(function(s){if(null==s)return null;try{var e=JSON.parse(s);if(e){var i=e.$schema;void 0===i||1>i?e=qe(e):delete e.$schema}return e}catch(t){return a.clearFlags().then(function(){return Promise.reject(t)})}}).catch(function(t){return r.warn(Fa()),Promise.reject(t)})},a.saveFlags=function(a){var n=Ye({},a,{$schema:1});return s.set(e(),JSON.stringify(n)).catch(function(t){return r.warn(Fa()),Promise.reject(t)})},a.clearFlags=function(){return s.clear(e()).catch(function(t){return r.warn(Fa()),Promise.reject(t)})},a}function et(k,e,y,t){function r(){p(),g(s)}function g(t){i||(t?i=setTimeout(n,t):n())}function n(){var e,s='',o={};if(k.eventSourceFactory){for(var l in null!=t&&(s='h='+t),a?k.eventSourceAllowsReport?(e=h,o.method='REPORT',o.headers={"Content-Type":'application/json'},o.body=JSON.stringify(_)):(e=m+'/ping/'+y,s=''):e=h+'/'+Pe(JSON.stringify(_)),u&&(s=s+(s?'&':'')+'withReasons=true'),e=e+(s?'?':'')+s,p(),b=k.eventSourceFactory(e,o),S)S.hasOwnProperty(l)&&b.addEventListener(l,S[l]);b.onerror=r}}function p(){b&&(b.close(),b=null)}var m=e.streamUrl,o={},h=m+'/eval/'+y,a=e.useReport,u=e.evaluationReasons,s=e.streamReconnectDelay,b=null,i=null,_=null,S=null;return o.connect=function(t,e){_=t,S=e,g()},o.disconnect=function(){clearTimeout(i),i=null,p()},o.isConnected=function(){return b&&k.eventSourceIsActive&&k.eventSourceIsActive(b)},o}function tt(a){var e,s,l,d,c={addPromise:function(n,t){e=n,s&&s(),s=t,n.then(function(s){e===n&&(l(s),a&&a())},function(s){e===n&&(d(s),a&&a())})}};return c.resultPromise=new Promise(function(t,e){l=t,d=e}),c}function nt(t){return 404===t.status?new fa(Ba()):new ya(Ka(t.statusText||t.status+''))}function at(d,e,p,t){function r(e,n){if(!d.httpRequest)return new Promise(function(t,e){e(new ya(Ja()))});var t=n?'REPORT':'GET',r=g?Ke(d):{};n&&(r['Content-Type']='application/json');var o=u[e];o||(o=tt(function(){delete u[e]}),u[e]=o);var l=d.httpRequest(t,e,r,n),a=l.promise.then(function(t){return 200===t.status&&t.header('content-type')&&0===t.header('content-type').lastIndexOf('application/json')?JSON.parse(t.body):Promise.reject(nt(t))},function(t){return Promise.reject(new ya(qa(t)))});return o.addPromise(a,function(){l.cancel&&l.cancel()}),o.resultPromise}var l=e.baseUrl,o=e.useReport,i=e.evaluationReasons,g=e.sendLDHeaders,n={},u={};return n.fetchFlagSettings=function(a,e){var n,g,m,f='';return o?(g=[l,'/sdk/evalx/',p,'/user'].join(''),m=JSON.stringify(a)):(n=Pe(JSON.stringify(a)),g=[l,'/sdk/evalx/',p,'/users/',n].join('')),e&&(f='h='+e),i&&(f=f+(f?'&':'')+'withReasons=true'),g=g+(f?'?':'')+f,t.debug(es(g)),r(g,m)},n.fetchGoals=function(){return r([l,'/sdk/goals/',p].join(''),null)},n}function st(a,s){var n,e={};return e.setUser=function(t){(n=We(t))&&s&&s(Ue(n))},e.getUser=function(){return n?Ue(n):null},a&&e.setUser(a),e}function it(t,e){return t(e={exports:{}},e.exports),e.exports}function rt(p,g,n){var t=g&&n||0,m=g||[],o=(p=p||{}).node||gs,h=void 0===p.clockseq?ms:p.clockseq;if(null==o||null==h){var k=cs();null==o&&(o=gs=[1|k[0],k[1],k[2],k[3],k[4],k[5]]),null==h&&(h=ms=16383&(k[6]<<8|k[7]))}var u=void 0===p.msecs?new Date().getTime():p.msecs,y=void 0===p.nsecs?vs+1:p.nsecs,b=u-hs+(y-vs)/1e4;if(0>b&&void 0===p.clockseq&&(h=16383&h+1),(0>b||u>hs)&&void 0===p.nsecs&&(y=0),1e4<=y)throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');hs=u,vs=y,ms=h;var l=(1e4*(268435455&(u+=122192928e5))+y)%4294967296;m[t++]=255&l>>>24,m[t++]=255&l>>>16,m[t++]=255&l>>>8,m[t++]=255&l;var d=268435455&1e4*(u/4294967296);m[t++]=255&d>>>8,m[t++]=255&d,m[t++]=16|15&d>>>24,m[t++]=255&d>>>16,m[t++]=128|h>>>8,m[t++]=255&h;for(var v=0;6>v;++v)m[t+v]=o[v];return g||fs(m)}function ot(a,e){return{validateUser:function(n){if(!n)return Promise.reject(new ha(Ya()));var s=Ue(n);return null!==s.key&&void 0!==s.key?(s.key=s.key.toString(),Promise.resolve(s)):s.anonymous?(a?a.get('ld:$anonUserId').catch(function(){return null}):Promise.resolve(null)).then(function(n){if(n)return s.key=n,s;var t=ks();return s.key=t,function(n){return a?a.set('ld:$anonUserId',n).catch(function(){e.warn(ja())}):Promise.resolve()}(t).then(function(){return s})}):Promise.reject(new ha(Wa()))}}}function lt(s,l,e,d){function t(t){Fe(function(){l&&l.maybeReportError(new ka(t))})}var n=Ye({},{baseUrl:'https://app.launchdarkly.com',streamUrl:'https://clientstream.launchdarkly.com',eventsUrl:'https://events.launchdarkly.com',sendEvents:!0,sendLDHeaders:!0,inlineUsersInEvents:!1,allowFrequentDuplicateEvents:!1,sendEventsOnlyForVariation:!1,useReport:!1,evaluationReasons:!1,flushInterval:2e3,samplingInterval:0,streamReconnectDelay:1e3,allAttributesPrivate:!1,privateAttributeNames:[]},e),a={all_attributes_private:'allAttributesPrivate',private_attribute_names:'privateAttributeNames'},i=Ye({},s||{});return function(){var s=i;Object.keys(a).forEach(function(n){if(void 0!==s[n]){var e=a[n];d.warn(Xa(n,e)),void 0===s[e]&&(s[e]=s[n]),delete s[n]}})}(),i=function(a,s){var n=Ye({},i);return Object.keys(s).forEach(function(t){void 0!==n[t]&&null!==n[t]||(n[t]=s[t])}),n}(0,n),(isNaN(i.flushInterval)||2e3>i.flushInterval)&&(i.flushInterval=2e3,t('Invalid flush interval configured. Must be an integer >= 2000 (milliseconds).')),(isNaN(i.samplingInterval)||0>i.samplingInterval)&&(i.samplingInterval=0,t('Invalid sampling interval configured. Sampling interval must be an integer >= 0.')),i}function dt(a){function s(n,e,t){n>=i&&e(t)}var i=0;a&&(i='none'===a?100:['debug','info','warn','error'].indexOf(a));var e={};return e.debug=function(t){return s(0,console.log,t)},e.info=function(t){return s(1,console.info,t)},e.warn=function(t){return s(2,console.warn,t)},e.error=function(t){return s(3,console.error,t)},e}function ct(M,e,n,t,r){function B(n){i&&(Z&&Z.enqueueEvent&&Z.enqueueEvent(n)||(n.user?(J=!1,!s||Q||t.isDoNotTrack()||(W.debug(os(n.kind)),d.enqueue(n))):J&&(W.warn(Ua()),J=!1)))}function P(d,e,n){var t=S.getUser(),r=new Date,o=e?e.value:null;if(!$.allowFrequentDuplicateEvents){var i=JSON.stringify(o)+(t&&t.key?t.key:'')+d,a=f[i];if(a&&3e5>r-a)return;f[i]=r}var s={kind:'feature',key:d,user:t,value:o,variation:e?e.variationIndex:null,default:n,creationDate:r.getTime(),reason:e?e.reason:null},c=g[d];c&&(s.version=c.flagVersion?c.flagVersion:c.version,s.trackEvents=c.trackEvents,s.debugEventsUntilDate=c.debugEventsUntilDate),B(s)}function o(a,e,n){var t;if(g&&g.hasOwnProperty(a)&&g[a]&&!g[a].deleted){var s=g[a];t=I(s),null!==s.value&&void 0!==s.value||(t.value=e)}else t={value:e,variationIndex:null,reason:{kind:'ERROR',errorKind:'FLAG_NOT_FOUND'}};return n&&P(a,t,e),t}function I(t){return{value:t.value,variationIndex:void 0===t.variation?null:t.variation,reason:t.reason||null}}function R(){H=!0,S.getUser()&&c.connect(S.getUser(),{ping:function(){W.debug(ts()),u.fetchFlagSettings(S.getUser(),a,function(t,e){t&&G.maybeReportError(new ya(Ka(t))),x(e)})},put:function(t){var e=JSON.parse(t.data);W.debug(ns()),x(e)},patch:function(s){var e=JSON.parse(s.data),n=g[e.key];if(!n||!n.version||!e.version||n.version<e.version){W.debug(as(e.key));var t={},i=Ye({},e);delete i.key,g[e.key]=i;var r=I(i);t[e.key]=n?{previous:n.value,current:r}:{current:r},N(t)}else W.debug(ss(e.key))},delete:function(a){var e=JSON.parse(a.data);if(!g[e.key]||g[e.key].version<e.version){W.debug(is(e.key));var n={};g[e.key]&&!g[e.key].deleted&&(n[e.key]={previous:g[e.key].value}),g[e.key]={version:e.version,deleted:!0},N(n)}else W.debug(rs(e.key))}})}function T(){H&&(c.disconnect(),H=!1)}function x(a){var e={};if(!a)return Promise.resolve();for(var n in g)g.hasOwnProperty(n)&&g[n]&&(a[n]&&!Me(a[n].value,g[n].value)?e[n]={previous:g[n].value,current:I(a[n])}:a[n]&&!a[n].deleted||(e[n]={previous:g[n].value}));for(var t in a)a.hasOwnProperty(t)&&a[t]&&(!g[t]||g[t].deleted)&&(e[t]={current:I(a[t])});return g=a,N(e).catch(function(){})}function N(a){var e=Object.keys(a);if(0<e.length){var s={};e.forEach(function(e){var t=a[e].current,n=t?t.value:void 0,r=a[e].previous;G.emit('change:'+e,n,r),s[e]=t?{current:n,previous:r}:{previous:r}}),G.emit('change',s),G.emit('internal-change',g),$.sendEventsOnlyForVariation||Z||e.forEach(function(e){P(e,a[e].current)})}return V&&Y?Y.saveFlags(g).catch(function(){return null}):Promise.resolve()}function C(){var t=v||K&&void 0===v;t&&!H?R():!t&&H&&T()}function O(t){return t==='change'||t.substr(0,'change'.length+1)==='change:'}function A(t){i=t.environment,S.setUser(t.user),g=t.flags,Fe(F)}function F(){W.info(Da()),X=!0,C(),G.emit('ready'),G.emit('initialized')}function z(t){G.maybeReportError(t),G.emit('failed',t),G.emit('ready')}var V,H,K,Y,W=n&&n.logger?n.logger:r&&r.logger||dt('warn'),G=Je(W),$=lt(n,G,r,W),a=$.hash,s=$.sendEvents,i=M,c=et(t,$,i,a),d=$.eventProcessor||Qe(t,$,i,W,G),u=at(t,$,i,W),f={},g={},v=$.streaming,X=!1,Q=!1,J=!0,Z=$.stateProvider,S=st(null,function(t){Z||t&&B({kind:'identify',key:t.key,user:t,creationDate:new Date().getTime()})}),U=ot(t.localStorage,W);t.localStorage&&(Y=new Ze(t.localStorage,i,a,S,W));var D=new Promise(function(t){var e=G.on('ready',function(){G.off('ready',e),t()})}),_=new Promise(function(a,s){var e=G.on('initialized',function(){G.off('initialized',e),a()}),t=G.on('failed',function(n){G.off('failed',t),s(n)})});if('string'==typeof $.bootstrap&&'LOCALSTORAGE'===$.bootstrap.toUpperCase()&&(Y?V=!0:W.warn(Fa())),Z){var j=Z.getInitialState();j?A(j):Z.on('init',A),Z.on('update',function(t){t.user&&S.setUser(t.user),t.flags&&x(t.flags)})}else(M?U.validateUser(e).then(function(t){return S.setUser(t),'object'===ys($.bootstrap)?(g=function(a){var e=Object.keys(a),s=a.$flagsState;!s&&e.length&&W.warn(Ga()),!1===a.$valid&&W.warn($a());var t={};return e.forEach(function(e){if('$flagsState'!==e&&'$valid'!==e){var n={value:a[e]};s&&s[e]?n=Ye(n,s[e]):n.version=0,t[e]=n}}),t}($.bootstrap),F()):V?Y.loadFlags().catch(function(){return null}).then(function(t){return null==t?(g={},u.fetchFlagSettings(S.getUser(),a).then(function(t){return x(t||{})}).then(F).catch(function(t){z(new ya(Ka(t)))})):(g=t,Fe(F),u.fetchFlagSettings(S.getUser(),a).then(function(t){return x(t)}).catch(function(t){return G.maybeReportError(t)}))}):u.fetchFlagSettings(S.getUser(),a).then(function(t){g=t||{},F()}).catch(function(t){g={},z(t)})}):Promise.reject(new fa(Ha()))).catch(function(t){return G.maybeReportError(t)});return{client:{waitForInitialization:function(){return _},waitUntilReady:function(){return D},identify:function(a,e,n){return Q?je(Promise.resolve({}),n):Z?(W.warn(Za()),je(Promise.resolve(Ve(g)),n)):je((V&&Y?Y.clearFlags():Promise.resolve()).then(function(){return U.validateUser(a)}).then(function(t){return S.setUser(t)}).then(function(){return u.fetchFlagSettings(S.getUser(),e)}).then(function(t){var e=Ve(t);return t?x(t).then(function(){return e}):e}).then(function(t){return H&&R(),t}).catch(function(t){return G.maybeReportError(t),Promise.reject(t)}),n)},getUser:function(){return S.getUser()},variation:function(t,e){return o(t,e,!0).value},variationDetail:function(t,e){return o(t,e,!0)},track:function(a,e){'string'==typeof a?(t.customEventFilter&&!t.customEventFilter(a)&&W.warn(Va(a)),B({kind:'custom',key:a,data:e,user:S.getUser(),url:t.getCurrentUrl(),creationDate:new Date().getTime()})):G.maybeReportError(new va(Va(a)))},on:function(a,e,n){O(a)?(K=!0,X&&C(),G.on(a,e,n)):G.on.apply(G,arguments)},off:function(t){if(G.off.apply(G,arguments),O(t)){var a=!1;G.getEvents().forEach(function(t){O(t)&&0<G.getEventListenerCount(t)&&(a=!0)}),a||(K=!1,H&&void 0===v&&T())}},setStreaming:function(t){var e=null===t?void 0:t;e!==v&&(v=e,C())},flush:function(t){return je(s?d.flush():Promise.resolve(),t)},allFlags:function(){var t={};if(!g)return t;for(var e in g)g.hasOwnProperty(e)&&(t[e]=o(e,null,!$.sendEventsOnlyForVariation).value);return t},close:function(t){if(Q)return je(Promise.resolve(),t);var e=function(){Q=!0,g={}};return je(Promise.resolve().then(function(){if(T(),s)return d.stop(),d.flush()}).then(e).catch(e),t)}},options:$,emitter:G,ident:S,logger:W,requestor:u,start:function(){s&&d.start()},enqueueEvent:B,getFlagsInternal:function(){return g},internalChangeEventName:'internal-change'}}function ut(){var t=window.navigator&&window.navigator.userAgent;if(t){var e=t.match(/Chrom(e|ium)\/([0-9]+)\./);if(e)return 73>parseInt(e[2],10)}return!0}function pt(s,e,n,t,r){if(r&&!ut())return bs;var o=new window.XMLHttpRequest;for(var i in o.open(s,e,!r),n||{})n.hasOwnProperty(i)&&o.setRequestHeader(i,n[i]);if(r)return o.send(t),bs;var a;return{promise:new Promise(function(s,e){o.addEventListener('load',function(){a||s({status:o.status,header:function(t){return o.getResponseHeader(t)},body:o.responseText})}),o.addEventListener('error',function(){a||e(new Error)}),o.send(t)}),cancel:function(){a=!0,o.abort()}}}function gt(){var a={pageIsClosing:!1};window.XMLHttpRequest&&(a.httpRequest=function(e,n,t,s){return pt(e,n,t,s,a.pageIsClosing)});var e;a.httpAllowsPost=function(){return void 0==e&&(e=!!window.XMLHttpRequest&&'withCredentials'in new window.XMLHttpRequest),e},a.getCurrentUrl=function(){return window.location.href},a.isDoNotTrack=function(){var t;return 1===(t=window.navigator&&void 0!==window.navigator.doNotTrack?window.navigator.doNotTrack:window.navigator&&void 0!==window.navigator.msDoNotTrack?window.navigator.msDoNotTrack:window.doNotTrack)||!0===t||'1'===t||'yes'===t};try{window.localStorage&&(a.localStorage={get:function(t){return new Promise(function(e){e(window.localStorage.getItem(t))})},set:function(a,e){return new Promise(function(n){window.localStorage.setItem(a,e),n()})},clear:function(t){return new Promise(function(e){window.localStorage.removeItem(t),e()})}})}catch(e){a.localStorage=null}return window.EventSource&&(a.eventSourceFactory=function(t){return new window.EventSource(t,{heartbeatTimeout:3e5,silentTimeout:3e5})},a.eventSourceIsActive=function(t){return t.readyState===window.EventSource.OPEN||t.readyState===window.EventSource.CONNECTING}),a.eventSourceAllowsReport=!1,a.userAgent='JSClient',a}function mt(s,e,n,t){var r,l,d=e.replace(n,'').replace(t,'');switch(s.kind){case'exact':l=e,r=new RegExp('^'+Ss(s.url)+'/?$');break;case'canonical':l=d,r=new RegExp('^'+Ss(s.url)+'/?$');break;case'substring':l=d,r=new RegExp('.*'+Ss(s.substring)+'.*$');break;case'regex':l=d,r=new RegExp(s.pattern);break;default:return!1;}return r.test(l)}function ft(l,e){for(var n=[],t=0;t<e.length;t++)for(var d=l.target,c=e[t],i=c.selector,a=document.querySelectorAll(i);d&&0<a.length;){for(var u=0;u<a.length;u++)d===a[u]&&n.push(c);d=d.parentNode}return n}function ht(l,d){for(var e={},t=null,n=[],o=0;o<l.length;o++)for(var c=l[o],a=c.urls||[],u=0;u<a.length;u++)if(mt(a[u],window.location.href,window.location.search,window.location.hash)){'pageview'===c.kind?d('pageview',c):(n.push(c),d('click_pageview',c));break}return 0<n.length&&(t=function(a){for(var e=ft(a,n),t=0;t<e.length;t++)d('click',e[t])},document.addEventListener('click',t)),e.dispose=function(){document.removeEventListener('click',t)},e}function vt(s,l){function n(){d&&d.dispose(),a&&a.length&&(d=ht(a,i))}function i(e,n){var t={kind:e,key:n.key,data:null,url:window.location.href,user:s.ident.getUser(),creationDate:new Date().getTime()};return'click'===e&&(t.selector=n.selector),s.enqueueEvent(t)}var a,d,e={};return e.goalKeyExists=function(t){if(!a)return!0;for(var e=0;e<a.length;e++)if('custom'===a[e].kind&&a[e].key===t)return!0;return!1},s.requestor.fetchGoals().then(function(t){t&&0<t.length&&(d=ht(a=t,i),function(a,e){function n(){(s=window.location.href)!==i&&(i=s,e())}var s,i=window.location.href;!function a(e,n){e(),setTimeout(function(){a(e,n)},n)}(n,a),window.history&&window.history.pushState?window.addEventListener('popstate',n):window.addEventListener('hashchange',n)}(300,n)),l()}).catch(function(e){s.emitter.maybeReportError(new ba.LDUnexpectedResponseError((e&&e.message,e.message))),l()}),e}function kt(l,e){var n=2<arguments.length&&void 0!==arguments[2]?arguments[2]:{},t=gt(),r=ct(l,e,n,t,ws),o=r.client,i=r.options,a=r.emitter,d=new Promise(function(t){var e=a.on('goalsReady',function(){a.off('goalsReady',e),t()})});if(o.waitUntilGoalsReady=function(){return d},i.fetchGoals){var s=vt(r,function(){return a.emit('goalsReady')});t.customEventFilter=s.goalKeyExists}else a.emit('goalsReady');return'complete'===document.readyState?r.start():window.addEventListener('load',r.start),window.addEventListener('beforeunload',function(){t.pageIsClosing=!0,o.close()}),o}function yt(e){var t=cn('idm'),n=S(t.idGatewayUrl),a=Cs[n],s={key:t.flId,//TODO- replace employeeId with personId
+custom:{orgId:e.userContext.OrganizationId}};// LaunchDarkly setup based on https://docs.launchdarkly.com/docs/js-sdk-reference
+Es=kt(a,s),Es.on('ready',function(){return sn('feature-flags-ready',{checkState:Is})})}/**
+	 * @param {*} featureKey - flag to check (key)
+	 * @param {*} featureValue - Optional, for comparing multivariate values
+	 * If key doesn't exist, ldclient will return false as value of featureKey
+	 * @returns If key does exist, will return whether it matches featureValue
+	 *///TODO- get and patch functions?
+/**
+	 * Initializes the Sidekick
+	 * @module Sidekick.Init
+	 * @memberOf Sidekick
+	 *//**
+	 * Initializes the sidekick
+	 * @param {Object} cfg - Configuration Object
+	 * @param {String} cfg.token - Access Token
+	 * @param {String} cfg.product - Application
+	 * @param {Number} cfg.flId - Frontline User ID
+	 * @param {Element} [cfg.appElement=document.body] - Element the sidekick should be attached to
+	 * @param {Boolean} [cfg.addIcons=true] - Add in the icons
+	 * @param {Boolean} [cfg.addOpenSans=true] - Add in OpenSans
+	 * @param {Boolean} [cfg.addSidekickCss=true] - Add Sidekick CSS file to header
+	 * @param {Boolean} [cfg.autoAppendAppNameInTitle=false] - Scans the TITLE node to ensure the application name is appended
+	 * @param {Boolean} [cfg.language=en] - Language to set any translations strings
+	 */// es6 polyfills
+var bt=Number.isInteger,_t=String.prototype,St=Math.floor,wt='undefined'==typeof globalThis?'undefined'==typeof window?'undefined'==typeof global?'undefined'==typeof self?{}:self:global:window:globalThis,Et='function'==typeof Symbol&&'symbol'==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&'function'==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?'symbol':typeof e},Ct=function(e,t){if(!(e instanceof t))throw new TypeError('Cannot call a class as a function')},It=function(){function e(e,t){for(var n,a=0;a<t.length;a++)n=t[a],n.enumerable=n.enumerable||!1,n.configurable=!0,'value'in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}return function(t,n,a){return n&&e(t.prototype,n),a&&e(t,a),t}}(),xt=function(e,t,n){return t in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e},At=function(){function e(e,t){var n=[],a=!0,s=!1,i=void 0;try{for(var r,o=e[Symbol.iterator]();!(a=(r=o.next()).done)&&(n.push(r.value),!(t&&n.length===t));a=!0);}catch(e){s=!0,i=e}finally{try{!a&&o['return']&&o['return']()}finally{if(s)throw i}}return n}return function(t,n){if(Array.isArray(t))return t;if(Symbol.iterator in Object(t))return e(t,n);throw new TypeError('Invalid attempt to destructure non-iterable instance')}}(),Ot=function(e){if(Array.isArray(e)){for(var t=0,n=Array(e.length);t<e.length;t++)n[t]=e[t];return n}return Array.from(e)},Nt=function(e,t){return t={exports:{}},e(t,t.exports),t.exports}(function(t){(function(e,n){t.exports=n()})(wt,function(){function t(e){var t='undefined'==typeof e?'undefined':Et(e);return null!==e&&('object'===t||'function'===t)}function n(e){return'function'==typeof e}// node
+// vertx
+function a(){return'undefined'==typeof L?s():function(){L(i)}}// web worker
+function s(){// Store setTimeout reference so es6-promise will be unaffected by
+// other code modifying setTimeout (like sinon.useFakeTimers())
+var e=setTimeout;return function(){return e(i,1)}}function i(){for(var e=0;e<N;e+=2){var t=F[e],n=F[e+1];t(n),F[e]=void 0,F[e+1]=void 0}N=0}function r(e,t){var n=this,a=new this.constructor(l);void 0===a[q]&&E(a);var s=n._state;if(s){var i=arguments[s-1];R(function(){return _(s,a,i,n._result)})}else y(n,a,e,t);return a}/**
+	      `Promise.resolve` returns a promise that will become resolved with the
+	      passed `value`. It is shorthand for the following:
+	    
+	      ```javascript
+	      let promise = new Promise(function(resolve, reject){
+	        resolve(1);
+	      });
+	    
+	      promise.then(function(value){
+	        // value === 1
+	      });
+	      ```
+	    
+	      Instead of writing the above, your code now simply becomes the following:
+	    
+	      ```javascript
+	      let promise = Promise.resolve(1);
+	    
+	      promise.then(function(value){
+	        // value === 1
+	      });
+	      ```
+	    
+	      @method resolve
+	      @static
+	      @param {Any} value value that the returned promise will be resolved with
+	      Useful for tooling.
+	      @return {Promise} a promise that will become fulfilled with the given
+	      `value`
+	    */function o(e){/*jshint validthis:true */var t=this;if(e&&'object'===('undefined'==typeof e?'undefined':Et(e))&&e.constructor===t)return e;var n=new t(l);return f(n,e),n}function l(){}function d(){return new TypeError('You cannot resolve a promise with itself')}function c(){return new TypeError('A promises callback cannot return that same promise.')}function u(e,t,n,a){try{e.call(t,n,a)}catch(t){return t}}function p(e,t,n){R(function(e){var a=!1,s=u(n,t,function(n){a||(a=!0,t===n?v(e,n):f(e,n))},function(t){a||(a=!0,k(e,t))},'Settle: '+(e._label||' unknown promise'));!a&&s&&(a=!0,k(e,s))},e)}function g(e,t){1===t._state?v(e,t._result):2===t._state?k(e,t._result):y(t,void 0,function(t){return f(e,t)},function(t){return k(e,t)})}function m(e,t,a){t.constructor===e.constructor&&a===r&&t.constructor.resolve===o?g(e,t):void 0===a?v(e,t):n(a)?p(e,t,a):v(e,t)}function f(e,n){if(e===n)k(e,d());else if(t(n)){var a;try{a=n.then}catch(t){return void k(e,t)}m(e,n,a)}else v(e,n)}function h(e){e._onerror&&e._onerror(e._result),b(e)}function v(e,t){void 0!==e._state||(e._result=t,e._state=1,0!==e._subscribers.length&&R(b,e))}function k(e,t){void 0!==e._state||(e._state=2,e._result=t,R(h,e))}function y(e,t,n,a){var s=e._subscribers,i=s.length;e._onerror=null,s[i]=t,s[i+1]=n,s[i+2]=a,0===i&&e._state&&R(b,e)}function b(e){var t=e._subscribers,n=e._state;if(0!==t.length){for(var a=void 0,s=void 0,r=e._result,o=0;o<t.length;o+=3)a=t[o],s=t[o+n],a?_(n,a,s,r):s(r);e._subscribers.length=0}}function _(e,t,a,s){var i,r,o=n(a),l=!0;if(o){try{i=a(s)}catch(t){l=!1,r=t}if(t===i)return void k(t,c())}else i=s;if(void 0!==t._state);else o&&l?f(t,i):!1==l?k(t,r):1===e?v(t,i):2==e&&k(t,i)}function S(t,e){try{e(function(e){f(t,e)},function(e){k(t,e)})}catch(n){k(t,n)}}function w(){return V++}function E(e){e[q]=V++,e._state=void 0,e._result=void 0,e._subscribers=[]}function C(){return new Error('Array Methods must be provided an Array')}/**
+	      `Promise.all` accepts an array of promises, and returns a new promise which
+	      is fulfilled with an array of fulfillment values for the passed promises, or
+	      rejected with the reason of the first passed promise to be rejected. It casts all
+	      elements of the passed iterable to promises as it runs this algorithm.
+	    
+	      Example:
+	    
+	      ```javascript
+	      let promise1 = resolve(1);
+	      let promise2 = resolve(2);
+	      let promise3 = resolve(3);
+	      let promises = [ promise1, promise2, promise3 ];
+	    
+	      Promise.all(promises).then(function(array){
+	        // The array here would be [ 1, 2, 3 ];
+	      });
+	      ```
+	    
+	      If any of the `promises` given to `all` are rejected, the first promise
+	      that is rejected will be given as an argument to the returned promises's
+	      rejection handler. For example:
+	    
+	      Example:
+	    
+	      ```javascript
+	      let promise1 = resolve(1);
+	      let promise2 = reject(new Error("2"));
+	      let promise3 = reject(new Error("3"));
+	      let promises = [ promise1, promise2, promise3 ];
+	    
+	      Promise.all(promises).then(function(array){
+	        // Code here never runs because there are rejected promises!
+	      }, function(error) {
+	        // error.message === "2"
+	      });
+	      ```
+	    
+	      @method all
+	      @static
+	      @param {Array} entries array of promises
+	      @param {String} label optional string for labeling the promise.
+	      Useful for tooling.
+	      @return {Promise} promise that is fulfilled when all `promises` have been
+	      fulfilled, or rejected if any of them become rejected.
+	      @static
+	    *//**
+	      `Promise.race` returns a new promise which is settled in the same way as the
+	      first passed promise to settle.
+	    
+	      Example:
+	    
+	      ```javascript
+	      let promise1 = new Promise(function(resolve, reject){
+	        setTimeout(function(){
+	          resolve('promise 1');
+	        }, 200);
+	      });
+	    
+	      let promise2 = new Promise(function(resolve, reject){
+	        setTimeout(function(){
+	          resolve('promise 2');
+	        }, 100);
+	      });
+	    
+	      Promise.race([promise1, promise2]).then(function(result){
+	        // result === 'promise 2' because it was resolved before promise1
+	        // was resolved.
+	      });
+	      ```
+	    
+	      `Promise.race` is deterministic in that only the state of the first
+	      settled promise matters. For example, even if other promises given to the
+	      `promises` array argument are resolved, but the first settled promise has
+	      become rejected before the other promises became fulfilled, the returned
+	      promise will become rejected:
+	    
+	      ```javascript
+	      let promise1 = new Promise(function(resolve, reject){
+	        setTimeout(function(){
+	          resolve('promise 1');
+	        }, 200);
+	      });
+	    
+	      let promise2 = new Promise(function(resolve, reject){
+	        setTimeout(function(){
+	          reject(new Error('promise 2'));
+	        }, 100);
+	      });
+	    
+	      Promise.race([promise1, promise2]).then(function(result){
+	        // Code here never runs
+	      }, function(reason){
+	        // reason.message === 'promise 2' because promise 2 became rejected before
+	        // promise 1 became fulfilled
+	      });
+	      ```
+	    
+	      An example real-world use case is implementing timeouts:
+	    
+	      ```javascript
+	      Promise.race([ajax('foo.json'), timeout(5000)])
+	      ```
+	    
+	      @method race
+	      @static
+	      @param {Array} promises array of promises to observe
+	      Useful for tooling.
+	      @return {Promise} a promise which settles in the same way as the first passed
+	      promise to settle.
+	    *//**
+	      `Promise.reject` returns a promise rejected with the passed `reason`.
+	      It is shorthand for the following:
+	    
+	      ```javascript
+	      let promise = new Promise(function(resolve, reject){
+	        reject(new Error('WHOOPS'));
+	      });
+	    
+	      promise.then(function(value){
+	        // Code here doesn't run because the promise is rejected!
+	      }, function(reason){
+	        // reason.message === 'WHOOPS'
+	      });
+	      ```
+	    
+	      Instead of writing the above, your code now simply becomes the following:
+	    
+	      ```javascript
+	      let promise = Promise.reject(new Error('WHOOPS'));
+	    
+	      promise.then(function(value){
+	        // Code here doesn't run because the promise is rejected!
+	      }, function(reason){
+	        // reason.message === 'WHOOPS'
+	      });
+	      ```
+	    
+	      @method reject
+	      @static
+	      @param {Any} reason value that the returned promise will be rejected with.
+	      Useful for tooling.
+	      @return {Promise} a promise rejected with the given `reason`.
+	    */function I(){throw new TypeError('You must pass a resolver function as the first argument to the promise constructor')}function x(){throw new TypeError('Failed to construct \'Promise\': Please use the \'new\' operator, this object constructor cannot be called as a function.')}/**
+	      Promise objects represent the eventual result of an asynchronous operation. The
+	      primary way of interacting with a promise is through its `then` method, which
+	      registers callbacks to receive either a promise's eventual value or the reason
+	      why the promise cannot be fulfilled.
+	    
+	      Terminology
+	      -----------
+	    
+	      - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
+	      - `thenable` is an object or function that defines a `then` method.
+	      - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
+	      - `exception` is a value that is thrown using the throw statement.
+	      - `reason` is a value that indicates why a promise was rejected.
+	      - `settled` the final resting state of a promise, fulfilled or rejected.
+	    
+	      A promise can be in one of three states: pending, fulfilled, or rejected.
+	    
+	      Promises that are fulfilled have a fulfillment value and are in the fulfilled
+	      state.  Promises that are rejected have a rejection reason and are in the
+	      rejected state.  A fulfillment value is never a thenable.
+	    
+	      Promises can also be said to *resolve* a value.  If this value is also a
+	      promise, then the original promise's settled state will match the value's
+	      settled state.  So a promise that *resolves* a promise that rejects will
+	      itself reject, and a promise that *resolves* a promise that fulfills will
+	      itself fulfill.
+	    
+	    
+	      Basic Usage:
+	      ------------
+	    
+	      ```js
+	      let promise = new Promise(function(resolve, reject) {
+	        // on success
+	        resolve(value);
+	    
+	        // on failure
+	        reject(reason);
+	      });
+	    
+	      promise.then(function(value) {
+	        // on fulfillment
+	      }, function(reason) {
+	        // on rejection
+	      });
+	      ```
+	    
+	      Advanced Usage:
+	      ---------------
+	    
+	      Promises shine when abstracting away asynchronous interactions such as
+	      `XMLHttpRequest`s.
+	    
+	      ```js
+	      function getJSON(url) {
+	        return new Promise(function(resolve, reject){
+	          let xhr = new XMLHttpRequest();
+	    
+	          xhr.open('GET', url);
+	          xhr.onreadystatechange = handler;
+	          xhr.responseType = 'json';
+	          xhr.setRequestHeader('Accept', 'application/json');
+	          xhr.send();
+	    
+	          function handler() {
+	            if (this.readyState === this.DONE) {
+	              if (this.status === 200) {
+	                resolve(this.response);
+	              } else {
+	                reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
+	              }
+	            }
+	          };
+	        });
+	      }
+	    
+	      getJSON('/posts.json').then(function(json) {
+	        // on fulfillment
+	      }, function(reason) {
+	        // on rejection
+	      });
+	      ```
+	    
+	      Unlike callbacks, promises are great composable primitives.
+	    
+	      ```js
+	      Promise.all([
+	        getJSON('/posts'),
+	        getJSON('/comments')
+	      ]).then(function(values){
+	        values[0] // => postsJSON
+	        values[1] // => commentsJSON
+	    
+	        return values;
+	      });
+	      ```
+	    
+	      @class Promise
+	      @param {Function} resolver
+	      Useful for tooling.
+	      @constructor
+	    *//*global self*/// Strange compat..
+var A=Array.isArray?Array.isArray:function(e){return'[object Array]'===Object.prototype.toString.call(e)},O=A,N=0,L=void 0,z=void 0,R=function(e,t){F[N]=e,F[N+1]=t,N+=2,2==N&&(z?z(i):j())},T='undefined'==typeof window?void 0:window,D=T||{},P=D.MutationObserver||D.WebKitMutationObserver,U='undefined'==typeof self&&'undefined'!=typeof process&&'[object process]'==={}.toString.call(process),M='undefined'!=typeof Uint8ClampedArray&&'undefined'!=typeof importScripts&&'undefined'!=typeof MessageChannel,F=Array(1e3),j=void 0;// test for web worker but not in IE10
+j=U?function(){// node version 0.10.x displays a deprecation warning when nextTick is used recursively
+// see https://github.com/cujojs/when/issues/410 for details
+return function(){return process.nextTick(i)}}():P?function(){var e=0,t=new P(i),n=document.createTextNode('');return t.observe(n,{characterData:!0}),function(){n.data=e=++e%2}}():M?function(){var e=new MessageChannel;return e.port1.onmessage=i,function(){return e.port2.postMessage(0)}}():void 0===T&&'function'==typeof e?function(){try{var e=Function('return this')().require('vertx');return L=e.runOnLoop||e.runOnContext,a()}catch(t){return s()}}():s();var q=Math.random().toString(36).substring(2),V=0,B=function(){function e(e,t){this._instanceConstructor=e,this.promise=new e(l),this.promise[q]||E(this.promise),O(t)?(this.length=t.length,this._remaining=t.length,this._result=Array(this.length),0===this.length?v(this.promise,this._result):(this.length=this.length||0,this._enumerate(t),0===this._remaining&&v(this.promise,this._result))):k(this.promise,C())}return e.prototype._enumerate=function(e){for(var t=0;void 0===this._state&&t<e.length;t++)this._eachEntry(e[t],t)},e.prototype._eachEntry=function(e,t){var n=this._instanceConstructor,a=n.resolve;if(a===o){var s=void 0,i=void 0,d=!1;try{s=e.then}catch(t){d=!0,i=t}if(s===r&&void 0!==e._state)this._settledAt(e._state,t,e._result);else if('function'!=typeof s)this._remaining--,this._result[t]=e;else if(n===H){var c=new n(l);d?k(c,i):m(c,e,s),this._willSettleAt(c,t)}else this._willSettleAt(new n(function(t){return t(e)}),t)}else this._willSettleAt(a(e),t)},e.prototype._settledAt=function(e,t,n){var a=this.promise;void 0===a._state&&(this._remaining--,2===e?k(a,n):this._result[t]=n),0===this._remaining&&v(a,this._result)},e.prototype._willSettleAt=function(e,t){var n=this;y(e,void 0,function(e){return n._settledAt(1,t,e)},function(e){return n._settledAt(2,t,e)})},e}(),H=function(){function e(t){this[q]=w(),this._result=this._state=void 0,this._subscribers=[],l!==t&&('function'!=typeof t&&I(),this instanceof e?S(this,t):x())}/**
+	      The primary way of interacting with a promise is through its `then` method,
+	      which registers callbacks to receive either a promise's eventual value or the
+	      reason why the promise cannot be fulfilled.
+	       ```js
+	      findUser().then(function(user){
+	        // user is available
+	      }, function(reason){
+	        // user is unavailable, and you are given the reason why
+	      });
+	      ```
+	       Chaining
+	      --------
+	       The return value of `then` is itself a promise.  This second, 'downstream'
+	      promise is resolved with the return value of the first promise's fulfillment
+	      or rejection handler, or rejected if the handler throws an exception.
+	       ```js
+	      findUser().then(function (user) {
+	        return user.name;
+	      }, function (reason) {
+	        return 'default name';
+	      }).then(function (userName) {
+	        // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+	        // will be `'default name'`
+	      });
+	       findUser().then(function (user) {
+	        throw new Error('Found user, but still unhappy');
+	      }, function (reason) {
+	        throw new Error('`findUser` rejected and we're unhappy');
+	      }).then(function (value) {
+	        // never reached
+	      }, function (reason) {
+	        // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+	        // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
+	      });
+	      ```
+	      If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+	       ```js
+	      findUser().then(function (user) {
+	        throw new PedagogicalException('Upstream error');
+	      }).then(function (value) {
+	        // never reached
+	      }).then(function (value) {
+	        // never reached
+	      }, function (reason) {
+	        // The `PedgagocialException` is propagated all the way down to here
+	      });
+	      ```
+	       Assimilation
+	      ------------
+	       Sometimes the value you want to propagate to a downstream promise can only be
+	      retrieved asynchronously. This can be achieved by returning a promise in the
+	      fulfillment or rejection handler. The downstream promise will then be pending
+	      until the returned promise is settled. This is called *assimilation*.
+	       ```js
+	      findUser().then(function (user) {
+	        return findCommentsByAuthor(user);
+	      }).then(function (comments) {
+	        // The user's comments are now available
+	      });
+	      ```
+	       If the assimliated promise rejects, then the downstream promise will also reject.
+	       ```js
+	      findUser().then(function (user) {
+	        return findCommentsByAuthor(user);
+	      }).then(function (comments) {
+	        // If `findCommentsByAuthor` fulfills, we'll have the value here
+	      }, function (reason) {
+	        // If `findCommentsByAuthor` rejects, we'll have the reason here
+	      });
+	      ```
+	       Simple Example
+	      --------------
+	       Synchronous Example
+	       ```javascript
+	      let result;
+	       try {
+	        result = findResult();
+	        // success
+	      } catch(reason) {
+	        // failure
+	      }
+	      ```
+	       Errback Example
+	       ```js
+	      findResult(function(result, err){
+	        if (err) {
+	          // failure
+	        } else {
+	          // success
+	        }
+	      });
+	      ```
+	       Promise Example;
+	       ```javascript
+	      findResult().then(function(result){
+	        // success
+	      }, function(reason){
+	        // failure
+	      });
+	      ```
+	       Advanced Example
+	      --------------
+	       Synchronous Example
+	       ```javascript
+	      let author, books;
+	       try {
+	        author = findAuthor();
+	        books  = findBooksByAuthor(author);
+	        // success
+	      } catch(reason) {
+	        // failure
+	      }
+	      ```
+	       Errback Example
+	       ```js
+	       function foundBooks(books) {
+	       }
+	       function failure(reason) {
+	       }
+	       findAuthor(function(author, err){
+	        if (err) {
+	          failure(err);
+	          // failure
+	        } else {
+	          try {
+	            findBoooksByAuthor(author, function(books, err) {
+	              if (err) {
+	                failure(err);
+	              } else {
+	                try {
+	                  foundBooks(books);
+	                } catch(reason) {
+	                  failure(reason);
+	                }
+	              }
+	            });
+	          } catch(error) {
+	            failure(err);
+	          }
+	          // success
+	        }
+	      });
+	      ```
+	       Promise Example;
+	       ```javascript
+	      findAuthor().
+	        then(findBooksByAuthor).
+	        then(function(books){
+	          // found books
+	      }).catch(function(reason){
+	        // something went wrong
+	      });
+	      ```
+	       @method then
+	      @param {Function} onFulfilled
+	      @param {Function} onRejected
+	      Useful for tooling.
+	      @return {Promise}
+	      *//**
+	      `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+	      as the catch block of a try/catch statement.
+	      ```js
+	      function findAuthor(){
+	      throw new Error('couldn't find that author');
+	      }
+	      // synchronous
+	      try {
+	      findAuthor();
+	      } catch(reason) {
+	      // something went wrong
+	      }
+	      // async with promises
+	      findAuthor().catch(function(reason){
+	      // something went wrong
+	      });
+	      ```
+	      @method catch
+	      @param {Function} onRejection
+	      Useful for tooling.
+	      @return {Promise}
+	      */return e.prototype.catch=function(e){return this.then(null,e)},e.prototype.finally=function(e){var t=this,a=t.constructor;return n(e)?t.then(function(t){return a.resolve(e()).then(function(){return t})},function(t){return a.resolve(e()).then(function(){throw t})}):t.then(e,e)},e}();return H.prototype.then=r,H.all=function(e){return new B(this,e).promise},H.race=function(e){/*jshint validthis:true */var t=this;return O(e)?new t(function(n,a){for(var s=e.length,r=0;r<s;r++)t.resolve(e[r]).then(n,a)}):new t(function(e,t){return t(new TypeError('You must pass an array to race.'))})},H.resolve=o,H.reject=function(e){/*jshint validthis:true */var t=this,n=new t(l);return k(n,e),n},H._setScheduler=function(e){z=e},H._setAsap=function(e){R=e},H._asap=R,H.polyfill=function(){var e;if('undefined'!=typeof wt)e=wt;else if('undefined'!=typeof self)e=self;else try{e=Function('return this')()}catch(t){throw new Error('polyfill failed because global object is unavailable in this environment')}var t=e.Promise;if(t){var n=null;try{n=Object.prototype.toString.call(t.resolve())}catch(t){// silently ignored
+}if('[object Promise]'===n&&!t.cast)return}e.Promise=H},H.Promise=H,H})}),Lt=Nt.polyfill();'function'!=typeof Object.assign&&Object.defineProperty(Object,'assign',{configurable:!0,writable:!0,value:function(e){if(null==e)// TypeError if undefined or null
+throw new TypeError('Cannot convert undefined or null to object');for(var t,n=Object(e),a=1;a<arguments.length;a++)if(t=arguments[a],null!=t)// Skip over if undefined or null
+for(var s in t)// Avoid bugs when hasOwnProperty is shadowed
+Object.prototype.hasOwnProperty.call(t,s)&&(n[s]=t[s]);return n}}),Array.prototype.includes||(Array.prototype.includes=function(e/*, fromIndex*/){var t=Object(this),a=parseInt(t.length,10)||0;if(0===a)return!1;var s,i=parseInt(arguments[1],10)||0;0<=i?s=i:(s=a+i,0>s&&(s=0));for(var n;s<a;){if(n=t[s],e===n||e!==e&&n!==n)// NaN !== NaN
+return!0;s++}return!1}),_t.endsWith||(_t.endsWith=function(e,t){var n=this.toString();('number'!=typeof t||!isFinite(t)||St(t)!==t||t>n.length)&&(t=n.length),t-=e.length;var a=n.indexOf(e,t);return-1!==a&&a===t}),_t.startsWith||(_t.startsWith=function(e,t){return t=t||0,this.substr(t,e.length)===e}),Array.prototype.find||(Array.prototype.find=t),Array.prototype.findIndex||(Array.prototype.findIndex=n),bt||(bt=function(e){return'number'==typeof e&&isFinite(e)&&St(e)===e}),function(e){(0,eval)('this').ambient=e()}(function(){// executed on every resize event (debounced to 100ms)
+function e(){var n={};for(var a in b=[],c)// skip if in prototype
+if(c.hasOwnProperty(a)){var s=[];c[a].__updated__=!1;var i=!1;// if we have activeEvents, we should check
+// if any of them apply to this class
+if(Object.keys(S).length){// check each of our activeEvents
+for(var r in S)// if it's on prototype, bail out
+if(S.hasOwnProperty(r)&&(i=!!c[a].__events__[r],i))// if we find that one of our active events could
+// affect this class, there's no reason to check the rest
+break;// check the class config's registered events
+}else i=!0;// spin over each plugin used by this class
+for(var e in c[a]){var o=void 0;// skip if we don't have a prop to handle this property
+if(0!==e.indexOf('__')&&c[a].hasOwnProperty(e))// skip if in prototype
+// ensure that the cache structure is constructed for this prop
+// if this property is invalid, the whole class is
+// not active, kill classes and go to the next class
+{var l=u[e];if(null!=u[e])if(l.cache=l.cache||{},l.cache[a]=l.cache[a]||{},i&&(!n.hasOwnProperty(e)&&(n[e]=l.getCurrentValue(),n[e]===l.currentValue?l.__updated__=!1:(l.currentValue=n[e],l.__updated__=!0)),c[a].__updated__=c[a].__updated__||l.__updated__),l.__updated__&&i||!l.cache[a].activeClasses?(o=l.getActiveClasses(l.currentValue,a,c[a][e]),l.cache[a].activeClasses=o):o=l.cache[a].activeClasses,!o.length){s=[];break}else s=s.concat(o)}}b=b.concat(s)}// reset active events
+S={},b=b.filter(function(e,t,n){return n.indexOf(e)===t}),t(),v=null}function t(){var e=f.className;// update currentClasses with active body classes
+// filter out anything we're not in charge of
+_=e.split(' ').filter(function(e){return y.includes(e)});// search for classes that are not currently active,
+// but should be, and add them
+for(var t,a=b.length;a--;)t=b[a],_.includes(t)||(e+=' '+t,c[t]&&o('enter',t,n(t))),c[t]&&o('update',t,n(t));// search for classes that are active,
+// but shouldn't be, and remove them
+for(var s,r=_.length;r--;)s=_[r],b.includes(s)||(e=e.replace(new RegExp('(^|\\s)'+s+'($|\\s)','g'),' '),c[s]&&o('leave',s,n(s)));// push the new classes to body... and filter out extra spaces
+f.className=e.split(' ').filter(function(e){return!!e}).join(' ')}// grabs all the property values that apply to a given class
+function n(e){var t={};for(var n in c[e])c[e].hasOwnProperty(n)&&u[n]&&(t[n]=l(n));return t}// resize debouncing, will execute resize code no more
+// than once every 100ms
+function a(t){return function(n){S[t]=n,v||(k?v=setTimeout(C,k):C())}}// initializes confg and attaches to events
+// ---------------------------------- //
+function s(t,n){// spin over each class (cls) and check out the
+// condition properties for each
+for(var s in Object.assign(c,t),t)// skip if in prototype
+if(c.hasOwnProperty(s))for(var r in c[s].__events__={},c[s])// skip if in prototype
+// setup any handlers that the plugin defines
+// setup the object for storing cached values
+if(c[s].hasOwnProperty(r)&&u[r])// skip if we don't have a prop to handle this property
+{var o=u[r];if(o.on)for(var l in o.on)o.on.hasOwnProperty(l)&&i(l,s,o.on[l]);o.cache=o.cache||{},o.cache[s]=o.cache[s]||{},o.watchElement=o.watchElement||g,'string'==typeof o.watchEvent&&(o.watchEvent=o.watchEvent.split(' '));var d=o.getAllClasses?o.getAllClasses(s,c[s][r]):[s];y=y.concat(d);for(var m,f=o.watchEvent.length;f--;)m=o.watchEvent[f],c[s].__events__[m]=!0,E[m]||(E[m]=[]),E[m].push(r),p[m]&&-1!==p[m].indexOf(o.watchElement)||(o.watchElement.addEventListener?o.watchElement.addEventListener(m,a(m),!1):o.watchElement.attachEvent('on'+m,a(m)),p[m]=p[m]||[],p[m].push(o.watchElement))}'number'==typeof n&&(k=n),e()}// ================================== //
+// Event Bus API methods
+// ================================== //
+function i(e,t,n){var s=e.split(' ');w[t]=w[t]||{};for(var r,o=s.length;o--;)r=s[o],w[t][r]=w[t][r]||[],w[t][r].push(n)}function r(e,t,n){for(var s,r=e.split(' '),o=r.length;o--;)if(s=r[o],w[t]&&w[t][s]&&w[t][s].length)for(var l=w[t][s].length;l--;)w[t][s][l]===n&&w[t][s].splice(l,1)}function o(e,t,n){if(null!=c[t]&&c[t].__updated__&&w[t]&&w[t][e]&&w[t][e].length)for(var a=w[t][e].length,s=0;s<a;s++)w[t][e][s](e,t,n,c[t])}// ================================== //
+// Javascript API Helpers
+// ================================== //
+function l(e){// get the latest value from cache if available
+return u[e].currentValue||u[e].getCurrentValue()}function d(e){return-1!==b.indexOf(e)}var c={},u={},p={},g=(0,eval)('this'),m=g.document,f=m.body,h=g.requestAnimationFrame||g.webkitRequestAnimationFrame||g.mozRequestAnimationFrame||function(e){g.setTimeout(e,1e3/60)},v=null,k=0,y=[],b=[],_=[],S={},w={},E={},C=function(){return h(e)};return{init:s,on:i,off:r,prop:u,// for backward compatibility
+registerPlugin:function(e,t){u[e]=t},getPluginValue:l,isActive:d}}),function(e){//                                                 //
+// =============================================== //
+window.ambient.registerPlugin('height',e);// ================= Plugin Name ================= //
+//                                                 //
+}({// ================= Plugin Code ================= //
+//                                                 //
+getCurrentValue:function(){var e=window,t=document,n=t.body;return e.innerHeight||n.clientHeight},getActiveClasses:function(e,t,n){var a,s,i=n.min||0,r=n.max||1/0;return a=e>=i,s=e<r,a&&s?[t]:[]},watchEvent:'resize'//                                                 //
+// =============================================== //
+}),function(e){//                                                 //
+// =============================================== //
+window.ambient.registerPlugin('width',e);// ================= Plugin Name ================= //
+//                                                 //
+}({// ================= Plugin Code ================= //
+//                                                 //
+getCurrentValue:function(){var e=window,t=document,n=t.body;return e.innerWidth||n.clientWidth},getAllClasses:function(e,t){var n,a,s=[];if(t.min=t.min||0,t.max=t.max||1/0,t.bend=t.bend||0,s=s.concat([e,e+'-gte',e+'-lte']),t.bend)for(a=t.max===1/0?8192:t.max,n=~~((a-t.min)/t.bend);n--;)s.push(e+'-'+(n+1));return s},getActiveClasses:function(e,t,n){var a,s,r,o=[];if(s=e>=n.min,r=e<n.max,s&&r&&(o.push(t),n.bend))for(a=~~((e-n.min)/n.bend);a--;)o.push(t+'-'+(a+1));return s&&o.push(t+'-gte'),r&&o.push(t+'-lte'),o},watchEvent:'resize'//                                                 //
+// =============================================== //
+}),ambient.init({"sk-auto-collapse-nav":{width:{max:1260}},"sk-adjust-menu-columns":{height:{}},"sk-screen-small":{width:{max:1100}},"sk-screen-medium":{width:{min:1100,max:1260}},"sk-screen-large":{width:{min:1260}}},0);/**
+	 * @module Sidekick.AssetLoader
+	 * @memberOf Sidekick
+	 */var zt=function(){for(var e=document.getElementsByTagName('script'),t=e.length;t--;){var n=e[t],a=n.src.split('?')[0];// Strip off any query strings
+if(a.match(/\/([\d|\w]{8}-)?sidekick\.js$/))return a.substr(0,a.lastIndexOf('/'))}}(),Rt=function(){return zt},Tt=function(e,t){var n=a('link',{rel:'stylesheet',media:'screen',charset:'utf-8',href:zt+'/'+e},document.head),s=a('div',{style:'display: none;',class:'sidekick-stylesheet-test'},document.body),i=setInterval(function(){try{'hidden'===window.getComputedStyle(s).visibility&&(clearInterval(i),t(n),document.body.removeChild(s))}catch(t){}},50);// watch hidden element for style update from sidekick.css
+},Dt=function(){var e=document.createElement('style');e.setAttribute('type','text/css'),e.setAttribute('media','print'),e.innerHTML='.sidekick { display: none !important; } .sidekick-wrapped-application {\tmargin: 0 !important } ',document.head.appendChild(e)},Pt=function(e){var t=document.createElement('style');t.setAttribute('type','text/css'),t.innerHTML=Ut[e.toLowerCase()],document.head.appendChild(t)},Ut={"fl-icons":s('FL-Icons','FL-Icons','FL-Icons','normal','normal'),"open-sans":// Open Sans: regular
+s('open-sans','opensans-regular-webfont','open_sansregular',400,'normal')+// Open Sans: semi-bold
+s('open-sans','opensans-semibold-webfont','open_sanssemibold',600,'normal')+// Open Sans: bold
+s('open-sans','opensans-bold-webfont','open_sansbold',700,'normal')},Mt=/*#__PURE__*/Object.freeze({activityIndicator:function(e,t,n){return'<a href="'+e.url+'"><span sk-tooltip content="'+n('System Activity')+'"></span> <span class="sk--dots"><span class="sk--dot"></span> <span class="sk--dot"></span> <span class="sk--dot"></span></span></a>'},appSwitcher:function(e,t,n){return'<div sk-skip-nav context-store="sk-config"></div><button id="sk--app-switcher-title" class="app-title" tabindex="0" aria-controls="sk--app-switcher-menu" aria-pressed="false"><div class="sk--content"></div><span sk-tooltip content="'+n('Switch Apps')+'"></span></button><div id="sk--app-switcher-menu" class="sk--menu" role="menu" aria-hidden="true" aria-describedby="sk--app-switcher-instruction"><h3 id="sk--app-switcher-instruction" class="sk-instruction">'+n('Your Solutions')+'</h3><ul class="sk--menulist"></ul></div>'},contactOrg:function(){return''},header:function(){return'<div class="sk--header-content" role="menubar"><div sk-impersonated-user context-store="user-data"></div><div sk-app-switcher context-store="app-switcher-data" role="menuitem" aria-haspopup="true"></div><div sk-org-switcher context-store="org-switcher-data" role="menuitem" aria-haspopup="true"></div><div class="sk--impersonation-border-lr"></div><div class="sk--impersonation-border-b"></div><div class="sk--content-right"><div sk-activity-indicator context-store="activity-indicator"></div><div sk-search context-store="search"></div><div sk-help context-store="help" role="menuitem" aria-haspopup="true"></div><div sk-user-info context-store="user-data" role="menuitem" aria-haspopup="true"></div><div sk-notifications context-store="notifications"></div><button class="sk--impersonation-exit fa-li-close"></button></div></div>'},help:function(e,t,n){return'<button id="sk--help-menu-title" class="control fa-li-question-circle-before" aria-controls="sk--help-menu" aria-pressed="false" aria-label="'+n('Help Resources')+'"><span sk-tooltip content="'+n('Help Resources')+'"></span></button><div id="sk--help-menu" class="menu" role="menu" aria-hidden="true"><h3 id="sk--help-menu-instruction" class="sk-instruction">'+n('Help Resources')+'</h3><div class="help-org-contact" sk-contact-org context-store="current-org"></div><ul class="articles menulist"></ul><ul class="blocks menulist"></ul></div>'},impersonatedUser:function(e,t,n){return'<div sk-skip-nav context-store="sk-config"></div><div class="sk--viewing-as">'+n('viewing as')+'</div><div class="sk--user-name">'+e.firstName+' '+e.lastName+'</div>'},loader:function(e,t){return'<div class="sk-loading-container">'+(!t.statusText?'':'<div class="sk-status">'+t.statusText+'</div>')+'<div class="sk-logo-spinner"><span class="sk-bar sk-bar-1"></span> <span class="sk-bar sk-bar-2"></span> <span class="sk-bar sk-bar-3"></span> <span class="sk-bar sk-bar-4"></span> <span class="sk-bar sk-bar-5"></span> <span class="sk-bar sk-bar-6"></span></div></div>'+(!t.fill?'':'<div class="sk-cover"></div>')},nav:function(e,t,n){return'<div class="sk--content-dimmer"></div><div class="sk--back-drop"><span class="sk--fl-pattern"></span></div><div class="sk--org-branding"><div class="sk--org-brand-small"></div><div class="sk--org-brand-large"></div></div><div class="sk--nav-title">'+n('Navigation')+'</div><i class="sk--nav-arrow" tabindex="0" aria-describedby="sk--nav-arrow-tooltip"><span sk-tooltip class="sk--nav-arrow-tooltip" id="sk--nav-arrow-tooltip" content="'+n('Toggle Navigation')+'" position="right"></span></i><div class="sk--top-section"><ul class="sk--menu-items" role="menu"></ul></div><div class="sk--bottom-section"><div class="sk--frontline-branding"><div class="sk--logo-container sk--full-logo"><a class="fa fa-logo-frontline sk--frontline-logo" target="_blank" href="http://frontlineeducation.com"></a> <span class="sk--copyright-info">&copy; '+new Date().getFullYear()+' | '+n('All rights reserved')+'</span></div><div class="sk--logo-container sk--small-logo"><a class="fa fa-logo-frontline-small sk--frontline-logo" target="_blank" href="http://frontlineeducation.com" tabindex="-1"></a> <span class="sk--copyright-info">&copy; '+new Date().getFullYear()+'</span></div></div></div>'},navItem:function(e){return'<a class="sk--main-menu-item-container" href="'+(e.url||'#')+'" target="'+(e.url&&e.target?e.target:'_self')+'" role="menuitem"><i class="sk--nav-icon fa '+e.icon+'"></i> <span class="sk--badge"></span> <span class="sk--main-menu-title">'+e.title+'</span> <span sk-tooltip content="'+e.title+'" position="right"></span> '+(e.children&&e.children.length?'<i class="sk--more-items fa fa-angle-right"></i>':'')+'<div class="sk--hover-elem"></div></a>'},navItemMegaMenu:function(){return'<div class="mega"></div>'},navItemSubmenu:function(){return'<div class="no-mega"><ul class="menu-group" role="menu"></ul></div>'},notifications:function(e,t,n){return(null==e.url?'<button class="control" aria-label="'+n('notifications')+'"><span class="fa-li-bell-before"></span> <span class="sk--unread"></span> <span sk-tooltip content="'+n('Notifications')+'" arrow-shift="1px"></span></button>':'<a href="'+e.url+'" class="control" aria-label="'+n('notifications')+'"> <span class="fa-li-bell-before"></span> <span class="sk--unread"></span> <span sk-tooltip content="'+n('Notifications')+'" arrow-shift="1px"></span> </a>')+'<div class="menu"><h3 class="sk-instruction">'+n('Recent Notifications')+' <button type="button" tabindex="-1" class="ss-ctrl-clear fa-li-arrow-right2" aria-label="'+n('close panel')+'"></button></h3><ul class="menulist"></ul></div>'},orgSwitcher:function(e,t,n){return'<button id="sk--org-switcher-title" class="control" aria-controls="sk--org-switcher-menu" aria-pressed="false"><div class="content"></div><span sk-tooltip content="'+n('Switch Organizations')+'"></span></button><div id="sk--org-switcher-menu" class="menu" role="menu" aria-hidden="true" aria-describedby="sk--org-switcher-instruction"><h3 id="sk--org-switcher-instruction" class="sk-instruction">'+n('Select an Organization')+'</h3><div class="search"><div class="sk-input"><span class="sk--input-container fa-li-search-before"><input type="text" class="search-org" placeholder="'+n('Search')+'" autocomplete="off"> </span><button type="button" tabindex="-1" class="ss-ctrl-clear fa-li-close" aria-label="'+n('clear input')+'"></button></div></div><div class="menu-scroll"><ul class="menulist"></ul></div></div>'},pickApp:function(e,t,n){return'<h2 class="sk--filtered-org-name"></h2><h1>'+n('Select an Application')+'</h1><ul class="sk--org-app-list"></ul>'},pickOrg:function(e,t,n){return'<h2 class="sk--filtered-app-name sk-hidden"></h2><h1>'+n('Select an Organization')+'</h1><div class="sk-input sk-hidden"><span class="sk--input-container fa-li-search-before"><input class="search" type="text" value="" placeholder="'+n('Search Organizations')+'"> </span><button type="button" tabindex="-1" class="ss-ctrl-clear fa-li-close sk-hidden" aria-label="'+n('clear input')+'"></button></div><ul class="sk--org-app-list"></ul>'},pickOrgApp:function(){return'<div class="sk--picker-user-info"><div sk-user-info context-store="user-data"></div></div><div class="sk--panel-left"><i class="fa-logo-frontline"></i><div sk-pick-org context-store="pick-org-app-data"></div><div sk-pick-app context-store="pick-org-app-data"></div></div>'},search:function(e,t,n){return'<div class="sk-input"><span class="sk--input-container fa-li-search-before"><input class="search" type="text" value=""> </span><button type="button" class="ss-ctrl-clear fa-li-close" aria-label="'+n('clear input')+'"></button></div><div class="sk--menu"><h3 id="sk-search-results-title" class="sk-instruction">'+n('Search Results')+'</h3><div class="sk--loader" role="presentation"><div sk-loader fill></div></div><div class="sk--search-content"></div></div>'},sessionTimeout:function(e,t,n){return'<div class="sk--timer-mode"><div class="sk--content-dimmer"></div><div class="sk--session-timeout-modal modal"><div class="title">'+n('You will be signed out soon.')+'</div><div class="sk--timer"></div><div class="content">'+n('Due to inactivity, your session will end and you will be signed out. Do you want to stay signed in?')+'</div><div class="modal-button"><a class="sk-button sk-button-std sk--logout" href="#">'+n('No, Sign Me Out')+'</a> <a class="sk-button sk-button-pri sk--extend" href="#">'+n('Yes, Stay Signed In')+'</a></div></div></div><div class="sk--signed-out"><div class="sk--content"><div class="sk--logo"></div><h2>'+n('You have been signed out.')+'</h2><p>'+n('For your security and protection of your data, you have been signed out due to inactivity.')+'</p><div><a href="#" class="sk--sign-in-link">'+n('Sign In Again to Continue')+'</a></div></div></div>'},siteErrors:function(){return'<div class="sk--content"><div class="sk--logo"></div><h2>Something went wrong.</h2><p>We don\u2019t know what happened but something went wrong. Please wait a few minutes then try to sign in again.</p><div><a href="#" class="sk--sign-in-link">Sign In Again to Continue</a></div></div>'},skipNav:function(e,t,n){return'<a class="sk--skip-nav-link" href="#'+(e.mainId?e.mainId:'')+'">'+n('Skip to Main Content')+'</a>'},tooltip:function(e,t){return'<span class="sk-tip-chevron"></span> <span class="sk-tip-content">'+t.content+'</span>'},unsupportedBrowserAlert:function(){return'<div class="sk--unsupported-browser-message"><a href="https://help.frontlineeducation.com/hc/en-us/articles/360001607068" target="_blank" class="sk--message">Your web browser is not supported and may cause problems. <span>Learn More</span> </a><button><i>&#xe909;</i> <span>Dismiss</span></button></div>'},userInfo:function(e,t,n){return'<button id="sk--user-info-title" class="sk--control" aria-controls="sk--user-info-menu" aria-pressed="false" aria-label="'+e.firstName+' '+e.lastName+'"><span class="sk--user-name fa-angle-down-after" title="'+e.firstName+' '+e.lastName+'">'+e.firstName+' '+e.lastName+'</span> <span class="sk--current-role"></span></button><div id="sk--user-info-menu" class="sk--menu" role="menu" aria-hidden="true" aria-describedby="sk--user-info-instruction"><h3 id="sk--user-info-instruction" class="sk-instruction sk--fl-account-header">'+n('Your Frontline Account')+'</h3><ul class="sk--roles sk--menulist"></ul><ul class="sk--blocks sk--menulist"><li><a class="sk--settings fa-li-settings" href="#" role="menuitem">'+n('Account Settings')+'</a></li><li><a class="sk--logout fa-li-power" href="#" role="menuitem">'+n('Sign Out')+'</a></li></ul></div>'}}),Ft=function(e){return new Ht(e)},jt=d,qt=function(e){var t=document.createElement('span');return t.innerHTML=e,1===t.children.length?Ft(t.children[0]):Ft(t)},Vt=window.requestAnimationFrame&&window.requestAnimationFrame.bind(window)||window.webkitRequestAnimationFrame&&window.webkitRequestAnimationFrame.bind(window)||window.mozRequestAnimationFrame&&window.mozRequestAnimationFrame.bind(window)||window.oRequestAnimationFrame&&window.oRequestAnimationFrame.bind(window)||window.msRequestAnimationFrame&&window.msRequestAnimationFrame.bind(window)||function(e){window.setTimeout(e,1e3/60)},Bt=[],Ht=function(){/**
+	  * @param {Element} domNode
+	  */function e(t){// if we have already built an EasyDom object for this domNode, pull it from cache
+return Ct(this,e),null==t._easyDomID?void(this._=t,t._easyDomID=Bt.length,Bt.push(this)):Bt[t._easyDomID]}/**
+	  * @inner
+	  * @param {String} selector - Selector for finding an element
+	  * @return {EasyDom}
+	  */return It(e,[{key:'find',value:function(e){return d(e,this._)}/**
+	   * @param {String} cls - Classname to add
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'addClass',value:function(e){var t=this._.className.length?' ':'';return this.hasClass(e)||(this._.className+=''+t+e),this}/**
+	   * @param {String} cls - Classname to remove
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'removeClass',value:function(e){return this._.className=this._.className.split(' ').filter(function(t){return t!==e&&0<t.length}).join(' '),this}/**
+	   * @param {String} cls - Classname to test if this element has.
+	   * @return {Boolean} Whether or not this element has the classname specified.
+	   */},{key:'hasClass',value:function(e){return this._.className.split(' ').includes(e)}/**
+	   * @param {String} cls - Classname to toggle
+	   * @param {String} [state] - current state
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'toggleClass',value:function(e,t){return null==t&&(t=!this._.className.split(' ').includes(e)),this[(t?'add':'remove')+'Class'](e)}/**
+	   * @param {EasyDom|EasyDom[]} elem - Element to append to this element's children
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'append',value:function(t){if(null!=t){var n=t.length;if(null==n)this._.appendChild(t instanceof e?t._:t);else// we have an array of elements, recurse over the elements
+for(var a=0;a<n;a++)this.append(t[a]);return this}}/**
+	   * @param {String} name - Attribute name to get/set value for
+	   * @param {*} [value] - Value to set the attribute to
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'attr',value:function(e,t){return void 0===t?this._.getAttribute(e):null===t?(this._.removeAttribute(e),this):(this._.setAttribute(r(e),t),this)}/**
+	   * @param {String} name - Data attribute name to get/set value for
+	   * @param {*} [value] - Value to set the attribute to
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'data',value:function(e,t){return this.attr('data-'+r(e),t)}/**
+	   * Empties this element of any children
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'empty',value:function(){for(;this._.firstChild;)this._.removeChild(this._.firstChild);return this}/**
+	   * Sets the children to be the content being passed in.
+	   * @param {EasyDom|EasyDom[]} content
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'children',value:function(e){return this.empty().append(e)}/**
+	   * Returns the {@link EasyDom} parent for this element
+	   * @return {EasyDom}
+	   */},{key:'parent',value:function(){return new e(this._.parentNode)}/**
+	   * Registers an event handler to an event.
+	   * @param {String} evt - Event to react to
+	   * @param {Function} handler - Function to handle the event
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'on',value:function(e,t){return this._listeners=this._listeners||[],this._listeners.push({evt:e,handler:t}),this._.addEventListener(e,t),this}/**
+	   * Deregisters an event handler to an event.
+	   * @param {String} evt - Event to react to
+	   * @param {Function} handler - Function to handle the event
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'off',value:function(e,t){var n=this,a=[];// if we couldn't find the listener, bail out
+// for chaining
+return(a=null==e&&null==t?this._listeners||[]:null==t?this._listeners.filter(function(t){return t.evt===e}):[this._listeners.find(function(n){return n.evt===e&&n.handler===t})].filter(Boolean),0===a.length)?this:(a.forEach(function(e){return n._.removeEventListener(e.evt,e.handler)}),this._listeners=this._listeners.filter(function(e){return!a.includes(e)}),this);// remove the dom listeners
+}/**
+	   * Sets the css property(ies) to the values
+	   * @param {Object|String} target
+	   * @param {String|Number} [value] - Only used if the target is a String
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'css',value:function(e,t){if(!(e instanceof Array)){if(e instanceof Object)for(var n,a=Object.keys(e),s=a.length;s--;)n=a[s],this.css(n,e[n]);if('string'==typeof e){if(void 0===t)return window.getComputedStyle(this._)[e];this._.style[o(e)]=t}return this}}/**
+	   * Checks if this element currently has focus
+	   * @returns {Boolean}
+	   */},{key:'hasFocus',value:function(){return window.document.activeElement===this._}}]),e}(),Kt=/*#__PURE__*/Object.freeze({element:Ft,find:jt,parse:qt,rAF:Vt}),Yt=function(e){return m(e,'array')},Wt=function(e){return m(e,'object')},Gt=function(e){return m(e,'boolean')},$t={},Xt=[],Qt={},Jt={"session.logout":'header.user-info.logout'},Zt=Object.keys(Jt).reduce(function(e,t){return e[Jt[t]]=t,e},{}),en=function(e){return console&&console.error&&console.error('SIDEKICK => '+e)},tn=function(e,t){var n=!!(2<arguments.length&&void 0!==arguments[2])&&arguments[2],a=!!(3<arguments.length&&void 0!==arguments[3])&&arguments[3],s=!1,i=!1;if(Wt(n)){var r=n;null!=r.greedy&&(i=r.greedy),null!=r.once&&(a=r.once),null!=r.terminal&&(s=r.terminal)}else Gt(n)&&(i=n);var o=$t[e]=$t[e]||[];if(Xt.includes(e))return void en('the event "'+e+'" is already handled by a terminal event. No additional handlers can be registered.');if(!0===s){// clear other handlers if this one is terminal
+var l=o.length;0<l&&(o.length=0,en(l+' "'+e+'" event handler(s) have been removed due to a terminal handler registration.')),Xt.push(e)}// check if this handler is already registered with this event
+return o.includes(t)?void en('the event "'+e+'" is already handled by '+t):(t.$once=a,o.push(t),i&&Qt[e]&&t.apply(null,Qt[e]),function(){return an(e,t)});// return a teardown function
+},nn=function(e,t){var n=!!(2<arguments.length&&arguments[2]!==void 0)&&arguments[2];return tn(e,t,{greedy:n,once:!0})},an=function(e,t){// we have no handlers for this event, get out
+if(null!=$t[e]){null==t&&($t[e].length=0);// remove just the one handler
+var n=$t[e],a=n.lastIndexOf(t);-1===a||n.splice(a,1)}// we are not removing a specific handler, remove all
+},sn=function e(t){for(var n=arguments.length,a=Array(1<n?n-1:0),s=1;s<n;s++)a[s-1]=arguments[s];// fire deprecated events for backward compatibility
+if(Jt.hasOwnProperty(t)&&e.apply(null,[Jt[t]].concat(a)),Qt[t]=a,!!$t[t])for(var r=$t[t],o=r.length;o--;)r[o].apply(null,a),!0===r[o].$once&&an(t,r[o])},rn={on:f(tn),once:f(nn),emit:f(sn),clear:function(){Xt.length=0,Object.keys($t).forEach(function(e){return delete $t[e]}),Object.keys(Qt).forEach(function(e){return delete Qt[e]})}},on={},ln=['idm-data','sk-config','fl-internal-product-ids'],dn=function(e,t){on[e]=t,sn('_store.set-'+e,t)},cn=function(e){return on[e]||null},un=function(e,t){return tn('_store.set-'+e,t,!0)},pn=function(e,t){return nn('_store.set-'+e,t,!0)},gn={set:h(function(){for(var e=arguments.length,t=Array(e),n=0;n<e;n++)t[n]=arguments[n];var a=t[0];return null==a?void(console&&console.error&&console.error('SIDEKICK.STORE: the first parameter %ckey<String>%c is required.','color:blue;font-weight:bold;','')):ln.includes(a)||a.startsWith('_')?void(console&&console.error&&console.error('SIDEKICK.STORE: "'+a+'" is a read only value')):dn.apply(null,t)}),get:h(cn),onValue:h(un),onValueOnce:h(pn),clear:function(){return Object.keys(on).forEach(function(e){return delete on[e]})}},mn='en',fn={},hn=[],vn={fr:{"You have been signed out.":'Vous avez \xE9t\xE9 d\xE9connect\xE9.',"For your security and protection of your data, you have been signed out due to inactivity.":'Pour votre s\xE9curit\xE9 et protection de vos donn\xE9es, vous avez \xE9t\xE9 d\xE9connect\xE9 en raison de l\'inactivit\xE9.',"Sign In Again to Continue":'Se connecter pour continuer',"Account Settings":'Param\xE8tres du compte',"All rights reserved":'Tous les droits sont r\xE9serv\xE9s',"clear input":'entr\xE9e libre',"close panel":'fermer le panneau',"Contact Your Organization":'Contactez votre organisme',"Due to inactivity, your session will end and you will be signed out. Do you want to stay signed in?":'En raison de l\'inactivit\xE9, votre session prendra fin et vous serez d\xE9connect\xE9. Voulez-vous rester connect\xE9?',Fax:'Fax',"Help Resources":'Ressources d\'aide',Navigation:'La navigation',"No, Sign Me Out":'Non, Signez-moi',"No Results Found":'Aucun r\xE9sultat trouv\xE9',Notifications:'Notifications',notifications:'notifications',Phone:'T\xE9l\xE9phone',"Recent Notifications":'Notifications r\xE9centes',Search:'Chercher',"Search Organizations":'Organismes de recherche',"Search Results":'R\xE9sultats de la recherche',"Select an Application":'S\xE9lectionnez une application',"Select an Organization":'S\xE9lectionnez une organisation',"Sign Out":'Se d\xE9connecter',"Skip to Main Content":'Passer au contenu principal',"Switch Apps":'Applications de commutation',"Switch Organizations":'Organisations Switch',"System Activity":'Activit\xE9 du syst\xE8me',"Yes, Stay Signed In":'Oui, Restez connect\xE9',"You have no notifications":'Vous avez aucune notification',"You will be signed out soon.":'Vous serez bient\xF4t d\xE9connect\xE9',"Your Frontline Account":'Votre compte Frontline',"Your Solutions":'Vos Solutions',"viewing as":'Voir Comme',"Minimize Navigation":'Minimiser Navigation',"Expand Navigation":'D\xE9velopper Navigation',"Toggle Navigation":'Navigation Bascule',"System Configuration":'Configuration du syst\xE8me',"Manage User Access":'G\xE9rer l\'acc\xE8s des utilisateurs',"Additional Resources":'Ressources additionnelles',"Resource Library":'Biblioth\xE8que de ressources',"Browse Library":'Parcourir la biblioth\xE8que',"My History":'Mon histoire',"My Groups":'Mes groupes',Library:'Biblioth\xE8que',Administration:'Administration',"My Organization Resources":'Ressources de mon organisation',"Global Directory":'Annuaire Global'},it:{"You have been signed out.":'Sei stato lasciato fuori conto.',"For your security and protection of your data, you have been signed out due to inactivity.":'Per la tua sicurezza e la protezione dei tuoi dati, sei uscito per l\'inattivit\xE0.',"Sign In Again to Continue":'Accedi nuovamente per continuare',"Account Settings":'Impostazioni dell \'account',"All rights reserved":'Tutti i diritti riservati',"clear input":'ingresso libero',"close panel":'Chiudi pannello',"Contact Your Organization":'Contattare la propria organizzazione',"Due to inactivity, your session will end and you will be signed out. Do you want to stay signed in?":'A causa di inattivit\xE0, la sessione si concluder\xE0 e si saranno firmati fuori. Vuoi rimanere firmato a?',Fax:'Fax',"Help Resources":'Risorse di assistenza',Navigation:'Navigazione',"No, Sign Me Out":'No, Mi Esci',"No Results Found":'Nessun risultato trovato',Notifications:'notifiche',notifications:'notifiche',Phone:'Telefono',"Recent Notifications":'Notifiche recenti',Search:'Ricerca',"Search Organizations":'Le organizzazioni di ricerca',"Search Results":'risultati di ricerca',"Select an Application":'Selezionare un\'applicazione',"Select an Organization":'Seleziona una Organizzazione',"Sign Out":'Disconnessione',"Skip to Main Content":'Vai al contenuto principale',"Switch Apps":'applicazioni Interruttore',"Switch Organizations":'Organizzazioni di commutazione',"System Activity":'Attivit\xE0 del sistema',"Yes, Stay Signed In":'S\xEC, Resta connesso',"You have no notifications":'Non ci sono notifiche',"You will be signed out soon.":'Verr\xE0 firmato presto',"Your Frontline Account":'Il tuo account Frontline',"Your Solutions":'Le nostre soluzioni',"viewing as":'visualizzazione come',"Minimize Navigation":'Ridurre Navigazione',"Expand Navigation":'Espandere Navigazione',"Toggle Navigation":'Attiva Navigazione',"System Configuration":'Configurazione di sistema',"Manage User Access":'Gestisci l\'accesso degli utenti',"Additional Resources":'Risorse addizionali',"Resource Library":'Libreria delle risorse',"Browse Library":'Sfoglia la biblioteca',"My History":'La mia storia',"My Groups":'I miei gruppi',Library:'Biblioteca',Administration:'Amministrazione',"My Organization Resources":'Risorse della mia organizzazione',"Global Directory":'Directory Globale'},es:{"You have been signed out.":'Se ha cerrado la sesi\xF3n.',"For your security and protection of your data, you have been signed out due to inactivity.":'Para su seguridad y protecci\xF3n de sus datos, se ha cerrado la sesi\xF3n debido a la inactividad.',"Sign In Again to Continue":'Iniciar sesi\xF3n de nuevo para continuar',"Account Settings":'Configuraciones de la cuenta',"All rights reserved":'Todos los derechos reservados',"clear input":'entrada de borrado',"close panel":'panel de cierre',"Contact Your Organization":'P\xF3ngase en contacto con su organizaci\xF3n',"Due to inactivity, your session will end and you will be signed out. Do you want to stay signed in?":'Debido a la inactividad, su sesi\xF3n finalizar\xE1 y se cerrar\xE1 sesi\xF3n. \xBFQuiere permanecer conectado?',Fax:'Fax',"Help Resources":'Recursos de ayuda',Navigation:'Navegaci\xF3n',"No, Sign Me Out":'No, firmeme',"No Results Found":'No se han encontrado resultados',Notifications:'Notificaciones',notifications:'notificaciones',Phone:'Tel\xE9fono',"Recent Notifications":'Notificaciones recientes',Search:'Buscar',"Search Organizations":'Organizaciones de la b\xFAsqueda',"Search Results":'Resultados de la b\xFAsqueda',"Select an Application":'Seleccione una aplicaci\xF3n',"Select an Organization":'Seleccione una Organizaci\xF3n',"Sign Out":'Desconectar',"Skip to Main Content":'Saltar al contenido principal',"Switch Apps":'Aplicaciones del interruptor',"Switch Organizations":'Organizaciones de conmutaci\xF3n',"System Activity":'Actividad del sistema',"Yes, Stay Signed In":'S\xED, permanece firmado',"You have no notifications":'No tiene notificaciones',"You will be signed out soon.":'Saldr\xE1 pronto',"Your Frontline Account":'Su cuenta en primera l\xEDnea',"Your Solutions":'sus Soluciones',"viewing as":'viendo como',"Minimize Navigation":'Minimizar Navegaci\xF3n',"Expand Navigation":'Expandir Navegaci\xF3n',"Toggle Navigation":'Alternar Navegaci\xF3n',"System Configuration":'Configuraci\xF3n del sistema',"Manage User Access":'Administrar acceso de usuario',"Additional Resources":'Recursos adicionales',"Resource Library":'Biblioteca de recursos',"Browse Library":'Navegar por la biblioteca',"My History":'Mi historia',"My Groups":'Mis grupos',Library:'Biblioteca',Administration:'Administraci\xF3n',"My Organization Resources":'Mis recursos de organizaci\xF3n',"Global Directory":'Directorio Global'}},kn={tadev:'ta',taqa:'ta',tastage:'ta',taqalocal:'ta',absmgmtdev:'absmgmt',absmgmtqa:'absmgmt',absmgmtstage:'absmgmt',ieplegacylocal:'ieplegacy',ieplegacydev:'ieplegacy',ieplegacybeta:'ieplegacybeta',ieplegacyrc:'ieplegacy',"504legacylocal":'504legacy',"504legacydev":'504legacy',"504legacybeta":'504legacybeta',"504legacyrc":'504legacy',rtilegacylocal:'rtilegacy',rtilegacydev:'rtilegacy',rtilegacybeta:'rtilegacybeta',rtilegacyrc:'rtilegacy',esalegacylocal:'esalegacy',esalegacydev:'esalegacy',esalegacybeta:'esalegacybeta',esalegacyrc:'esalegacy',medicaidlegacylocal:'medicaidlegacy',medicaidlegacydev:'medicaidlegacy',medicaidlegacybeta:'medicaidlegacybeta',medicaidlegacyrc:'medicaidlegacy',pdlocal:'pd',pddev:'pd',pdqa:'pd',pdstage:'pd',pdkkuhl:'pd',pdprodtest:'pd',elevateqa:'cc',elevatedev:'cc',elevatestage:'cc',elevatetest:'cc',applitracktest:'recruit',applitrackqa:'recruit',recruitstage:'recruit',recruitqa:'recruit',recruitlocal:'recruit',iepenrichlocal:'iepenrich',iepenrichdev:'iepenrich',iepenrichbeta:'iepenrich'},yn={EC:'employee',TADEV:'abs_time_user_dev',TAQA:'abs_time_user_qa',TASTAGE:'abs_time_user_stage',AbsMgmtDev:'abs_time_user_dev',AbsMgmtQA:'abs_time_user_qa',IepLegacyLocal:'ss_tri_state_user_local',"504LegacyLocal":'ss_tri_state_user_local',RtiLegacyLocal:'ss_tri_state_user_local',EsaLegacyLocal:'ss_tri_state_user_local',MedicaidLegacyLocal:'ss_tri_state_user_local',IepLegacyDev:'ss_tri_state_user_dev',"504LegacyDev":'ss_tri_state_user_dev',RtiLegacyDev:'ss_tri_state_user_dev',EsaLegacyDev:'ss_tri_state_user_dev',MedicaidLegacyDev:'ss_tri_state_user_dev',pdLocal:'pd_user_local',ELEVATEQA:'ELEVATEQA_user',ELEVATEDEV:'ELEVATEDEV_user',pdDev:'pd_user_dev',AbsMgmtStage:'abs_time_user_stage',AppliTrackTest:'AppliTrackTest_user',IepEnrichLocal:'ss_enrich_user_local',IepEnrichDev:'ss_enrich_user_dev',pdQA:'pd_user_qa',TAQALocal:'abs_time_user_qa',pdKkuhl:'pd_user_kkuhl',AppliTrackQA:'AppliTrackTest_user',pdStage:'pd_user_stage',IepLegacyBeta:'ss_tri_state_user_beta',"504LegacyBeta":'ss_tri_state_user_beta',RtiLegacyBeta:'ss_tri_state_user_beta',EsaLegacyBeta:'ss_tri_state_user_beta',MedicaidLegacyBeta:'ss_tri_state_user_beta',ELEVATESTAGE:'ELEVATESTAGE_user',RecruitStage:'RecruitStage_user',IepEnrichBeta:'ss_enrich_user_beta',ELEVATETEST:'ELEVATETEST_user',IepLegacyRc:'ss_tri_state_user_rc',"504LegacyRc":'ss_tri_state_user_rc',RtiLegacyRc:'ss_tri_state_user_rc',EsaLegacyRc:'ss_tri_state_user_rc',MedicaidLegacyRc:'ss_tri_state_user_rc',DOC:'DOC_user',pdProdTest:'pd_user_prodtest',RecruitLocal:'RecruitLocal_user',platformtools:'fl-employee'},bn=/*#__PURE__*/Object.freeze({dev:{ecSand:'https://ecsandproxyawsdev.flqa.net',productUserTypeMap:yn,productIdMap:kn},qa:{ecSand:'https://ecsandproxyawsqa.flqa.net',productUserTypeMap:yn,productIdMap:kn},stage:{ecSand:'https://ecsandproxyawsstage.flqa.net',productUserTypeMap:yn,productIdMap:kn},prod:{ecSand:'https://api2.frontlineeducation.com',productUserTypeMap:{EC:'employee',IepLegacyBeta:'ss_tri_state_user_beta',"504LegacyBeta":'ss_tri_state_user_beta',RtiLegacyBeta:'ss_tri_state_user_beta',EsaLegacyBeta:'ss_tri_state_user_beta',MedicaidLegacyBeta:'ss_tri_state_user_beta',IepLegacy:'ss_tri_state_user',"504Legacy":'ss_tri_state_user',RtiLegacy:'ss_tri_state_user',EsaLegacy:'ss_tri_state_user',MedicaidLegacy:'ss_tri_state_user',ta:'abs_time_user',AbsMgmt:'abs_time_user',pd:'pd_user',recruit:'recruit_user',IepEnrich:'ss_enrich_user',cc:'cc_user',platformTools:'fl-employee'},productIdMap:{}},productIdFromMap:_,environmentFromIdmGatewayUrl:S}),_n=null,Sn=null,wn=null,En=null,Cn=null;/**
+	 * Loads a style sheet
+	 * @function stylesheet
+	 * @instance
+	 * @param  {String} fileName
+	 * @param  {Function} success
+	 * @param  {Function} failure
+	 *//**
+	 * Loads the sidekick print styles (hides sidekick for print)
+	 * @function printStyles
+	 * @instance
+	 *//**
+	 * Loads a font
+	 * @function fontFace
+	 * @instance
+	 * @param  {String} fontName
+	 *//**
+	 * Finds an {@link EasyDom} element based on the selector.
+	 * @function find
+	 * @instance
+	 * @param {String} selector - Selector to look for elements from
+	 * @param {EasyDom} [parent=false] - Parent element to start the search in
+	 * @return {Array}
+	 *//**
+	 * Parses an HTML string, creates an Element, then returns it as an {@link EasyDom} element.
+	 * @function parse
+	 * @instance
+	 * @param {Element} el - Element from which to wrap in {@link EasyDom}
+	 * @return {EasyDom} the new {@link EasyDom} element
+	 *//**
+	 * Runs a function on a timer (requestAnimationFrame)
+	 * @function rAF
+	 * @instance
+	 * @param {Function} callback - Callback when the timer runs
+	 *//**
+	 * EasyDom wrapper around HTML elements.
+	 * @class
+	 */// map of all handlers for all events
+// events that are handled by terminal handlers (only 1 allowed)
+// map of last data emitted for each event (for greedy event handlers)
+// eslint-disable-line
+/**
+	 * Event Bus Module
+	 * @module Sidekick.EventBus
+	 * @memberOf Sidekick
+	 *//**
+	 * Registers an event listener.
+	 * @function on
+	 * @instance
+	 * @param  {String} evt - Event to respond to
+	 * @param  {Function} handler - function to handle the event
+	 * @param  {Object} [config] - the event handler config
+	 * @param  {Boolean} [config.greedy=false] - execute immediately with last emitted data if possible
+	 * @param  {Boolean} [config.once=false] - Run once?
+	 * @param  {Boolean} [config.terminal=false] - Do not allow other handlers to listen to this event?
+	 * @return {Function} - Deregister function
+	 *//**
+	 * Registers an event listener to run once.
+	 * @function once
+	 * @instance
+	 * @param  {String} evt - Event to respond to
+	 * @param  {Function} handler - function to handle the event
+	 * @param  {Boolean} [greedy=false] -
+	 * @return {Function}
+	 *//**
+	 * Deregisters an event listener.
+	 * @function off
+	 * @instance
+	 * @param  {String} evt - Event to respond to
+	 * @param  {Function} handler - function to handle the event
+	 *//**
+	 * Emits an event.
+	 * @function emit
+	 * @instance
+	 * @param  {String} evt - Event to respond to
+	 * @param  {...*} args - Parameters to pass to the handler function for this event
+	 *//**
+	 * Deregisters all event listeners.
+	 * @function clear
+	 * @instance
+	 *//**
+	 * The object that exposes the events public api and logs warnings when internal
+	 * events are emitted or listened to
+	 *//**
+	 * @module Sidekick.Store
+	 * @memberOf Sidekick
+	 *//**
+	 * Sets a value to the store.
+	 * @function set
+	 * @instance
+	 * @param  {String} key - Key for the value
+	 * @param  {Function} value - value stored under the key
+	 * @emits ${eventPrefix}-$key
+	 *//**
+	 * Returns the value stored at the key or null.
+	 * @function get
+	 * @instance
+	 * @param  {String} key
+	 * @return {*} value - Value (or null) found (or not) at the key.
+	 *//**
+	 * Creates a listener for this key.
+	 * @function onValue
+	 * @instance
+	 * @param  {String} key - key for the handler
+	 * @param  {Function} handler - function to handle the event
+	 *//**
+	 * Creates a listener for this key that runs once.
+	 * @function onValueOnce
+	 * @instance
+	 * @param  {String} key - key for the handler
+	 * @param  {Function} handler - function to handle the event
+	 *//**
+	 * Returns the value stored at the key or null.
+	 * @function clear
+	 * @instance
+	 *//**
+	 * The object that exposes the events public api and logs warnings when internal
+	 * events are emitted or listened to
+	 */// get the token and idmData from the sidekick, store in local vars
+nn('token-ready',function(e){var t=e.get;_n=t,E()},{greedy:!0}),nn('feature-flags-ready',function(e){wn=e,E()},{greedy:!0}),pn('idm-data',function(e){Sn=e,E()});// wait for nav component to send us the translations service instance
+var In=function(e,t){En=t,Cn=e,E()},xn={" ":32,// space
+arrowdown:40,arrowleft:37,arrowright:39,arrowup:38,enter:13,escape:27,tab:9},An=window.localStorage,On={},Nn=function(e,t,n){if(null==e)return!1;var a=window.location,s=a.host,i=a.protocol,r=i+'//'+s,o=''+r+e;// if a matcher value is provided, check it first
+return'string'==typeof n&&n.length?(null==On[n]&&(On[n]=new RegExp(n,'i')),On[n].test(e)||On[n].test(o)):n instanceof Array?(null==n._re&&(n._re=n.map(function(e){return new RegExp(e,'i')})),n._re.reduce(function(t,n){return t||n.test(e)||n.test(o)},!1)):!('string'!=typeof t)&&(t.startsWith(r)&&(t=t.slice(r.length)),e.startsWith(t));// all attempts to match this route have failed
+},Ln=function(){var e=window.location.search;if(0===e.length)return{};var t=e.slice(1).split('&');return t.reduce(function(e,t){var n=t.split('='),a=At(n,2),s=a[0],i=a[1];return e[decodeURIComponent(s)]=decodeURIComponent(i),e},{})},zn=0,Rn=!1,Tn={},Dn={},Pn=['app-switcher','search','help','notifications'],Un=['app-switcher','search'],Mn=['user-info','org-switcher'],Fn=['impersonated-user','org-switcher'],jn=function(e,t,n){var a=3<arguments.length&&arguments[3]!==void 0?arguments[3]:0,s=4<arguments.length&&arguments[4]!==void 0?arguments[4]:'normal 15px',i=null==Dn[e];Dn[e]={elem:t,text:n,adjustment:a,font:s},'user-info'===e&&i&&V(),j()},qn=document.createElement('canvas').getContext('2d');///////
+// calculating and distribute the top bar extra width
+// to dynamic width elements
+//
+/**
+	 * cmptDynamicWidth - registers a header component that should be dynamic
+	 * width and occupy as much space (max-width) as possible
+	 *
+	 * @param {EasyDomElement} elem - the element that should be dynamic
+	 * @param {String} text - the dynamic text content to use for measurements
+	 * @param {Number} adjustment - the px amount to add to measurement to compensate for padding
+	 */tn('_header.impersonation',function(e){Rn=e,j()}),tn('_activity-indicator-initialized',function(e){tn('activity-indicator.visible',function(t){zn=t?parseFloat(e.css('width'))+parseFloat(e.css('margin-right')):0,j()},!0)},!0),Pn.forEach(function(e){tn('_'+e+'-initialized',function(t){return B(e,t)},!0)});var Vn={type:'session',expires:30// in minutes
+},Bn={session:'local',local:'session'},Hn=window.sessionStorage,Kn=window.localStorage,Yn=function(e,t,n){var a=Object.assign({},Vn,n,{data:t});if('number'==typeof a.expires&&isFinite(a.expires)){a.expires=Date.now()+a.expires*60000}else a.expires=null;window[a.type+'Storage'].setItem('SK_'+e,JSON.stringify(a)),window[Bn[a.type]+'Storage'].removeItem('SK_'+e)},Wn=function(e){var t=Hn.getItem('SK_'+e)||Kn.getItem('SK_'+e)||null;if(null==t)return null;var n=JSON.parse(t);// if the data has expired, return null
+return null!=n.expires&&n.expires<Date.now()?null:n.data};// cleanup the expired persistence values when we first load
+pn('sk-config',function(e){var t=e.cleanCache;// clean out anything that is expired
+[Kn,Hn].forEach(function(e){for(// spin all the items in local/session storage
+var n=e.length;n--;){// get the key to inspect
+var a=e.key(n);// if it's not a SideKick value, don't mess with it
+if(a.startsWith('SK_')){// can we get data for this key?
+var s=Wn(a.slice(3));// if the data is null or we are in a clearing cache state, remove it
+(null==s||t)&&e.removeItem(a)}}})});var Gn,$n={detect:function(){return'undefined'==typeof navigator?le():de(navigator.userAgent)},detectOS:oe,getNodeVersion:le,parseUserAgent:de}.detect,Xn=(0,eval)('this'),Qn=w(Xn,function(e){return e.console.log.bind(e.console)},function(){}),Jn=[{name:'chrome',version:50},{name:'firefox',version:40},{name:'safari',version:11,os:'mac os'},{name:'ie',version:11},{name:'edge'},{os:'ios'}],Zn={header:b,nav:D,navItem:P,notifications:H,navItemSubmenu:K,userInfo:Y,help:W,search:G,loader:$,orgSwitcher:X,appSwitcher:Q,contactOrg:function(e,t,n,a){function s(t){n!==t&&(n=t);var s='';null!=n.phone&&n.phone.length&&(s=a('Phone')+': '+n.phone),null!=n.fax&&n.fax.length&&(s.length&&(s+=', '),s+=a('Fax')+': '+n.fax),e.children(qt('<dl class="sk--org">\n\t\t\t<dt><h4>'+a('Contact Your Organization')+'</h4></dt>\n\t\t\t<dd class="sk--name">'+n.name+'</dd>\n\t\t\t'+(null!=n.contactName&&n.contactName.length?'<dd class="sk--contact-name">'+n.contactName+'</dd>':'')+'\n\t\t\t'+(s.length?'<dd class="sk--phones">'+s+'</dd>':'')+'\n\t\t\t'+(null==n.email?'':'<dd class="sk--email"><a href="mailto:'+n.email+'">'+n.email+'</a></dd>')+'\n\t\t\t'+(null!=n.comments&&n.comments.length?'<dd class="sk--comments">'+n.comments+'</dd>':'')+'\n\t\t</dl>'))}un('current-org',s)},tooltip:J,pickOrgApp:function(e){var t,n;sn('header.visible',!1),sn('nav.visible',!1),Vt(function(){return Vt(function(){return e.addClass('sk--fade-in')})}),tn('_pick-org.org-id-selected',function(e){return t=e}),tn('_pick-app.product-id-selected',function(e){n=e,sn('_pick-org-app.selected',{orgId:t,productId:n})}),tn('pick-org-app.abort',function(){e.css('display','none')},!0)},pickOrg:Z,pickApp:ee,impersonatedUser:te,activityIndicator:ne,navItemMegaMenu:ae,sessionTimeout:se,siteErrors:ie,skipNav:re,unsupportedBrowserAlert:ge/*cmptInject*/},ea=!1,ta=null,na=['productId','access','user','session','roles'],aa=function(e){var t=1<arguments.length&&void 0!==arguments[1]?arguments[1]:{},n=t.users,a=t.targetOrgId;// ensure our orgId is always a string so that we can correctly do comparisons
+'number'==typeof a&&(a=a.toString());var s=Object.keys(e),i=na.reduce(function(e,t){return e||!s.includes(t)},!1);// if we are waiting on data, don't process yet
+if(!(i||null==n)){var r=cn('fl-internal-product-ids')||[],o=r.includes(e.productId.toLowerCase()),l=e.productId.toUpperCase(),d=e.access.filter(we).filter(function(e){return e.ProductId.toUpperCase()===l}).filter(function(e){return!r.includes(e.ProductId.toLowerCase())}),c=e.session&&e.session.State||{};'number'==typeof c.currentOrg&&(c.currentOrg=c.currentOrg.toString());var u=a||c.currentOrg||null,p=e.roles.map(function(e){return e.toLowerCase()}).includes('idmadministrator');// if the user is NOT an IDM Administrator and they are trying to access an internal screen
+// redirect them to the /select screen so they can pick something they are allowed to see
+// if the user is an IdmAdministrator and they are accessing an org they don't
+// have access to, or an internal product, create a fake access record for them
+if(!p&&o&&(window.location.href=Rt()+'/select/'),p&&l&&(null!=u||o)){var m=o?null:d.find(function(e){return u===e.OrganizationId});if(null==m){var f=e.product&&e.product.DefaultSignInUrl||'',h=e.product&&e.product.OrgNavigationUrlTemplate||'',v=e.product&&e.product.Name||'',k=e.product&&e.product.LegacyName||null,y={FlId:n.Id.toString(),Disabled:!1,OrganizationId:o?null:u,OrganizationName:o?'':'IDM ADMIN: '+u,ProductId:e.productId,ProductName:v,ProductLegacyName:k,DefaultSignInUrl:f,OrgNavigationUrlTemplate:h,Url:f,UserKey:null,Fake:!0,Internal:o};d.push(y),e.access.push(y)}}// this account has no access at all
+if(0===e.access.length)return console&&console.log&&console.log('NO ACCESS RECORDS'),void sn('idm.no-access',e.user);// couldn't find an access record for the current product
+// if we have a user context and OrganizationUsers, aggregate the identities
+// that are within this organization context
+if(0===d.length)return be(e);// if we have just one product access record that matches this app
+if(1===d.length)e.userContext=Object.assign({},d[0]);else if(1<d.length)// we are targeting a specific org
+if(null!=u){// try to find a legit product access record for the requested org
+var b=d.find(function(e){return u.toString()===e.OrganizationId});// if we couldn't find a real access record and we are not an idmAdmin
+if(null==b)// we have access to this app, but not for the org we are targeting
+// we are also not an idmAdmin
+return be(e);// we are not targeting a specific org
+e.userContext=Object.assign({},b)}else// have the user pick the org they want to access
+return be(e);if(null!=e.userContext&&null!=n.OrganizationUsers){var _=e.userContext.OrganizationId;e.identities=n.OrganizationUsers.reduce(function(e,t){return t.OrganizationId===_&&(e=e.concat(t.Identities)),e},[].concat(n.Identities||[]))}if(null!=e.userContext){// common deprecation attrs
+var S=e.userContext;g({attr:'FlId',newLoc:'STORE(idm-data).user.profileId',obj:S,objLoc:'STORE(idm-data).userContext'},e.user.profileId.toString()),g({attr:'Description',obj:S,objLoc:'STORE(idm-data).userContext'},null),g({attr:'UserKey',obj:S,objLoc:'STORE(idm-data).userContext'},function(){var t=e.product.AssociatedRoles.map(function(e){return e.Type}),n=e.identities.filter(function(e){return t.includes(e.Type)});return n[0]&&n[0].Id||null});var w={LegacyName:'ProductLegacyName',DefaultSignInUrl:'Url',OrgNavigationUrlTemplate:'Url'};Object.keys(w).forEach(function(t){var n=w[t];g({attr:t,obj:S,objLoc:'STORE(idm-data).userContext',newLoc:'STORE(idm-data).userContext.'+n},function(){return e.userContext[n]})})}dn('idm-data',e);var E=Ft(window),C=u!==c.currentOrg,I=u!==e.userContext.OrganizationId;(C||I)&&Ie(),E.on('focus',Ie),tn('_nav.expand-arrow',function(e){Ae(e)})}// ensure our orgId is always a string so that we can correctly do comparisons
+},sa=function(e){var t=e.productId.toUpperCase();// idmData
+dn('org-switcher-data',Ee(e)),dn('app-switcher-data',Ce(e)),dn('user-data',e.user),tn('header.org-switcher.change',function(n){var s=n.id,a=e.access.find(function(e){return e.ProductId.toUpperCase()===t&&e.OrganizationId===s});ca(s,function(){return null==a?be(e,{orgId:s}):void(window.location.href=a.Url)})})},ia=function(e,t){var n=2<arguments.length&&arguments[2]!==void 0?arguments[2]:[];// if the user's session has expired, bail out!
+Se()||ke('GET',e,null,_e(t),[{key:'Authorization',value:'Bearer '+xe()},{key:'Accept',value:'*/*'}].concat(n))},ra=function(e,t){var n=2<arguments.length&&arguments[2]!==void 0?arguments[2]:function(){},a=3<arguments.length&&arguments[3]!==void 0?arguments[3]:[];// if the user's session has expired, bail out!
+Se()||ke('POST',e,JSON.stringify(t),_e(n),[{key:'Authorization',value:'Bearer '+xe()},{key:'Content-Type',value:'application/json'}].concat(a))},oa=function(e,t,n){var a=3<arguments.length&&arguments[3]!==void 0?arguments[3]:[];// if the user's session has expired, bail out!
+Se()||ke('PUT',e,JSON.stringify(t),_e(n),[{key:'Authorization',value:'Bearer '+xe()},{key:'Accept',value:'*/*'}].concat(a))},la=function(e,t,n){var a=3<arguments.length&&arguments[3]!==void 0?arguments[3]:[];// if the user's session has expired, bail out!
+Se()||ke('PATCH',e,JSON.stringify(t),_e(n),[{key:'Authorization',value:'Bearer '+xe()},{key:'Accept',value:'*/*'}].concat(a))},da=function(e){var t=1<arguments.length&&arguments[1]!==void 0?arguments[1]:function(){},n=2<arguments.length&&arguments[2]!==void 0?arguments[2]:[];// if the user's session has expired, bail out!
+Se()||ke('DELETE',e,null,_e(t),[{key:'Authorization',value:'Bearer '+xe()},{key:'Content-Type',value:'application/json'}].concat(n))},ca=function(e,t){var n=cn('idm'),a=n.idGatewayUrl;ra(a+'/sessions/state',{currentOrg:e},t)},ua={type:'local',// local storage
+expires:1440// 1 day
+},pa={};// eslint-disable-line
+// shorthand for these long attributes that are used often
+// shorthand get
+// shorthand post
+// shorthand put
+// shorthand patch
+// shorthand delete
+pn('idm',function(e){function t(e){function t(e,t){if(null!=e&&null!=t){var n={productId:i};r.users=e,n.roles=e.Roles.map(function(e){return e.Name}),n.user={profileId:e.Id,firstName:e.FirstName,lastName:e.LastName,email:e.Email,emailConfirmed:e.EmailIsVerified,roles:n.roles,isFrontlineUser:!0===e.IsFrontlineUser};// set deprecated user fields
+['username','middleName','birthday','gender','militaryStatus','emailSent'].forEach(function(e){g({obj:n.user,attr:e,objLoc:'STORE(idm-data).user'},null)}),n.access=t.map(function(t){var n=Object.assign({Disabled:!1},t),s=n;// deprecation defaults
+g({obj:s,objLoc:'STORE(idm-data).access[*]',attr:'FlId',newLog:'STORE(idm-data).user.profileId'},a),g({obj:s,objLoc:'STORE(idm-data).access[*]',attr:'Description'},null),g({obj:s,objLoc:'STORE(idm-data).access[*]',attr:'UserKey'},function(){var t=l.productUserTypeMap[n.ProductId],a=n.OrganizationId,s=e.OrganizationUsers.reduce(function(e,n){return n.OrganizationId===a&&(e=e.concat(n.Identities.filter(function(e){return e.Type===t}))),e},[]);return s[0]&&s[0].Id||null});var i={LegacyName:'ProductLegacyName',DefaultSignInUrl:'Url',OrgNavigationUrlTemplate:'Url'};return Object.keys(i).forEach(function(e){var t=i[e];g({obj:s,objLoc:'STORE(idm-data).access[*]',attr:e,newLoc:'STORE(idm-data).access[*].'+t},function(){return n[t]})}),n}),aa(Object.assign(pa,n),r)}}/////
+// Process User Data
+//
+var s=Wn('rawUser-'+a+'-'+e),o=Wn('rawProductLinks-'+a+'-'+e);// get user data
+if(null==s){var d=n+'/userservice/v0/api/users/id/'+a;ia(d,function(n){Yn('rawUser-'+a+'-'+e,n,ua),s=n,t(s,o)})}else t(s,o);// get product links data
+if(null==o){var c=n+'/userservice/v0/api/productlinks?userId='+a;ia(c,function(n){Yn('rawProductLinks-'+a+'-'+e,n,ua),o=n,t(s,o)})}else t(s,o)}var n=e.idGatewayUrl,a=e.flId,s=e.currentOrg,i=e.product,r={targetOrgId:s,users:null},o=S(n),l=bn[o];n.endsWith('/')&&(e.idGatewayUrl=n=n.slice(0,-1)),pn('idm-data',function(e){function t(e){dn('org-branding-data',e.data.attributes.branding)}/////
+// get the org-co-branding data from the org service
+//
+if(null!=e.userContext&&null!=e.userContext.OrganizationId){var n=e.userContext.OrganizationId,a=l.ecSand,s=Wn('rawOrgBrand-'+n);if(null==s){ia(a+'/OrganizationAPI/api/organizations/'+n+'?fields=branding',function(e){Yn('rawOrgBrand-'+n,e,ua),t(e)},[{key:'FlUser',value:'{"OrganizationId": "'+n+'"}'}])}else t(s)}});var d=Wn('rawProduct-'+i.toUpperCase());0<i.length&&null==d?ia(n+'/api/products/'+i,function(e){Yn('rawProduct-'+i.toUpperCase(),e,ua),aa(Object.assign(pa,{product:e}),r)}):aa(Object.assign(pa,{product:d}),r),ia(n+'/sessions',function(e){aa(Object.assign(pa,{session:e}),r),t(e.Id)})}),pn('idm',function(){return sn('token-ready',{get:ia,post:ra,put:oa,patch:la,del:da})}),pn('idm-data',sa),tn('_pick-org-app.selected',function(e){var t=e.orgId,n=e.productId;if(null!=t&&null!=n){var a=pa.access.find(function(){var e=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},a=e.OrganizationId,s=e.ProductId;return null!=a&&null!=s&&a.toString()===t.toString()&&s.toUpperCase()===n.toUpperCase()});null==a||ca(a.OrganizationId,function(){location.href=a.Url})}});for(var ga='function'==typeof Symbol&&'symbol'==Et(Symbol.iterator)?function(t){return'undefined'==typeof t?'undefined':Et(t)}:function(t){return t&&'function'==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?'symbol':'undefined'==typeof t?'undefined':Et(t)},ma=Oe('LaunchDarklyUnexpectedResponseError'),fa=Oe('LaunchDarklyInvalidEnvironmentIdError'),ha=Oe('LaunchDarklyInvalidUserError'),va=Oe('LaunchDarklyInvalidEventKeyError'),ka=Oe('LaunchDarklyInvalidArgumentError'),ya=Oe('LaunchDarklyFlagFetchError'),ba=Object.freeze({LDUnexpectedResponseError:ma,LDInvalidEnvironmentIdError:fa,LDInvalidUserError:ha,LDInvalidEventKeyError:va,LDInvalidArgumentError:ka,LDFlagFetchError:ya,isHttpErrorRecoverable:Ne}),_a=Re,Sa=[],wa=[],Ea='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',Ca=0,Ia=Ea.length;Ca<Ia;++Ca)Sa[Ca]=Ea[Ca],wa[Ea.charCodeAt(Ca)]=Ca;wa[45]=62,wa[95]=63;for(var xa='function'==typeof Symbol&&'symbol'==ga(Symbol.iterator)?function(t){return void 0===t?'undefined':ga(t)}:function(t){return t&&'function'==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?'symbol':void 0===t?'undefined':ga(t)},Aa=Array.isArray,Oa=Object.keys,Na=Object.prototype.hasOwnProperty,La=function p(e,n){if(e===n)return!0;if(e&&n&&'object'==(void 0===e?'undefined':xa(e))&&'object'==(void 0===n?'undefined':xa(n))){var t,g,m,f=Aa(e),a=Aa(n);if(f&&a){if((g=e.length)!=n.length)return!1;for(t=g;0!=t--;)if(!p(e[t],n[t]))return!1;return!0}if(f!=a)return!1;var u=e instanceof Date,s=n instanceof Date;if(u!=s)return!1;if(u&&s)return e.getTime()==n.getTime();var c=e instanceof RegExp,l=n instanceof RegExp;if(c!=l)return!1;if(c&&l)return e.toString()==n.toString();var d=Oa(e);if((g=d.length)!==Oa(n).length)return!1;for(t=g;0!=t--;)if(!Na.call(n,d[t]))return!1;for(t=g;0!=t--;)if(!p(e[m=d[t]],n[m]))return!1;return!0}return e!=e&&n!=n},za=Object.assign||function(a){for(var e,s=1;s<arguments.length;s++)for(var i in e=arguments[s],e)Object.prototype.hasOwnProperty.call(e,i)&&(a[i]=e[i]);return a},Ra=['key','secondary','ip','country','email','firstName','lastName','avatar','name'],Ta=Object.freeze({btoa:Te,base64URLEncode:Pe,clone:Ue,deepEquals:Me,onNextTick:Fe,wrapPromiseCallback:je,transformValuesToVersionedValues:qe,transformVersionedValuesToValues:Ve,chunkUserEventsForUrl:Be,getLDUserAgentString:He,getLDHeaders:Ke,extend:Ye,sanitizeUser:We}),Da=function(){return'LaunchDarkly client initialized'},Pa=function(){return'LaunchDarkly client is not ready'},Ua=function(){return'Be sure to call `identify` in the LaunchDarkly client: http://docs.launchdarkly.com/docs/running-an-ab-test#include-the-client-side-snippet'},Ma=function(){return'Event key must be a string'},Fa=function(){return'localStorage is unavailable'},ja=function(){return'localStorage is unavailable, so anonymous user ID cannot be cached'},qa=function(t){return'network error'+(t?' ('+t+')':'')},Va=function(t){return'Custom event "'+t+'" does not exist'},Ba=function(){return'environment not found. Please see https://docs.launchdarkly.com/docs/js-sdk-reference#section-initializing-the-client for instructions on SDK initialization.'},Ha=function(){return'No environment specified. Please see https://docs.launchdarkly.com/docs/js-sdk-reference#section-initializing-the-client for instructions on SDK initialization.'},Ka=function(t){return'Error fetching flag settings: '+(t.message||t)},Ya=function(){return'No user specified. Please see https://docs.launchdarkly.com/docs/js-sdk-reference#section-initializing-the-client for instructions on SDK initialization.'},Wa=function(){return'Invalid user specified. Please see https://docs.launchdarkly.com/docs/js-sdk-reference#section-initializing-the-client for instructions on SDK initialization.'},Ga=function(){return'LaunchDarkly client was initialized with bootstrap data that did not include flag metadata. Events may not be sent correctly. Please see https://docs.launchdarkly.com/docs/js-sdk-reference#section-initializing-the-client for instructions on SDK initialization.'},$a=function(){return'LaunchDarkly bootstrap data is not available because the back end could not read the flags.'},Xa=function(t,e){return'[LaunchDarkly] "'+t+'" is deprecated, please use "'+e+'"'},Qa=function(a,e,n){return'Received error '+a+(401===a?' (invalid SDK key)':'')+' for '+e+' - '+(Ne(a)?n:'giving up permanently')},Ja=function(){return'Cannot make HTTP requests in this environment. Please see https://docs.launchdarkly.com/docs/js-sdk-reference#section-initializing-the-client for instructions on SDK initialization.'},Za=function(){return'identify() has no effect here; it must be called on the main client instance'},es=function(t){return'polling for feature flags at '+t},ts=function(){return'received ping message from stream'},ns=function(){return'received streaming update for all flags'},as=function(t){return'received streaming update for flag "'+t+'"'},ss=function(t){return'received streaming update for flag "'+t+'" but ignored due to version check'},is=function(t){return'received streaming deletion for flag "'+t+'"'},rs=function(t){return'received streaming deletion for flag "'+t+'" but ignored due to version check'},os=function(t){return'enqueueing "'+t+'" event'},ls=function(t){return'sending '+t+' events'},ds=Object.freeze({clientInitialized:Da,clientNotReady:Pa,eventWithoutUser:Ua,invalidKey:Ma,localStorageUnavailable:Fa,localStorageUnavailableForUserId:ja,networkError:qa,unknownCustomEventKey:Va,environmentNotFound:Ba,environmentNotSpecified:Ha,errorFetchingFlags:Ka,userNotSpecified:Ya,invalidUser:Wa,bootstrapOldFormat:Ga,bootstrapInvalid:$a,deprecated:Xa,httpErrorMessage:Qa,httpUnavailable:Ja,identifyDisabled:Za,debugPolling:es,debugStreamPing:ts,debugStreamPut:ns,debugStreamPatch:as,debugStreamPatchIgnored:ss,debugStreamDelete:is,debugStreamDeleteIgnored:rs,debugEnqueueingEvent:os,debugPostingEvents:ls}),cs=it(function(a){var e='undefined'!=typeof crypto&&crypto.getRandomValues&&crypto.getRandomValues.bind(crypto)||'undefined'!=typeof msCrypto&&'function'==typeof window.msCrypto.getRandomValues&&msCrypto.getRandomValues.bind(msCrypto);if(e){var n=new Uint8Array(16);a.exports=function(){return e(n),n}}else{var t=Array(16);a.exports=function(){for(var a,s=0;16>s;s++)0==(3&s)&&(a=4294967296*Math.random()),t[s]=255&a>>>((3&s)<<3);return t}}}),us=[],ps=0;256>ps;++ps)us[ps]=(ps+256).toString(16).substr(1);var gs,ms,fs=function(a,e){var n=e||0,s=us;return[s[a[n++]],s[a[n++]],s[a[n++]],s[a[n++]],'-',s[a[n++]],s[a[n++]],'-',s[a[n++]],s[a[n++]],'-',s[a[n++]],s[a[n++]],'-',s[a[n++]],s[a[n++]],s[a[n++]],s[a[n++]],s[a[n++]],s[a[n++]]].join('')},hs=0,vs=0,ks=rt,ys='function'==typeof Symbol&&'symbol'==ga(Symbol.iterator)?function(t){return void 0===t?'undefined':ga(t)}:function(t){return t&&'function'==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?'symbol':void 0===t?'undefined':ga(t)},bs={promise:Promise.resolve({status:200,header:function(){return null},body:null})},_s=/[|\\{}()[\]^$+*?.]/g,Ss=function(t){if('string'!=typeof t)throw new TypeError('Expected a string');return t.replace(_s,'\\$&')},ws={fetchGoals:!0},Es=null,Cs={dev:'5b522a204892e62d90dad00b',qa:'5b5749ea6c774e2ec9e8ee20',stage:'5b36942fa6f97714d8295171',prod:'5b16ba9ceb049c319c453c93'},Is=function(e){var t=!(1<arguments.length&&arguments[1]!==void 0)||arguments[1];return Es.variation(e,!1)===t},xs=(0,eval)('this');// eslint-disable-line no-eval
+/////
+// register the global sidekick object
+//
+xs.sidekick!==void 0&&console&&console.error&&console.error('TOO MANY SIDEKICKS => the sidekick was loaded twice on this page.'),xs.sidekick=xs.sidekick||{init:function(){function e(){r.className.length&&(r.className+=' '),r.className+='sidekick-wrapped-application';for(var e=n.length;e--;){var t=n[e],a=t.name,s=t.ctxStore,o=document.createElement('div');o.setAttribute('sk-'+a,''),s&&o.setAttribute('context-store',s),null==r.firstChild?r.appendChild(o):r.insertBefore(o,r.firstChild)}me()}var t=0<arguments.length&&arguments[0]!==void 0?arguments[0]:{};// prevent a second init of the sidekick
+if(null==cn('sk-config')){pn('idm-data',yt);var n=[{name:'header',ctxStore:!1},{name:'unsupported-browser-alert',ctxStore:'idm'},{name:'nav',ctxStore:'nav'},{name:'pick-org-app',ctxStore:'pick-org-app-data'},{name:'session-timeout',ctxStore:'session-timeout'},{name:'site-errors',ctxStore:!1}],a={appElement:document.body,// the html element the sk should surround
+mainElement:null,// the main content element for the "skip nav" link
+addIcons:!0,// automagically add the icon font
+addOpenSans:!0,// automagically add open sans font-face
+addSidekickCss:!0,// automagically add sidekick.css to the header
+autoAppendAppNameInTitle:!1,// scans the title to ensure app name is appended
+cleanCache:!1,// cleans out the local and session storage cache
+language:'en'// language to set any translations strings
+},s=Object.assign({},a,t);// setup the app config values
+dn('sk-config',s),dn('fl-internal-product-ids',['platformtools','doc']),v(s.language);var r=s.appElement;s.addIcons&&Pt('Fl-Icons'),s.addOpenSans&&Pt('Open-Sans'),s.addSidekickCss?Tt('sidekick.css',e):e(),s.autoAppendAppNameInTitle&&he(),Dt()}// Hookup feature flags
+},cycle:me,dom:Kt,store:gn,events:rn}})();
+//# sourceMappingURL=sidekick.js.map

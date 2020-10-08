@@ -1,0 +1,1011 @@
+(function(){'use strict';// Object.assign
+// Number.isInteger polyfill
+// String.endsWidth
+function e(e,n,t){var a=document.createElement(e);return Object.keys(n).sort().forEach(function(e){return a.setAttribute(e,n[e])}),t.appendChild(a),a}/////
+// helper functions
+//
+/////
+// Run the polyfills
+//
+// String.startsWith
+// Array.includes
+function n(e,n,t,a,s){return('\n\t\t@font-face {\n\t\t\tfont-family: \''+e+'\';\n\t\t\tsrc: url(\''+Oe+'/font/'+n+'.eot?#iefix\') format(\'embedded-opentype\'),\n\t\t\t\turl(\''+Oe+'/font/'+n+'.woff\') format(\'woff\'),\n\t\t\t\turl(\''+Oe+'/font/'+n+'.ttf\') format(\'truetype\'),\n\t\t\t\turl(\''+Oe+'/font/'+n+'.svg#'+t+'\') format(\'svg\');\n\t\t\tfont-weight: '+a+';\n\t\t\tfont-style: '+s+';\n\t\t}\n\t').replace(/[\t\n]+/g,' ').replace(/^\s+|\s+$/g,'')}/////
+// Other Open-Sans fonts that might be needed
+//
+// Open Sans: regular italic
+// fontFaceCss('open-sans', 'opensans-italic-webfont', 'open_sansitalic', 400, 'italic') +
+// Open Sans: light
+// fontFaceCss('open-sans', 'opensans-light-webfont', 'open_sanslight', 300, 'normal') +
+// Open Sans: light italic
+// fontFaceCss('open-sans', 'opensans-lightitalic-webfont', 'open_sanslight_italic', 300, 'italic') +
+// Open Sans: semi-bold italic
+// fontFaceCss('open-sans', 'opensans-semibolditalic-webfont', 'open_sanssemibold_italic', 600, 'italic') +
+// Open Sans: bold italic
+// fontFaceCss('open-sans', 'opensans-bolditalic-webfont', 'open_sansbold_italic', 700, 'italic') +
+// Open Sans: extra-bold
+// fontFaceCss('open-sans', 'opensans-extrabold-webfont', 'open_sansextrabold', 800, 'normal') +
+// Open Sans: extra-bold italic
+// fontFaceCss('open-sans', 'opensans-extrabolditalic-webfont', 'open_sansextrabold_italic', 800, 'italic') +
+/**
+	 * Common string helper functions
+	 * @module Sidekick.StringHelpers
+	 * @memberOf Sidekick
+	 *//**
+	 * Turns a space delimited string to dash delimited.
+	 * @function toDashCase
+	 * @instance
+	 * @param  {String} txt - String to transform
+	 */function t(e){return s(e).join('-')}/**
+	 * Turns a space delimited string to camel case.
+	 * @function toDashCase
+	 * @instance
+	 * @param  {String} txt - String to transform
+	 */function a(e){return s(e).map(function(e,n){return 0===n?e:e.charAt(0).toUpperCase()+e.substr(1)}).join('')}function s(e){return e.toString().replace(/[\s_-]/g,'{!}').replace(/([A-Z])/g,'{!}$1').toLowerCase().split('{!}').filter(function(e){return!!e.length})}function i(e){var n=!!(1<arguments.length&&void 0!==arguments[1])&&arguments[1],t=n||document,a=/^..*[\.\# ]+.+$/,s=a.test(e),i={"#":'ById',".":'sByClassName',"@":'sByName',"=":'sByTagName'}[e[0]];return i=null==i||s?'querySelectorAll':'getElement'+i,'querySelectorAll'!==i&&(e=e.slice(1)),r(t[i](e),function(e){return new We(e)})}function r(e,n){return Array.prototype.map.call(e,n)}function o(e,n){var t=2<arguments.length&&arguments[2]!==void 0?arguments[2]:'DEPRECATED => '+e+' is being removed! Use '+n+' instead.';console&&console.error&&console.error(t)}function d(e){var n=1<arguments.length&&arguments[1]!==void 0?arguments[1]:'REMOVED => '+e+' is being removed! Do not use it!';console&&console.error&&console.error(n)}function l(){var e=0<arguments.length&&arguments[0]!==void 0?arguments[0]:{},n=e.obj,t=e.attr,a=e.objLoc,s=a===void 0?'':a,i=e.newLoc,r=i===void 0?null:i,l=arguments[1],c='function'==typeof l?l:function(){return l};// clear out the attr if it was previously defined
+n.hasOwnProperty(t)&&delete n[t],Object.defineProperty(n,t,{get:function(){var e=s?'.':'',n=''+s+e+t;return null==r?d(n):o(n,r),c()}})}function c(e,n){return Object.prototype.toString.call(e)// => "[object Type]"
+.split(' ')[1]// => "Type]"
+.slice(0,-1)// => "Type"
+.toLowerCase()===n.toLowerCase();// => "type === type"
+}function u(e){return function(){for(var n=arguments.length,t=Array(n),a=0;a<n;a++)t[a]=arguments[a];var s=t[0];/* eslint-disable no-console */s.startsWith('_')&&console&&console.error&&nn('the event "'+s+'" is internal and not to be used'),en.hasOwnProperty(s)&&o('The "'+s+'" event','"'+en[s]+'"'),e.apply(null,t)}}function p(e){return function(){for(var n=arguments.length,t=Array(n),a=0;a<n;a++)t[a]=arguments[a];var s=t[0];return null==s?void(console&&console.error&&console.error('SIDEKICK.STORE: the first parameter %ckey<String>%c is required.','color:blue;font-weight:bold;','')):(s.startsWith('_')&&console&&console.error&&console.error('SIDEKICK.STORE: "'+s+'" is internal and not to be used'),e.apply(null,t));/* eslint-disable no-console *//* eslint-enable no-console */}}/**
+	 * Internationalization (i18n) for Sidekick
+	 * @module Sidekick.Translations
+	 * @memberOf Sidekick
+	 *//**
+	 * Sets the language to use.
+	 * @function init
+	 * @instance
+	 * @param  {String} newLang=en - Language to set. Defaults to English.
+	 */function m(e){return f(),e=e.toLowerCase(),null==vn[e]&&0<=e.indexOf('-')&&(e=e.split('-')[0],null==vn[e]&&(e='en')),fn=e,'en'===fn?void(hn={}):void(hn=vn[fn])}/**
+	 * Takes an English string and will look up the translation based on the current language.
+	 * @function i18n
+	 * @instance
+	 * @param  {String} str - String to transform
+	 * @return {String} Returns the translation if exists. Otherwise returns the str passed in.
+	 */function g(e){/* eslint-enable no-console */return!kn.includes(e)&&console&&console.error&&console.error('SIDEKICK: "'+e+'" is not a valid language token'),'en'===fn?e:null==hn[e]?e:hn[e]}function f(){var e=Object.keys(vn);kn=Object.keys(vn[e[0]]).sort();var n=kn.join('#');e.forEach(function(e){var t=Object.keys(vn[e]).sort().join('#');/* eslint-disable no-console */t!==n&&console&&console.error&&console.error('SIDEKICK: Internationalization language signatures are inconsistent ('+e+')')}/* eslint-enable no-console */)}/**
+	 * Container class
+	 * @class Sidekick.Header
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 */function h(e){var n=je(un('sk-config').appElement),t=e.find('.sk--impersonation-exit'),a=Ue(t,1),s=a[0];tn('header.visible',function(t){n.toggleClass('sk-header-hidden',!t),e.toggleClass('sk-hidden',!t)},!0);// impersonation v2 overrides regular impersonation modes
+var i=!1,r='';pn('idm',function(e){var n=e.idGatewayUrl,t=e.isImpersonatingV2,a=t!==void 0&&t;i=a,r=n.endsWith('/')?n.slice(0,-1):n,a&&rn('_header.impersonation',a)},{greedy:!0}),tn('header.impersonation',function(e){i||rn('_header.impersonation',e)},{greedy:!0,terminal:!0}),tn('_header.impersonation',function(e){return n.toggleClass('sk-impersonation',e)},!0),s.on('click',function(e){e.stopPropagation(),e.preventDefault(),i?window.location.href=r+'/impersonate/v2/user/end':rn('header.end-impersonation')})}function k(e,n){var t=e.toLowerCase();return n[t]||t}function v(e){var n=/\/\/idgatewayaws(.*?)\.flqa\.net/gi,t=n.exec(e);return null===t?'prod':t[1]}function y(e,n){var t=2<arguments.length&&arguments[2]!==void 0?arguments[2]:null;try{var a=n(e);return'undefined'==typeof a?t:a}catch(e){return t}}// called multiple times but doesn't truly execute untill all data is available (like Promise.all())
+function b(){// if we don't have all the data we need yet, wait till we do
+// locate environment specific urls
+// bailout if this is an internal product
+if(null!=wn&&null!=Cn&&null!=Sn)// get this users permitted actions so that we can personalize the extended nav
+// the full extended nav (pre-permissions)
+{var e='true'===sessionStorage.getItem('automation-no-platform-nav');if(!e){tn('_location.path-change',function(){return Be(function(){var e=0<xn.find('.sk--platform-menu.highlight').length;xn.toggleClass('sk--platform-has-highlight',e)})});var n=un('fl-internal-product-ids')||[],t=un('idm'),s=v(t.idGatewayUrl),i=_n[s],r=i.ecSand,o=Ne(),d=Cn,l=d.productId,c=k(l,i.productIdMap);if(!n.includes(c)){var u=window.location.href.startsWith(o),p=y(Cn,function(e){return e.userContext.OrganizationId},''),m=[{title:Sn('System Configuration'),icon:'fa-li-settings-sliders',routeMatcher:['^/'+c+'-useraccess'],children:[// {
+//     title: i18n('Manage User Access'),
+//     url: `${urlIsUiModule ? '' : ssBaseUrl}/${pId}-useraccess/`,
+//     permission: hasPermittedAction('users', 'view')
+// }
+]},{title:Sn('Additional Resources'),icon:'fa-li-hand-papers',routeMatcher:['^/'+c+'-includedcontent'],url:(u?'':o)+'/'+c+'-includedcontent/'}];wn(r+'/PermissionAPI/api/ActionPermissions?organizationId='+p,function(e){var n=y(e,function(e){return e.data.attributes.objects},[]).reduce(function(e,n){return Object.assign(e,Me({},n.type,n.permittedActions.map(function(e){return a(e)})))},{}),t=function e(t){// return the menu with deleted items removed
+return t.forEach(function(a,s){// if this item has a permission function that returns false (no-access) we
+// should remove the item, otherwise, leave it alone
+var i=y(a,function(e){return null==e.permission||!0===e.permission(n)},!1);i?a.children&&(a.children=e(a.children),0===a.children.length&&delete t[s]):delete t[s]}),t.filter(function(e){return void 0!==e})}(m);// remove everything this user doesn't have access to
+cn('_platform-nav-items',t)})}}}}/**
+	* @module Sidekick.KeyPressHelper
+	* @memberOf Sidekick
+	*//**
+	 * Determines if the specified key was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if the specified key was pressed. False otherwise
+	 */function _(e,n,t){if(null==e)return!1;var a=e.key&&e.key.toLowerCase()===n,s=e.which===t;return a||s}/**
+	 * Utility function that maps a key name to a keyCode value before passing the event to isKey
+	 *
+	 * @param {Object} evt
+	 * @param {String} keyName
+	 *
+	 * @return {Boolean}
+	 */function w(e,n){return _(e,n,En[n])}/**
+	 * Determines if ENTER was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if ENTER was pressed. False otherwise
+	 */function C(e){return w(e,'enter')}/**
+	 * Determines if ESCAPE was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if ESCAPE was pressed. False otherwise
+	 */function S(e){return w(e,'escape')}/**
+	 * Determines if TAB was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if TAB was pressed. False otherwise
+	 */function x(e){return w(e,'tab')}/**
+	 * Determines if LEFT was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if LEFT was pressed. False otherwise
+	 */function I(e){return w(e,'arrowleft')}/**
+	 * Determines if UP was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if UP was pressed. False otherwise
+	 */function E(e){return w(e,'arrowup')}/**
+	 * Determines if RIGHT was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if RIGHT was pressed. False otherwise
+	 */function O(e){return w(e,'arrowright')}/**
+	 * Determines if DOWN was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if DOWN was pressed. False otherwise
+	 */function N(e){return w(e,'arrowdown')}/**
+	 * Determines if SPACE was pressed
+	 *
+	 * @param {Object} evt
+	 *
+	 * @return {Boolean} Returns true if SPACE was pressed. False otherwise
+	 */function A(e){return w(e,' ')}/* globals ambient, sidekick *//**
+	 * Top level navigation
+	 * @class Sidekick.Navigation
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs - Any attributes present on the "elem" dom node
+	 * @param {Object} ctx - Context object containing nav data
+	 * @param {Function} i18n - translation function
+	 */function z(e,n,t,a){function s(){document.activeElement&&document.activeElement.blur(),m?l(!1):c()}function i(){m||(h=!v.hasClass('sk-nav-expanded'),On.setItem('sk-leftnav-expanded',h),rn('_nav.expand-arrow',h)),l()}function r(n){var a=!!(1<arguments.length&&void 0!==arguments[1])&&arguments[1],s=e.find('.sk--menu-items'),i=Ue(s,1),r=i[0],o=t.menuItems.map(function(e){return Object.assign(e,{isPlatformMenu:!1})}),d=n.length?['-']:[],l=n.map(function(e){return Object.assign(e,{isPlatformMenu:!0})}),u=[].concat(Fe(o),d,Fe(l)).map(function(e){if('-'===e)return Ve('<li class="sk--menu-divider"></li>');// create the base element
+var n=Ve('<li sk-nav-item></li>');// add menuName value if present
+return'string'==typeof e.menuName&&n.data('menu-name',e.menuName),n._.context=e,Be(function(){var t=n.find('.sk--main-menu-item-container')[0];(!e.url||e.children&&e.children.length)&&t.on('click',function(e){return e.preventDefault()}),e.children&&e.children.length?t.on('click',function(){return p(n)}):t.on('click',c)}),n});r.empty().append(u),a&&window.sidekick.cycle(),Be(function(){var n=T._.getBoundingClientRect().bottom+D._.getBoundingClientRect().height-e._.getBoundingClientRect().top;e.css('min-height',n+'px')})}/////
+// helper functions
+//
+// compare the current path to the location and emit an event if path has changed
+function o(){if(g!==window.location.href){var e=g;g=window.location.href;var n=window.location.host,t=g.substr(g.indexOf(n)+n.length);rn('_location.path-change',t,g,e)}}function d(e){var n=a(e?'Minimize Navigation':'Expand Navigation');N.attr('content',n),Be(function(){var e=N.find('.sk-tip-content')[0];null!=e&&(e._.textContent=n)})}function l(n){null==n&&(n=!v.hasClass('sk-nav-expanded'));var t=n&&!m;t!==X&&(rn('nav.expanded-footprint',t),X=t),n&&(rn('sk-menu-open',null),e.removeClass('sk-nav-collapsed')),d(n),Be(function(){v.hasClass('sk-nav-submenu-active')&&c(),v.toggleClass('sk-nav-expanded',n),n||setTimeout(function(){return e.addClass('sk-nav-collapsed')},300),setTimeout(function(){W.attr('tabindex',n?null:'-1'),G.attr('tabindex',n?'-1':null)},300)})}function c(){v.removeClass('sk-nav-submenu-active'),qe('.sidekick.sk-nav .sk-submenu-active').forEach(function(e){return e.removeClass('sk-submenu-active')}),setTimeout(function(){return v.addClass('sk-nav-submenu-collapsed')},300)}function u(e){m=e,e?l(!1):l(h)}// the menu item gains attention
+function p(e){rn('sk-menu-open',null);// close other menus
+var n=e.find('.sk-nav-item-mega-menu,.sk-nav-item-submenu'),t=Ue(n,1),a=t[0];a.on('keydown',function(n){switch(!0){case S(n):a.removeClass('sk-submenu-active'),e.removeClass('sk-submenu-active');var t=e.find('a'),s=Ue(t,1),i=s[0];null!=i&&i._.focus(),n.stopPropagation();}}),Be(function(){v.removeClass('sk-nav-submenu-collapsed'),Be(function(){e.toggleClass('sk-submenu-active'),e.hasClass('sk-submenu-active')?(v.addClass('sk-nav-submenu-active'),null!=a&&a._.focus(),qe('.sidekick.sk-nav .sk-submenu-active').filter(function(n){return n!==e}).forEach(function(e){return e.removeClass('sk-submenu-active')})):c()})})}In(e,a);var m=ambient.isActive('sk-auto-collapse-nav'),g='',f=un('sk-config'),h='false'!==On.getItem('sk-leftnav-expanded'),k=je(f.appElement),v=je(document.body),y=e.find('.sk--content-dimmer'),b=Ue(y,1),_=b[0],w=e.find('.sk--nav-arrow'),x=Ue(w,1),I=x[0],E=e.find('.sk--nav-arrow-tooltip'),O=Ue(E,1),N=O[0],z=e.find('.sk--top-section'),L=Ue(z,1),T=L[0],P=e.find('.sk--bottom-section'),R=Ue(P,1),D=R[0],M=e.find('.sk--org-brand-small'),U=Ue(M,1),F=U[0],j=e.find('.sk--org-brand-large'),q=Ue(j,1),V=q[0],B=D.find('.sk--full-logo > a'),Y=Ue(B,1),W=Y[0],H=D.find('.sk--small-logo > a'),K=Ue(H,1),G=K[0];// stores the expanded state of the user preference
+/////
+// dom elements we require access to
+//
+/////
+// init styles
+//
+/////
+// register event listeners and handlers
+//
+if(T.on('click',function(e){return e.stopPropagation()}),D.on('click',function(e){return e.stopPropagation()}),v.on('click',c),_.on('click',function(){return m?l(!1):c()}),tn('sk-menu-open',function(e){null===e||(m&&l(!1),c())}),mn('org-branding-data',function(n){if(null!=n){var t=n.rectangleImagePublicUrl,a=n.squareImagePublicUrl;null==t||null==a||(F.css('background-image','url('+a+')'),V.css('background-image','url('+t+')'),e.addClass('sk--has-org-branding'))}}),tn('nav.menu-item-clicked',s),tn('nav.plat-menu-item-clicked',s),tn('nav.visible',function(e){k.toggleClass('sk-nav-hidden',!e)},!0),I.on('click',function(e){i(e)}// evt.target.blur();
+),I.on('keydown',function(e){switch(!0){case C(e):case A(e):i(e);}}),ambient.on('enter','sk-auto-collapse-nav',function(){return u(!0)}),ambient.on('leave','sk-auto-collapse-nav',function(){return u(!1)}),setInterval(o,500),mn('idm-data',function(e){null==e.session.State||null==e.session.State.prefLeftNavExpanded||(h=e.session.State.prefLeftNavExpanded,On.setItem('sk-leftnav-expanded',h),!m&&l(h))}),v.addClass('sk-nav-submenu-collapsed'),m&&e.addClass('sk-nav-collapsed'),null!=t.menuItems){// if extended nav data is not loaded yet, wait for data and re-render nav
+var Q=un('_platform-nav-items');// if the extended nav isn't available yet, setup another render call for when it shows up
+null==Q&&mn('_platform-nav-items',function(e){return r(e,!0)}),r(Q||[]),m||l(h);var X=null}}function L(e,n,t){function s(e){var n=e.every(function(e){return Ke(e.children)}),t=i(e);return n&&30>=t}function i(e){// children must be an array
+return Ke(e)?e.reduce(function(e,n){return++e,Ke(n.children)&&(e+=n.children.length),e},0):0}t.url=t.url||t.route||null,t.isPlatformMenu&&e.addClass('sk--platform-menu');var r=null;if(t.children&&t.children.length){var o=s(t.children)?'mega-menu':'submenu';r=Ve('<div sk-nav-item-'+o+' sub-level="1" tabindex="-1"></div>'),r._.context=t.children,e.append(r),e.addClass('sk--has-children')}else{var d=e.find('.sk--main-menu-item-container')[0];t.target&&d.attr('target',t.target),e.addClass('sk--menu-action');var a=t.isPlatformMenu?'plat-menu-item':'menu-item';e.on('click',function(e){return rn('nav.'+a+'-clicked',t,e)})}if(null!=t.badgeEvent){var l=e.find('.sk--badge')[0];tn(t.badgeEvent,function(e){if(l.css('display','none'),l.removeClass('sk--max'),!0===e)l.css('display','block'),l.addClass('sk--empty');else if(xe(e)){if(1>e)return;l.css('display','block'),l.css('display','block'),l._.innerHTML=Math.min(e,99),99<e&&(l.addClass('sk--max'),l._.innerHTML+='+')}},!0)}tn('_location.path-change',function(n){var a=An(n,t.url,t.routeMatcher);e.toggleClass('highlight',a)})}/**
+	 * @module Sidekick.ComponentCommon
+	 * @memberOf Sidekick
+	 *//**
+	 * Sets up common <code>on</code> handlers for a menu item
+	 * @function cmptMenuItem
+	 * @instance
+	 * @param  {Element} domCmpt
+	 * @param  {Element} domHandle
+	 * @param  {Element} mItem
+	 */function T(e,n,t,a){a.find('[role=menuitem]').forEach(function(e){e.on('focus',function(){e.attr('aria-selected',!0)}),e.on('blur',function(){e.attr('aria-selected',!1)})}),a.on('keydown',function(e){var n=!1;switch(!0){case x(e):break;case I(e):case O(e):break;case E(e):case N(e):var s=Array.prototype.slice.call(t._.children),i=s.indexOf(a._);if(i===(E(e)?0:s.length-1)){n=!0;break}var r=i+(E(e)?-1:1),o=s[r].querySelector('[role=menuitem]');o.focus(),e.stopPropagation(),n=!0;}n&&e.preventDefault()})}/**
+	 * Sets up common <code>on</code> handlers for a menu
+	 * @function cmptMenu
+	 * @instance
+	 * @param  {Element} domCmpt
+	 * @param  {Element} domHandle
+	 * @param  {Element} domMenu
+	 */function P(e,n,t){function a(t){var a=n.hasClass('ss-menu-open');rn('sk-menu-'+(a?'close':'open'),e,t)}e.on('click',function(n){e.hasClass('sk-no-click')||n.stopPropagation()}),n.on('click',a),n.on('keydown',function(e){var n=!1;switch(!0){case C(e):case A(e):case N(e):case E(e):a(e),n=!0;}n&&e.preventDefault()}),t.attr('tabindex','-1'),t.on('keydown',function(a){var s=!1;switch(!0){case N(a):case E(a):t.find('[role=menuitem]').forEach(function(e,n,t){var s=E(a)?t.length-1:0,i=n===s?'focus':'blur';e._[i]()});break;case S(a):rn('sk-menu-close',e),n._.focus(),s=!0;}s&&a.preventDefault()}),je(window).on('blur',function(){null!=document.activeElement&&'IFRAME'===document.activeElement.tagName&&rn('sk-menu-close',e)}),je(document).on('click',function(){return rn('sk-menu-close',e)}),tn('sk-menu-open',function(a,s){if(a!==e)rn('sk-menu-close',e);else{if(n.addClass('ss-menu-open'),n.attr('aria-pressed','true'),t.addClass('ss-menu-open'),t.attr('aria-hidden','false'),N(s)||E(s))return void t.find('[role=menuitem]').forEach(function(e,n,t){var a=E(s)?t.length-1:0;e._[n===a?'focus':'blur']()});t._.focus()}}),tn('sk-menu-close',function(a){// if this close event was for another menu, ignore
+if(a===e){n.removeClass('ss-menu-open'),n.attr('aria-pressed','false'),t.removeClass('ss-menu-open'),t.attr('aria-hidden','true');var s=t.find('[role=menuitem]');s.map(function(e){return e.attr('aria-selected',!1)})}// close the menu
+})}/**
+	 * handle the clear button functionality for an sk-input element
+	 * @function cmptInputClear
+	 * @instance
+	 * @param {Element} domInput
+	 * @param {Element} domClearBtn
+	 * @param {Boolean} clearOnEscape - Adds an event handler to run when you press escape
+	 */function R(e,n,t){function a(){e._.value='',e._.focus(),s()}// toggle sk-hidden based on the content
+var s=function(){n.toggleClass('sk-hidden',!e._.value.length)};e.on('input',s),n.on('click',a),t&&e.on('keydown',function(e){// bail out if this was not the ESCAPE key
+S(e)&&a()}),s()}// re-calculate the measurements because adjustments have been made
+function D(){// decide what elements could be on the screen based on if we are impersonating
+var e=Tn?Mn:Dn,n=Tn?Fn:Un,t=e.reduce(function(e,n){var t=Pn[n]&&parseFloat(Pn[n].css('width'));return e+(t||0)},Tn?48:5),a=n.filter(function(e){return null!=Rn[e]}).map(function(e){return Rn[e]}).map(function(n){return Object.assign({},n,{width:M(n.text,n.font)})}),s=a.reduce(function(n,t){return n+(t.width+t.adjustment)},0);// calculate the total width of all static elements on the screen
+// give the header an extra 43 pixels for impersonation mode to accommodate the X
+// figure out what dyamic elements are on screen currently
+// calculate the total width of all dymanic elements based on their text width
+// apply the corrent percent width calculation for each dynamic element
+a.forEach(function(n){var e=t+Ln,a=Ee(100*((n.width+n.adjustment)/s));n.elem.css('max-width','calc('+a+'% - '+e*(a/100)+'px)')})}// measure how many px this text will take up
+function M(e){var n=1<arguments.length&&void 0!==arguments[1]?arguments[1]:'normal 15px';return qn.font=n+' \'Open Sans\',\'Helvetica Neue\',Helvetica,Arial,sans-serif',qn.measureText(e).width}// if we switch to or from impersonation mode, we should recalculate header space
+// if roles are filled, we need to make sure the role name is not longer
+// than the user's name, if it is, we need to use it for calculations instead
+function U(){pn('roles',function(e){var n=e.roles.find(function(n){return n.id===e.currentRole}).name,t=Rn['user-info'],a=M(t.text,t.font),s=M(n,'600 13px');s>a&&(t.text=n,t.font='600 13px'),D()})}// listen to other header elements and readjust when they show up
+function F(e,n){Pn[e]=n,D()}/**
+	 * Displays notifications
+	 * @class Sidekick.Notifications
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 * @emits notification.delete
+	 * @emits notification.mark-as-read
+	 * @listens store notifications
+	 * @example Array of notifications
+	 * title: Notification Title
+	 * content: Notification Content
+	 * unread: Optional. Shows the unread dot
+	 * timestamp: Optional. Shows a timestamp
+	 * {
+		title: 'this is notification 1',
+		content: 'You got notified...',
+		unread: true
+	}, {
+		title: 'this is notification 2',
+		content: 'You got notified... again!',
+		timestamp: 'TODAY'
+	}
+	 */function j(n,e,t,a){/////
+// update function for when notification list changes
+//
+/**
+	  * Updates the display with the new notifications being passed in.
+	  * @param  {Array} nArr - New context object with new notifications.
+	  */function s(e){// no items to display
+return'[object Array]'===Object.prototype.toString.call(e)&&(e={items:e}),t.items!==e.items&&(t=e),i(),0===t.items.length?void d.children(o):void(d.children(t.items.map(function(e){var n=Ve('\n\t\t\t\t<li class="menulist-item '+(e.unread?'unread':'')+'">\n\t\t\t\t\t\t<h4 class="subject">\n\t\t\t\t\t\t\t'+(e.unread?'<a class="mark-read" href="#" aria-label="mark as read"></a>':'')+'\n\t\t\t\t\t\t\t'+e.title+'\n\t\t\t\t\t\t</h4>\n\t\t\t\t\t\t<div>'+e.content+'</div>\n\t\t\t\t\t\t'+(e.timestamp?'<small>'+e.timestamp+'</small>':'')+'\n\t\t\t\t\t\t<button type="button" class="remove fa-li-close" aria-label="remove notification"></button>\n\t\t\t\t\t</a>\n\t\t\t\t</li>\n\t\t\t');return n.find('.remove')[0].on('click',function(n){n.preventDefault(),n.stopPropagation(),rn('notification.delete',e)}),e.unread&&(n.find('.mark-read')[0].on('click',function(n){n.preventDefault(),n.stopPropagation(),rn('notification.mark-as-read',e),i()}),n.on('click',function(n){n.stopPropagation(),rn('notification.mark-as-read',e)})),n})),!l.hasClass('ss-menu-open')&&(d.find('=a').forEach(function(e){return e.attr('tabindex','-1')}),d.find('=button').forEach(function(e){return e.attr('tabindex','-1')})));// process the list of items to display
+}function i(){var e=t.items.filter(function(e){return!0===e.unread}).length;r(e)}function r(e){n.toggleClass('has-unread',0<e),p.css('display','none'),p.removeClass('sk--max'),0<e&&(99<e&&(p.addClass('sk--max'),e=99),p._.innerHTML=e,p.css('display','block'))}var o=Ve('<li class="menulist-item notifications-empty"><div>'+a('You have no notifications')+'</div></li>'),d=n.find('.menulist')[0],l=n.find('.menu')[0],c=n.find('.control')[0],u=n.find('.ss-ctrl-clear')[0],p=c.find('.sk--unread')[0];/////
+// find dom elements that we care about
+//
+/////
+// handle iniital state and data changes
+//
+// if url is present just make the button a link
+return null==t.url?void(pn('notifications',s),P(n,c,l),u.on('click',function(){return rn('sk-menu-close',n)}),tn('sk-menu-close',function(t){t!==n||(d.find('=a').forEach(function(e){return e.attr('tabindex','-1')}),d.find('=button').forEach(function(e){return e.attr('tabindex','-1')}))}),tn('sk-menu-open',function(t){t!==n||(d.find('=a').forEach(function(e){return e.attr('tabindex','0')}),d.find('=button').forEach(function(e){return e.attr('tabindex','0')}))})):(c.attr('target',t.target),void tn('notifications.unread-count',r,!0))}function q(e,n,t){var a=n.subLevel,s=e.find('.menu-group')[0];e.addClass('sub-level-'+a);var i=[],r=t.map(function(n){n.url=n.url||n.route||null;var t,s=n.url||'#',r=n.url&&n.target?' target="'+n.target+'"':'',o=n.children,d=!!(o&&o.length),l=Ve('\n\t\t\t<li class="sub-menu-item">\n\t\t\t\t<a class="sub-menu-item-container" title="'+n.title+'" href="'+s+'"'+r+' role="menu-item">\n\t\t\t\t\t<span>'+n.title+'</span>\n\t\t\t\t\t'+(d?'<i class="sk--more-items fa fa-angle-right"></i>':'')+'\n\t\t\t\t</a>\n\t\t\t</li>\n\t\t');return d?(t=Ve('<div sk-nav-item-submenu sub-level="'+(parseInt(a,10)+1)+'" tabindex="-1"></div>'),t._.context=o,i.push(t),t.on('keydown',function(e){switch(!0){case S(e):t.removeClass('sk-submenu-active'),l.removeClass('sk-submenu-active');var n=l.find('a'),a=Ue(n,1),s=a[0];null!=s&&s._.focus(),e.stopPropagation();}})):l.addClass('sk--menu-action'),'string'==typeof n.menuName&&l.data('menu-name',n.menuName),l.find('.sub-menu-item-container')[0].on('click',function(a){d||rn('nav.menu-item-clicked',n,a),d&&a.preventDefault(),e.find('.sk-submenu-active').forEach(function(e){e!==l&&e!==t&&e.removeClass('sk-submenu-active')}),d&&(t.toggleClass('sk-submenu-active'),t._.focus(),l.toggleClass('sk-submenu-active'))}),l});s.children(r),e.append(i),tn('_location.path-change',function(e){null==e||r.forEach(function(n,a){var s=t[a],i=An(e,s.url,s.routeMatcher);n.toggleClass('highlight',i)})})}/**
+	 * User info component.
+	 * @class Sidekick.UserInfo
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx - user data object
+	 * @param {Boolean} [ctx.firstName] - First Name to show
+	 * @param {Boolean} [ctx.lastName] - Last Name to show
+	 * @param {Boolean} [ctx.showAcctSettings=true] - Show/hide the Account Settings button
+	 * @param {Boolean} [ctx.showSignOut=true] - Show/hide the Signout button
+	 * @param {Function} i18n - translation function
+	 * @emits header.user-info.role - Role to switch to
+	 * @emits header.user-info.account-settings
+	 * @emits session.logout
+	 * @listens roles - Accepts a collection of roles
+	 * @example
+	 * currentRole: ID of the current role that is in the roles array
+	 * roles: List of roles pertaining to the app
+	 * {
+	 	currentRole: 1,
+	 	roles: [{
+			'id': 1,
+			'name': 'Admin'
+		}]
+	}
+	 */function V(e,n,t){// button display controls
+var a=!1!==t.showAcctSettings,s=!1!==t.showSignOut,i=e.find('.sk--control'),r=Ue(i,1),o=r[0],d=o.find('.sk--user-name'),l=Ue(d,1),c=l[0],u=o.find('.sk--current-role'),p=Ue(u,1),m=p[0],g=e.find('.sk--menu'),f=Ue(g,1),h=f[0],k=e.find('.sk--settings'),v=Ue(k,1),y=v[0],b=e.find('.sk--logout'),_=Ue(b,1),w=_[0],C=e.find('.sk--roles'),S=Ue(C,1),x=S[0],I=e.find('.sk--blocks'),E=Ue(I,1),O=E[0],N=e.find('.sk--fl-account-header'),A=Ue(N,1),z=A[0];/////
+// find dom elements that we care about
+//
+/////
+// helper functions
+//
+/**
+	  * Updates the display with the new data being passed in.
+	  * @param  {Object} data - New roles
+	  *//////
+// handle iniital state and data changes
+//
+pn('roles',function(n){// validate data structure
+if(null!=n.currentRole&&null!=n.roles&&0!==n.roles.length&&!n.roles.filter(function(e){return null==e.id||null==e.name}).length){var a=n.currentRole,s=n.roles,i=s.find(function(e){return e.id===a}).name;m._.innerHTML=i||'',null!=i&&o.attr('aria-label',t.firstName+' '+t.lastName+' - '+i),null==s||0===s.length?(x.css('display','none'),x.children(),m.css('display','none'),m.children()):1===s.length?(m.css('display','block'),x.css('display','none'),x.children()):(x.css('display','block'),m.css('display','block'),x.children(s.map(function(n){var t=n.id===a,s=t.toString(),i=t?'fa-li-checkmark-after active':'',r=Ve('\n\t\t\t\t\t<li>\n\t\t\t\t\t\t<a role="menuitem" aria-current="'+s+'" aria-selected="false" class="active-state-link '+i+'" href="#">'+n.name+'</a>\n\t\t\t\t\t</li>\n\t\t\t\t');return n.id!==a&&r.on('click',function(t){t.stopPropagation(),t.preventDefault(),rn('header.user-info.role',n),rn('sk-menu-close',e)}),T(e,o,x,r),r})))}}),mn('idm-data',function(){var e=0<arguments.length&&arguments[0]!==void 0?arguments[0]:{},n=e.user;// if this use is an SSO user (not a frontline account) we need to hide
+// the settings link that normally takes them to the IDM settings page
+n.isFrontlineUser||(y.parent().css('display','none'),z.css('display','none'))}),jn('user-info',e,c._.innerText,45),P(e,o,h),tn('sk-menu-open',function(n){n!==e||c.removeClass('fa-angle-down-after').addClass('fa-angle-up-after')}),tn('sk-menu-close',function(n){n!==e||c.addClass('fa-angle-down-after').removeClass('fa-angle-up-after')}),!1==a&&!1==s?O.css('display','none'):(a?(y.on('click',function(n){n.stopPropagation(),n.preventDefault(),rn('header.user-info.account-settings'),rn('sk-menu-close',e)}),T(e,o,O,je(y._.parentNode))):y.parent().css('display','none'),s?(w.on('click',function(n){n.stopPropagation(),n.preventDefault(),rn('session.logout'),rn('sk-menu-close',e)}),T(e,o,O,je(w._.parentNode))):w.parent().css('display','none'))}/**
+	 * Displays articles, and helper blocks
+	 * @class Sidekick.Help
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 * @emits header.help.article.click - Thrown when an article is clicked that doesn't have a url
+	 * @emits header.help.block.click - Thrown when an block is clicked that doesn't have a url
+	 * @example
+	 * articles: List of articles pertaining to the app
+	 * blocks: List of other links to different sections of the app.
+	 * title: Text to show the user
+	 * icon: Icon to show the user
+	 * url: Optional. If passed article/block will open a new window to that url. If omitted then
+	 * 	header.help.article.click/header.help.block.click will be thrown and the item will be the article/block. Extra
+	 * 	params can optionally be added to the item when building the nav menu and they will be included back to you when the
+	 * 	nav item is clicked.
+	 * {
+		'articles': [{
+			'title': 'Getting Started with Frontline Central',
+			'url': '/getting_started',
+			'icon': 'file-text'
+		}],
+		'blocks': [{
+			'title': 'Learn more about Frontline Central',
+			'url': 'http://help1.frontlinek12.com/?b_id=13067',
+			'icon': 'learning_center_logo'
+		}]
+	}
+	 */function B(e,n,t){/////
+// helper functions
+//
+/**
+	  * Updates the display with the new data being passed in.
+	  * @param  {Object} newCtx - New context object with the new data.
+	  */function a(n){t!==n&&(t=n);// articles
+var a=t.articles;null==a||0===a.length?h.css('display','none'):(h.css('display','block'),h.children(a.slice(0,3).map(function(n){var t;if(null==n.url||0===n.url.length)t=Ve('<li><a class="'+n.icon+'" href="#">'+n.title+'</a></li>'),t.on('click',function(t){t.stopPropagation(),t.preventDefault(),rn('header.help.article.click',n),rn('sk-menu-close',e)});else{// perform string replacement on the URL
+var a=Object.keys(k).reduce(function(e,n){return e.replace('{'+n+'}',k[n])},n.url);t=Ve('<li><a role="menuitem" aria-selected="false" class="'+n.icon+'" href="'+a+'" target="_blank">'+n.title+'</a></li>')}// bind common keydown handlers to menu item
+return T(e,o,h,t),t})));// blocks
+var s=t.blocks;null==s||0===s.length?m.css('display','none'):(m.css('display','block'),m.children(s.map(function(n){var t;return null==n.url||0===n.url.length?(t=Ve('<li><a role="menuitem" aria-selected="false" class="'+n.icon+'" href="#">'+n.title+'</a></li>'),t.on('click',function(t){t.stopPropagation(),t.preventDefault(),rn('header.help.block.click',n),rn('sk-menu-close',e)})):t=Ve('<li><a role="menuitem" aria-selected="false" class="'+n.icon+'" href="'+n.url+'" target="_blank">'+n.title+'</a></li>'),T(e,o,m,t),t})))}/**
+	  * Extract values for URL "template" string from IDM data. Use default values if the data is not provided.
+	  * @param  {Object} [idmData] - IDM data object
+	  * @param  {Object} {idmData.userContext} IDM user context object
+	  * @param  {Object} {idmData.product} IDM product object
+	  */function s(){var e=0<arguments.length&&arguments[0]!==void 0?arguments[0]:{},n=e.identities,t=e.userContext,a=e.product,s=a&&a.DefaultUserType||'',i=Array.isArray(n)&&n.find(function(e){return e.Type===s}),r=i&&i.Id||'',o=t&&t.OrganizationId||'';// these names must match the placeholders values in the URL, which we control
+return{userKey:r,orgId:o}}/////
+// find dom elements that we care about
+//
+var i=e.find('.control'),r=Ue(i,1),o=r[0],d=e.find('.menu'),l=Ue(d,1),c=l[0],u=e.find('.blocks'),p=Ue(u,1),m=p[0],g=e.find('.articles'),f=Ue(g,1),h=f[0],k=s();// initialize with default values
+/////
+// handle initial state and data changes
+//
+a(t),pn('help',a),pn('idm-data',function(e){k=s(e),a(t)}),P(e,o,c)}/**
+	 * Performs a search. Listens for results.
+	 * @class Sidekick.Search
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Number} [ctx.limit=20] - Count of items to show before view all appears
+	 * @param {String[]} [ctx.searchTypes=type-ahead] - An array of options of how to search. Defaults to type-ahead.
+	 *        'type-ahead' Type ahead search
+	 *        'search-on-enter' Search when pressing enter
+	 * @param {String} [ctx.placeHolderText=Search] - Default text put in the search box
+	 * @param {Function} i18n - translation function
+	 * @emits header.search - Fired when a search is done. Passes the search value
+	 * @emits header.search.item-clicked - Fired when a search result is clicked
+	 * @listens header.search.results - Array of HTML to display in the result list.
+	 */function Y(e,n,t,a){/////
+// update function for when help list changes
+//
+/**
+	  * Resets button and menu state.
+	  */function s(){Be(i)}/**
+	  * Restore focus to search box, selecting the value if populated
+	  *//**
+	  * Restore focus to search box, selecting the value if populated
+	  *//**
+	  * Closes the menu when escape is pressed
+	  *//**
+	  * Submit the search value to request type-ahead results
+	  *//**
+	  * Changes focus to a typeahead search result
+	  *//**
+	  * Makes a search only when enter is pressed.
+	  *//**
+	  * Makes a search.
+	  * @emits header.search - Passes the search value
+	  */function i(){if(y.empty(),!c.hasFocus())return h.removeClass('ss-menu-open'),void c.attr('aria-expanded','false');var e=c._.value.length;0<e?(h.addClass('ss-menu-open'),c.attr('aria-expanded','true'),w.css('display','block'),rn('header.search',c._.value)):(h.removeClass('ss-menu-open'),c.attr('aria-expanded','false'),rn('header.search.no-query'))}/**
+	  * Updates the result list.
+	  * @param  {Array} results - Accepts an array of HTML to display in the result list.
+	  * @listens header.search.results - Array of HTML to display in the result list.
+	  */var r=Ve('\n\t\t<ul id="sk-search-results" class="sk--menulist" role="listbox" aria-live="polite" aria-labelledby="sk-search-results-title">\n\t\t\t<li class="sk-list-empty" role="option" tabindex="0">'+a('No Results Found')+'</li>\n\t\t</ul>\n\t'),o=t.limit||20,d=e.find('.search'),l=Ue(d,1),c=l[0],u=e.find('.ss-ctrl-clear'),p=Ue(u,1),m=p[0],g=e.find('.sk--menu'),f=Ue(g,1),h=f[0],k=e.find('.sk--search-content'),v=Ue(k,1),y=v[0],b=e.find('.sk--loader'),_=Ue(b,1),w=_[0];/////
+// find dom elements that we care about
+//
+/////
+// handle iniital state and data changes
+//
+c.attr('placeholder',t.placeHolderText||a('Search')),c.attr('aria-label',t.placeHolderText||a('Search')),tn('header.search.results',function(n){if(w.css('display','none'),!!c.hasFocus()){var t=n instanceof Array;if(null==n||t&&0===n.length)return void y.children(r);if('string'==typeof n)e.addClass('sk--hide-instruction'),y.children(Ve(n)),h.addClass('ss-menu-open');else{// process the list of blocks to display
+var a=Ve('<ul id="sk-search-results" class="sk--menulist" role="listbox" aria-live="polite" aria-labelledby="sk-search-results-title"></ul>');a.children(n.slice(0,o).map(function(e,n){var t=Ve(e);t.attr('role','option'),t.attr('tabindex','0');var a=Ve('<li role="presentation"></li>');return a.append(t),a.on('click',function(e){e.stopPropagation(),e.preventDefault(),h.removeClass('ss-menu-open'),rn('header.search.item-clicked',n)}),a})),y.children(a)}}}),e.on('click',function(e){return e.stopPropagation()}),je(document).on('click',s),tn('header.search.reset',s),tn('sk-menu-open',function(n){n!==e&&s()}),je(window).on('blur',function(){null!=document.activeElement&&'IFRAME'===document.activeElement.tagName&&s()}),R(c,m,!0),m.on('click',s),c.on('keydown',function(e){// bail out if this was not the ESCAPE key
+S(e)&&s()}),c.on('focus',function(e){var n=e.target;''===n.value||n.setSelectionRange(0,n.value.length)}),'string'==typeof t.searchTypes?t.searchTypes=[t.searchTypes]:(null==t.searchTypes||0===t.searchTypes.length)&&(t.searchTypes=['type-ahead']),t.searchTypes.includes('search-on-enter')&&c.on('keydown',function(e){// bail out if this was not the ENTER key
+if(C(e)){y.empty();var n=c._.value.length;m.css('display',0<n?'block':'none'),0<n&&(rn('header.search',c._.value),c._.value='',m.addClass('sk-hidden')),document.activeElement&&document.activeElement.blur()}}),t.searchTypes.includes('type-ahead')&&(!t.searchTypes.includes('search-on-enter')&&c.on('keydown',function(e){// bail out if this was not the ENTER key
+C(e)&&rn('header.search.enter-pressed',c._.value)}),c.attr('aria-expanded','false'),c.attr('aria-autocomplete','list'),c.attr('aria-owns','sk-search-results'),c.on('input',i),c.on('click',function(){rn('sk-menu-open',e),i()}),e.on('keydown',function(e){// bail out if this was not the ESCAPE key
+S(e)&&document.activeElement!==c._&&c._.focus()}),e.on('keydown',function(e){// bail out if this was not the UP or DOWN key
+// bail out if the currently focused element is not a search result
+if(E(e)||N(e)){var n=y.find('[role=option]').map(function(e){return e._});// restore focus to search box when moving beyond first or last result
+if(0!==n.length){if(e.preventDefault(),c.hasFocus()){// select the first (down) or last (up) result
+var t=E(e)?n.length-1:0;return void n[t].focus()}var a=n.indexOf(document.activeElement);if(-1!==a){if(0===a&&E(e))return c._.focus();if(a===n.length-1&&N(e))return c._.focus();var s=E(e)?a-1:a+1;n[s].focus()}}}}))}/**
+	 * SuperSuit Loader
+	 * @class Sidekick.Loader
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {String} attrs.statusText - text to show above the finger loader
+	 * @param {Null} attrs.fill - undefined if not in "fill" mode, not undefined if in fill mode
+	 * @param {Null} ctx - not used
+	 * @param {Function} i18n - translation function
+	 * @listens loader.show - show/hide the loader
+	 */function W(e,n){n.fill!==void 0&&e.addClass('sk-fill-container')}/**
+	 * Displays allowed organizations
+	 * @class Sidekick.OrganizationSwitcher
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx - org switcher context object
+	 * @param {Function} i18n - translation function
+	 * @emits header.org-switcher.change - Passes selected organization
+	 */function H(e,n,t,a){/////
+// helper functions
+//
+/**
+	  * Filters orgs
+	  */function s(e){var n=S._.value;// no search filter
+return!n.length||-1!==e.name.toLowerCase().indexOf(n.toLowerCase());// serach filter
+}/**
+	  * Processes the access data to populate the list
+	  */function i(){var n=t.orgs,i=t.currentOrg;// no access, don't show, we are done
+if(null==i||0===n.length)return void e.css('display','none');e.css('display','inline-block');// render out our current org name in the header
+var o=n.find(function(e){return e.id===i}).name;if(l.attr('aria-label',o+' - '+a('Switch Organizations')),p._.innerHTML=o,p.attr('title',o),jn('org-switcher',e,o,30),1===n.length)// no need to continue, we only have 1 org. No picker is needed.
+return e.addClass('sk-no-click'),l.attr('tabindex','-1'),l.attr('disabled','disabled'),l.attr('aria-disabled','true'),p.removeClass('fa-angle-down-after'),void f.css('display','none');// Sort by name
+e.removeClass('sk-no-click'),l.attr('tabindex','0'),l.attr('disabled',null),l.attr('aria-disabled','false'),p.addClass('fa-angle-down-after'),_.css('display',10<n.length?'block':'none'),n.sort(function(e,n){return e.name.localeCompare(n.name)});var d=n.filter(s);0<d.length?v.children(d.map(function(n){var t=n.id===i,a=t.toString(),s=t?'active':'',r=t?'fa-li-checkmark-after active':'',o=n.url||'#',d=n.url&&n.target?' target="'+n.target+'"':'',c=Ve('\n\t\t\t\t\t<li class="'+s+'">\n\t\t\t\t\t\t<a role="menuitem" aria-current="'+a+'" aria-selected="false" class="active-state-link '+r+'" href="'+o+'"'+d+'>'+n.name+'</a>\n\t\t\t\t\t</li>\n\t\t\t\t');return c.on('click',function(t){n.url||(t.stopPropagation(),t.preventDefault(),rn('header.org-switcher.change',n)),rn('sk-menu-close',e)}),T(e,l,v,c),c})):v.children(r)}var r=Ve('<li class="sk-list-empty">No Organizations Found</li>'),o=e.find('.control'),d=Ue(o,1),l=d[0],c=l.find('.content'),u=Ue(c,1),p=u[0],m=e.find('.menu'),g=Ue(m,1),f=g[0],h=e.find('.menulist'),k=Ue(h,1),v=k[0],y=e.find('.search'),b=Ue(y,1),_=b[0],w=e.find('.search-org'),C=Ue(w,1),S=C[0],x=e.find('.ss-ctrl-clear'),I=Ue(x,1),E=I[0];/////
+// find dom elements that we care about
+//
+/////
+// wait to handle this initial state until the current org is specified
+//
+pn('current-org',function(e){t.orgs.filter(function(n){return n.id.toString()===e.id.toString()}).filter(function(e){return e.name.startsWith('IDM ADMIN:')}).forEach(function(n){return n.name=e.name}),i()}),i(),P(e,l,f),R(S,E),S.on('input',i),E.on('click',i)}/**
+	 * Displays allowed organizations
+	 * @class Sidekick.ApplicationSwitcher
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx - app switcher data object
+	 * @param {Function} i18n - translation function
+	 * @emits header.app-switcher.change - Passes selected product id
+	 */function K(e,n,t,a){/////
+// find dom elements that we care about
+//
+var s=e.find('.app-title'),i=Ue(s,1),r=i[0],o=r.find('.sk--content'),d=Ue(o,1),l=d[0],c=e.find('.sk--menu'),u=Ue(c,1),p=u[0],m=e.find('.sk--menulist'),g=Ue(m,1),f=g[0];/////
+// listen for events and take action
+//
+P(e,r,p);/**
+	  * Processes the access data to populate the list
+	  * @param  {Object} app
+	  */var h=t.currentApp,k=t.apps,v=k.find(function(e){return e.id===h}),y=null==v?'':v.name;r.attr('aria-label',y+' - '+a('Switch Apps')),l.attr('title',y),l._.innerHTML=y,tn('_header.impersonation',function(n){var t=e.find('.sk--skip-nav-link'),a=Ue(t,1),s=a[0];null==s||s.css('display',n?'none':null)},{greedy:!0}),2>k.length?(e.addClass('sk-no-click'),r.attr('tabindex','-1'),r.attr('disabled','disabled'),r.attr('aria-disabled','true'),l.removeClass('fa-angle-down-after')):(e.removeClass('sk-no-click'),r.attr('tabindex','0'),r.attr('disabled',null),r.attr('aria-disabled','false'),l.addClass('fa-angle-down-after'),k.sort(function(e,n){return e.name.localeCompare(n.name)}),f.children(k.map(function(n){var t=n.id===h,a=null!=n.legacyName&&n.legacyName.length,s=a?' <i class="sk--formerly">formerly '+n.legacyName+'</i>':'',i=t.toString(),o=t?'active':'',d=t?'fa-li-checkmark-after':'',l=n.url||'#',c=n.url&&n.target?' target="'+n.target+'"':'',u=Ve('\n\t\t\t\t<li>\n\t\t\t\t\t<a role="menuitem" aria-current="'+i+'" aria-selected="false" class="active-state-link '+o+'" href="'+l+'"'+c+'><span class="sk--name '+d+'">'+n.name+'</span>'+s+'</a>\n\t\t\t\t</li>\n\t\t\t');return t&&u.addClass('active'),a&&u.addClass('sk--has-legacy'),u.on('click',function(t){n.url||(t.stopPropagation(),t.preventDefault(),rn('header.app-switcher.change',n)),rn('sk-menu-close',e)}),T(e,r,f,u),u})))}/**
+	 * Displays Organization information
+	 * @class Sidekick.ContactOrg
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 * @listens current-org - Accepts an organization to update the information
+	 */function G(e,n){/////
+// helper functions
+//
+function t(e){if('string'==typeof e||'number'==typeof e)return parseInt(e,10).toString().length===e.toString().length&&(e+='px'),e}// position: bottom, top, left, right
+var a=n.position||'bottom',s=t(n.distance)||'-3px',i=null;(function(n){if(null!=n){var s=e.find('.sk-tip-chevron')[0];n=t(n);var i=['left','right'].includes(a)?'Y':'X';s.css({transform:'translate'+i+'('+n+') rotate(45deg)'})}})(n.arrowShift),function(n){var s=e.parent()._.getBoundingClientRect(),i=['left','right'].includes(a)?'Y':'X',r='Y'===i?'50%':'5px',o=window.innerWidth-s.right<s.left?'right':'left',d='Y'===i?'top':o;n=t(n)||r,e.css(Me({},d,n)),'X'==i&&e.find('.sk-tip-chevron')[0].css(Me({},d,'18px'))}(n.tipShift),e.addClass('sk-tip-pos-'+a),e.css(Me({},'margin-'+{left:'right',right:'left',top:'bottom',bottom:'top'}[a],s)),e.parent().addClass('sk-tooltip-container'),e.parent().on('mouseenter',function(){i=setTimeout(function(){e.parent().addClass('sk--hover')},1e3)}),e.parent().on('mouseleave',function(){clearTimeout(i),i=null,e.parent().removeClass('sk--hover')})}function Q(e,n,t){var a=t.access,s=t.productId,i=t.orgId,r=zn();/////
+// helper functions
+//
+null!=r.orgId&&(i=r.orgId),null!=r.productId&&(s=r.productId);var o=s.toUpperCase(),d=e.find('.search')[0],l=e.find('.ss-ctrl-clear')[0],c=e.find('.sk--org-app-list')[0],u=e.find('.sk--filtered-app-name')[0],p=[],m='';/////
+// get handle on elements we need
+//
+// if we are left with just 1, pick it
+return null!=i&&(p=a.filter(function(e){return e.OrganizationId===i})),0===p.length&&(p=a.filter(function(e){return e.ProductId.toUpperCase()===o}),p.length&&(m=p[0].ProductName)),0===p.length&&(p=a),p=function(e){return e.filter(function(e,n,t){var a=t.findIndex(function(n){return n.OrganizationId===e.OrganizationId});return a===n})}(p),1===p.length?void Be(function(){rn('_pick-org.org-id-selected',p[0].OrganizationId)}):void(m.length?(u._.innerHTML=m,u.removeClass('sk-hidden')):e.addClass('sk--orgs-not-filtered'),p.sort(function(e,n){var t=e.OrganizationName.toLowerCase(),a=n.OrganizationName.toLowerCase();return t>a?1:t<a?-1:0}),c.children(p.map(function(e){var n=Ve('\n\t\t\t<li>\n\t\t\t\t<a href="#" data-org-id="'+e.OrganizationId+'">\n\t\t\t\t\t'+e.OrganizationName+'\n\t\t\t\t</a>\n\t\t\t</li>\n\t\t');return n.on('click',function(n){n.preventDefault(),rn('_pick-org.org-id-selected',e.OrganizationId)}),n})),R(d,l))}function X(e,n,t){/////
+// helper functions
+//
+function a(e){return e.filter(function(e,n,t){var a=t.findIndex(function(n){return n.ProductId.toUpperCase()===e.ProductId.toUpperCase()});return a===n})}function s(e){var n=i.filter(function(n){return n.OrganizationId.toString()===e.toString()&&n.ProductId.toUpperCase()===d});// if we are left with just 1, pick it
+// show the screen
+return(0===n.length&&(n=i.filter(function(n){return n.OrganizationId.toString()===e.toString()})),n=a(n),1===n.length)?(Be(function(){rn('_pick-app.product-id-selected',n[0].ProductId)}),!1):(n.sort(function(e,n){var t=e.ProductName.toLowerCase(),a=n.ProductName.toLowerCase();return t>a?1:t<a?-1:0}),c.children(n.map(function(e){var n='string'==typeof e.ProductLegacyName&&e.ProductLegacyName.length?'<small>formerly '+e.ProductLegacyName+'</small>':'',t=Ve('\n\t\t\t\t<li>\n\t\t\t\t\t<a href="#" data-app-id="'+e.ProductId+'">\n\t\t\t\t\t\t<span>'+e.ProductName+'</span>'+n+'\n\t\t\t\t\t</a>\n\t\t\t\t</li>\n\t\t\t');return t.on('click',function(n){n.preventDefault(),rn('_pick-app.product-id-selected',e.ProductId)}),t})),!0)}var i=t.access,r=t.productId,o=zn();null!=o.productId&&(r=o.productId);var d=r.toUpperCase(),l=e.parent().find('.sk-pick-org')[0],c=e.find('.sk--org-app-list')[0],u=e.find('.sk--filtered-org-name')[0];/////
+// get handle on elements we need
+//
+/////
+// listen and react to events
+//
+tn('_pick-org.org-id-selected',function(n){if(null!=n){var a=t.access.find(function(){var e=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},t=e.OrganizationId;return null!=t&&t.toString()===n.toString()});if(null!=a){u._.innerHTML=a.OrganizationName,l.css('display','none');var i=s(n);i&&Be(function(){e.css('display','block'),Be(function(){return e.css('opacity',1)})})}}})}function $(e){var n=e.find('.sk--user-name')[0];jn('impersonated-user',e,n._.innerText,30,'bold 18px')}/**
+	 * Container class
+	 * @class Sidekick.ActivityIndicator
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {String} ctx.url - URL that clicking this should go to if passed in
+	 * @param {Function} i18n
+	 * @emits activity-indicator.clicked - Indicates the activity indicator has been clicked if URL not specified
+	 * @listens activity-indicator.visible - true/false - show hide the indicator
+	 */function J(e,n,t){e.addClass('sk-hidden');/////
+// dom elements we require access to
+//
+var a=e.find('a')[0];/////
+// listen for events and take action
+//
+tn('activity-indicator.visible',function(n){return e.toggleClass('sk-hidden',!n)}),t.url=t.url||'#','#'===t.url&&a.on('click',function(e){e.stopPropagation(),e.preventDefault(),rn('activity-indicator.clicked')})}/* globals ambient */function Z(e,n,t){function a(n){// store the current state
+var t=i;// check the new state
+i=n>=s,t!==i&&e.toggleClass('sk--two-column',!i)}// height values for different measurements
+var s=t.reduce(function(e,n){return e+54+30*n.children.length},90),i=!0,r=e.find('.mega')[0],o=t.map(function(e,n){e.url=e.url||e.route||null;var t=Ve('<ul class="menu-group" role="menu"><li class="group-title">'+e.title+'</li></ul>');// add menuName value if present
+return'string'==typeof e.menuName&&t.data('menu-name',e.menuName),t.append(e.children.map(function(e,t){e.url=e.url||e.route||null;var a=e.url||'#',s=e.url&&e.target?' target="'+e.target+'"':'',i=Ve('\n\t\t\t\t<li class="sub-menu-item sk--child-'+n+'-'+t+'">\n\t\t\t\t\t<a class="sub-menu-item-container" title="'+e.title+'" href="'+a+'"'+s+' role="menu-item">\n\t\t\t\t\t\t<span>'+e.title+'</span>\n\t\t\t\t\t</a>\n\t\t\t\t</li>\n\t\t\t');// add menuName value if present
+return'string'==typeof e.menuName&&i.data('menu-name',e.menuName),i.find('.sub-menu-item-container')[0].on('click',function(n){rn('nav.menu-item-clicked',e,n)}),i})),t});r.children(o),ambient.on('update','sk-adjust-menu-columns',function(e,n,t){return a(t.height)}),a(ambient.getPluginValue('height')),tn('_location.path-change',function(n){null==n||t.forEach(function(t,a){t.children.forEach(function(t,s){var i=An(n,t.url,t.routeMatcher);e.find('.sk--child-'+a+'-'+s)[0].toggleClass('highlight',i)})})})}/**
+	 * Launches a modal window with a countdown until sessions times out.
+	 * @class Sidekick.SessionTimeout
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 * @emits session.logout - Thrown when the logout button is clicked
+	 * @emits session.extend - Thrown when the stay signed in button is clicked
+	 * @listens session-timeout.clear - Clears the countdown and hides the modal
+	 * @example
+	 * timer: seconds to countdown
+	 * {
+		'timer': 180
+	}
+	 */function ee(e){/////
+// helper functions
+//
+// timer defaults to 3 minutes
+function n(){var n=Math.max,s=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},r=s.timer,o=void 0===r?180:r,l=o;// show the main component (which starts out hidden)
+return e.addClass('show'),0>=o?void t():void(d._.innerHTML=a(n(l,0)),clearInterval(i),i=setInterval(function(){d._.innerHTML=a(n(--l,0)),0>=l&&(clearInterval(i),t())},1e3));// fill the countdown timer and show it
+}function t(){l.addClass('show'),rn('sk-menu-close',e)}function a(e){var n=e,t=Ee(n/60);return n-=60*t,10>n&&(n='0'+n),t+':'+n}function s(){clearInterval(i),l.removeClass('show'),e.removeClass('show')}var i=void 0,r=e.find('.sk--logout')[0],o=e.find('.sk--extend')[0],d=e.find('.sk--timer')[0],l=e.find('.sk--signed-out')[0],c=e.find('.sk--sign-in-link')[0];/////
+// find dom elements that we care about
+//
+/////
+// handle initial state and data changes
+//
+pn('session-timeout',n),tn('session-timeout.clear',s),c.on('click',function(e){e.stopPropagation(),e.preventDefault(),window.location.reload()}),r.on('click',function(n){n.stopPropagation(),n.preventDefault(),clearInterval(i),rn('session.logout'),rn('sk-menu-close',e)}),o.on('click',function(n){n.stopPropagation(),n.preventDefault(),s(),rn('session.extend'),rn('sk-menu-close',e)})}/**
+	 * Lodas a generic error page
+	 * @class Sidekick.SiteErrors
+	 * @memberOf Sidekick
+	 * @param {EasyDom} elem - Container {@link EasyDom} element
+	 * @param {Object} attrs
+	 * @param {Object} ctx
+	 * @param {Function} i18n - translation function
+	 * @emits session.logout - Thrown when the logout button is clicked
+	 * @listens site-errors -
+	 */function ne(e){/////
+// find dom elements that we care about
+//
+var n=e.find('.sk--sign-in-link')[0];/////
+// listen for events and take action
+//
+tn('site-errors',function(){e.addClass('show')}),tn('site-errors.clear',function(){e.removeClass('show')}),n.on('click',function(e){e.stopPropagation(),e.preventDefault(),window.location.reload()})}function te(e,n,t){var a=t.mainElement,s=e.find('.sk--skip-nav-link'),i=Ue(s,1),r=i[0];null==r||(r.on('focus',function(){e.addClass('sk-skip-nav-focused')}),r.on('blur',function(){e.removeClass('sk-skip-nav-focused')}),r.on('click',function(e){e.preventDefault();var n;a instanceof Element?n=a:(n=document.querySelector('main, [role=main]'),null==n&&(n=t.appElement)),-1===n.tabIndex&&null==n.getAttribute('tabindex')&&n.setAttribute('tabindex','-1'),n.focus()}))}function ae(e){var n=oe(),t=n.filter(function(n){return n.rule&&n.rule.test(e)})[0];return t?t.name:null}function se(){var e='undefined'!=typeof process&&process.version;return e&&{name:'node',version:process.version.slice(1),os:process.platform}}function ie(e){var n=re();if(!e)return null;var t=n.map(function(n){var t=n.rule.exec(e),a=t&&t[1].split(/[._]/).slice(0,3);return a&&3>a.length&&(a=a.concat(1==a.length?[0,0]:[0])),t&&{name:n.name,version:a.join('.')}}).filter(Boolean)[0]||null;return t&&(t.os=ae(e)),/alexa|bot|crawl(er|ing)|facebookexternalhit|feedburner|google web preview|nagios|postrank|pingdom|slurp|spider|yahoo!|yandex/i.test(e)&&(t=t||{},t.bot=!0),t}function re(){return de([['aol',/AOLShield\/([0-9\._]+)/],['edge',/Edge\/([0-9\._]+)/],['yandexbrowser',/YaBrowser\/([0-9\._]+)/],['vivaldi',/Vivaldi\/([0-9\.]+)/],['kakaotalk',/KAKAOTALK\s([0-9\.]+)/],['samsung',/SamsungBrowser\/([0-9\.]+)/],['chrome',/(?!Chrom.*OPR)Chrom(?:e|ium)\/([0-9\.]+)(:?\s|$)/],['phantomjs',/PhantomJS\/([0-9\.]+)(:?\s|$)/],['crios',/CriOS\/([0-9\.]+)(:?\s|$)/],['firefox',/Firefox\/([0-9\.]+)(?:\s|$)/],['fxios',/FxiOS\/([0-9\.]+)/],['opera',/Opera\/([0-9\.]+)(?:\s|$)/],['opera',/OPR\/([0-9\.]+)(:?\s|$)$/],['ie',/Trident\/7\.0.*rv\:([0-9\.]+).*\).*Gecko$/],['ie',/MSIE\s([0-9\.]+);.*Trident\/[4-7].0/],['ie',/MSIE\s(7\.0)/],['bb10',/BB10;\sTouch.*Version\/([0-9\.]+)/],['android',/Android\s([0-9\.]+)/],['ios',/Version\/([0-9\._]+).*Mobile.*Safari.*/],['safari',/Version\/([0-9\._]+).*Safari/],['facebook',/FBAV\/([0-9\.]+)/],['instagram',/Instagram\s([0-9\.]+)/],['ios-webview',/AppleWebKit\/([0-9\.]+).*Mobile/]])}function oe(){return de([['iOS',/iP(hone|od|ad)/],['Android OS',/Android/],['BlackBerry OS',/BlackBerry|BB10/],['Windows Mobile',/IEMobile/],['Amazon OS',/Kindle/],['Windows 3.11',/Win16/],['Windows 95',/(Windows 95)|(Win95)|(Windows_95)/],['Windows 98',/(Windows 98)|(Win98)/],['Windows 2000',/(Windows NT 5.0)|(Windows 2000)/],['Windows XP',/(Windows NT 5.1)|(Windows XP)/],['Windows Server 2003',/(Windows NT 5.2)/],['Windows Vista',/(Windows NT 6.0)/],['Windows 7',/(Windows NT 6.1)/],['Windows 8',/(Windows NT 6.2)/],['Windows 8.1',/(Windows NT 6.3)/],['Windows 10',/(Windows NT 10.0)/],['Windows ME',/Windows ME/],['Open BSD',/OpenBSD/],['Sun OS',/SunOS/],['Linux',/(Linux)|(X11)/],['Mac OS',/(Mac_PowerPC)|(Macintosh)/],['QNX',/QNX/],['BeOS',/BeOS/],['OS/2',/OS\/2/],['Search Bot',/(nuhk)|(Googlebot)|(Yammybot)|(Openbot)|(Slurp)|(MSNBot)|(Ask Jeeves\/Teoma)|(ia_archiver)/]])}function de(e){return e.map(function(e){return{name:e[0],rule:e[1]}})}function le(e){var n=Qn(),t=Kn('browser-warning-dismissed');// console.log('alreadyDismissed =====> ', alreadyDismissed);
+if(!0!==t){var a=y(n,function(e){return e.name.toLowerCase()}),s=y(n,function(e){return e.os.toLowerCase()}),i=y(n,function(e){return parseInt(e.version.split('.')[0],10)},0),r=Xn.some(function(e){return!!a&&(e.name||a)===a&&!!s&&(e.os||s)===s&&!!i&&(e.version||0)<=i});// console.log('NAME =====>', name);
+// console.log('OS =====>', os);
+// console.log('VERSION =====>', version);
+// console.log('isSupported =====>', isSupported);
+if(!r){var o=je(window.document.body),d=e.find('button'),l=Ue(d,1),c=l[0];o.addClass('sk-unsupported-browser');var u=function(){Hn('browser-warning-dismissed',!0,{expires:null}),e.css({position:'absolute',left:'0'}),Be(function(){o.addClass('sk-unsupported-browser-dismissed'),setTimeout(function(){return e.css({display:'none'})},550)})};tn('nav.expanded-footprint',function(n){return e.toggleClass('sk--nav-expanded-footprint',n)}),c.on('click',u)}}}/**
+	 * Loads the components
+	 * @module Sidekick.ComponentLoader
+	 * @memberOf Sidekick
+	 *//**
+	 * Sidekick component list
+	 * @private
+	 *//**
+	 * Loads all the components
+	 * @function bootstrapAll
+	 * @instance
+	 */function ce(){Jn=!0,Gn=!0,Object.keys($n).forEach(function(e){return ue(e)}),Jn=!1,Gn||setTimeout(ce,0)}function ue(e){function n(e,n){return function(t){s(e,n,t),Jn||ce()}}function s(n,t,a){for(// clean out the existing element content
+var s=n._;s.firstChild;)s.removeChild(s.firstChild);// if we have a template for this component, mix with ctx and fill elem
+Pe[e]&&(s.innerHTML=Pe[e](a,t,g)),Be(function(){return n.addClass('sk-'+o+'-initialized')}),$n[e](n,t,a,g),Be(function(){return rn('_'+o+'-initialized',n,t,a)})}for(var r,o=t(e),d=document.querySelectorAll('[sk-'+o+']'),l=d.length;l--;){r=je(d[l]),Gn=!1,r.addClass('sidekick').addClass('sk-'+o),r.attr('sk-'+o,null);/////
+// bootstrap the element
+//
+// parse attrs
+for(var c,u={},p=r._.attributes.length;p--;)c=r._.attributes[p],u[a(c.name)]=c.value;null==r._.context?u.contextStore?mn(u.contextStore,n(r,u)):s(r,u,null):s(r,u,r._.context)}}/**
+	 * @module Sidekick.DomScanner
+	 * @memberOf Sidekick
+	 *//**
+	 * Scans the document title to append app name if not found.
+	 * @function title
+	 * @instance
+	 */function pe(){me(),mn('app-switcher-data',function(){Zn=setInterval(function(){if(null!=un('app-switcher-data')){var e=un('app-switcher-data'),n=e.currentApp,t=e.apps;if(null!=n&&null!=t&&0!==t.length){var a=t.find(function(e){return e.id===n}).name;document.title.endsWith(a)||(document.title=document.title+' - '+a)}}},500)})}/**
+	 * Stops scanning the title
+	 * @function stopTitle
+	 * @instance
+	 */function me(){null!=Zn&&(clearInterval(Zn),Zn=null)}/**
+	 * Ajax Calls
+	 * @module Sidekick.Ajax
+	 * @memberOf Sidekick
+	 *//**
+	 * Makes a call
+	 * @function do
+	 * @instance
+	 * @param  {String}   method
+	 * @param  {String}   url
+	 * @param  {Object}   post
+	 * @param  {Function} callback
+	 * @param  {Array}   headers
+	 * @param  {Number}   timeout
+	 * @param  {Boolean}   withCredentials
+	 * @param  {Object}   responseType
+	 * @param  {Array}   eventHandlers
+	 * @param  {Array}   uploadEventHandlers
+	 */function ge(e,n,t,a,s,r,o,d,l,c){var u,p,m=new window.XMLHttpRequest;for(m.open(e,n,!0),p=0;p<s.length;p++){var g=s[p];null!=g.value&&m.setRequestHeader(g.key,g.value)}m.onload=function(){var e=m.statusText||'',n='response'in m?m.response:m.responseText,t=1223===m.status?204:m.status;// responseText is the old-school way of retrieving response (supported by IE9)
+// response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
+// normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
+fe(a,t,n,m.getAllResponseHeaders(),e)};var f=function(){fe(a,-1,null,null,'')};if(m.onerror=f,m.onabort=f,null!=l)for(p=0;p<l.length;p++)u=l[p],m.addEventListener(u.key,u.value);if(null!=c)for(p=0;p<c.length;p++)u=c[p],m.upload.addEventListener(u.key,u.value);if(o&&(m.withCredentials=!0),d)try{m.responseType=d}catch(n){// WebKit added support for the json responseType value on 09/03/2013
+// https://bugs.webkit.org/show_bug.cgi?id=73648. Versions of Safari prior to 7 are
+// known to throw when setting the value "json" as the response type. Other older
+// browsers implementing the responseType
+//
+// The json response type can be ignored if not supported, because JSON payloads are
+// parsed on the client-side regardless.
+if('json'!==d)throw n}m.send(null==t?null:t)}function fe(e,n,t,a,s){e(n,t,a,s)}function he(e){var n=1<arguments.length&&arguments[1]!==void 0?arguments[1]:{};cn('pick-org-app-data',Object.assign({},e,n)),cn('idm-data',Object.assign(e,{userContext:{}}))}function ke(){var e=0<arguments.length&&arguments[0]!==void 0?arguments[0]:function(){};return function(n,t,a,s){// handle error state
+if(400<=n&&500>=n)throw Error(s);e(JSON.parse(t))}}function ve(){// if we could not get the token, assume the user's session has expired
+return!(null!=Ce())&&(cn('session-timeout',{timer:0}),!0)}// remove extra access records that share the same OrgId and ProductId
+// these are found in users that have multiple "roles" for a product
+function ye(e,n,t){return t.findIndex(function(n){return n.OrganizationId===e.OrganizationId&&n.ProductId===e.ProductId})===n}function be(e){var n=e.userContext;return null==n.OrganizationId||!0===n.Internal?{currentOrg:'',orgs:[]}:{currentOrg:e.userContext.OrganizationId.toString(),orgs:e.access.filter(function(e){return!e.Disabled})// remove disabled
+.map(function(e){return e.OrganizationId})// make an array of primitives
+.filter(function(e,n,t){return t.indexOf(e)===n})// so we can remove dupes
+.map(function(n){// then rebuild with id and name
+var t=e.access.find(function(e){return e.OrganizationId===n}),a=t.OrganizationId,s=t.OrganizationName;return{id:a.toString(),name:s}})}}function _e(e){var n=e.userContext;// if this is an internal app, setup the app switcher
+if(!0===n.Internal)return{currentApp:n.ProductId,apps:[{id:n.ProductId,name:n.ProductName}]};if(null==n.OrganizationId)return{currentApp:'',apps:[]};var t=e.userContext.OrganizationId.toString();return{currentApp:e.userContext.ProductId.toUpperCase(),apps:e.access.filter(function(e){return!e.Disabled})// remove disabled
+.filter(function(e){return e.OrganizationId.toString()===t}).filter(function(e,n,t){return t.findIndex(function(n){return n.ProductId.toUpperCase()===e.ProductId.toUpperCase()})===n}).map(function(e){// then rebuild with id and name
+var n=e.ProductId,t=e.ProductName,a=e.Url;return{id:n.toUpperCase(),name:t,url:a,legacyName:e.ProductLegacyName}})}}function we(){var e=un('idm-data');dt(e.userContext.OrganizationId)}function Ce(){var e=un('idm');// handle old accessToken prop and provide deprecation message
+return null==e.accessToken&&'function'==typeof e.getAccessToken?e.getAccessToken():(console&&console.error&&console.error('DEPRECATED! sidekick.store: idm.accessToken is deprecated, please provide a getAccessToken function that returns the current, valid, idm access token'),e.accessToken)}function Se(e,n){var t=un('idm'),a=t.idGatewayUrl;st(a+'/sessions/state',{prefLeftNavExpanded:e},n)}// common persistence config
+/**
+	 * Initializes the Sidekick
+	 * @module Sidekick.Init
+	 * @memberOf Sidekick
+	 *//**
+	 * Initializes the sidekick
+	 * @param {Object} cfg - Configuration Object
+	 * @param {String} cfg.token - Access Token
+	 * @param {String} cfg.product - Application
+	 * @param {Number} cfg.flId - Frontline User ID
+	 * @param {Element} [cfg.appElement=document.body] - Element the sidekick should be attached to
+	 * @param {Boolean} [cfg.addIcons=true] - Add in the icons
+	 * @param {Boolean} [cfg.addOpenSans=true] - Add in OpenSans
+	 * @param {Boolean} [cfg.addSidekickCss=true] - Add Sidekick CSS file to header
+	 * @param {Boolean} [cfg.autoAppendAppNameInTitle=false] - Scans the TITLE node to ensure the application name is appended
+	 * @param {Boolean} [cfg.language=en] - Language to set any translations strings
+	 */// es6 polyfills
+var xe=Number.isInteger,Ie=String.prototype,Ee=Math.floor;'function'!=typeof Object.assign&&Object.defineProperty(Object,'assign',{configurable:!0,writable:!0,value:function(e){if(null==e)// TypeError if undefined or null
+throw new TypeError('Cannot convert undefined or null to object');for(var n,t=Object(e),a=1;a<arguments.length;a++)if(n=arguments[a],null!=n)// Skip over if undefined or null
+for(var s in n)// Avoid bugs when hasOwnProperty is shadowed
+Object.prototype.hasOwnProperty.call(n,s)&&(t[s]=n[s]);return t}}),Array.prototype.includes||(Array.prototype.includes=function(e/*, fromIndex*/){var t=Object(this),a=parseInt(t.length,10)||0;if(0===a)return!1;var s,i=parseInt(arguments[1],10)||0;0<=i?s=i:(s=a+i,0>s&&(s=0));for(var n;s<a;){if(n=t[s],e===n||e!==e&&n!==n)// NaN !== NaN
+return!0;s++}return!1}),Ie.endsWith||(Ie.endsWith=function(e,n){var t=this.toString();('number'!=typeof n||!isFinite(n)||Ee(n)!==n||n>t.length)&&(n=t.length),n-=e.length;var a=t.indexOf(e,n);return-1!==a&&a===n}),Ie.startsWith||(Ie.startsWith=function(e,n){return n=n||0,this.substr(n,e.length)===e}),Array.prototype.find||(Array.prototype.find=function(e){if(null==this)throw new TypeError('Array.prototype.find called on null or undefined');if('function'!=typeof e)throw new TypeError('predicate must be a function');// eslint-disable-line no-bitwise
+for(var n,t=Object(this),a=t.length>>>0,s=arguments[1],r=0;r<a;r++)if(n=t[r],e.call(s,n,r,t))return n}),Array.prototype.findIndex||(Array.prototype.findIndex=function(e){if(null==this)throw new TypeError('Array.prototype.findIndex called on null or undefined');if('function'!=typeof e)throw new TypeError('predicate must be a function');// eslint-disable-line no-bitwise
+for(var n,t=Object(this),a=t.length>>>0,s=arguments[1],r=0;r<a;r++)if(n=t[r],e.call(s,n,r,t))return r;return-1}),xe||(xe=function(e){return'number'==typeof e&&isFinite(e)&&Ee(e)===e}),function(e){(0,eval)('this').ambient=e()}(function(){// executed on every resize event (debounced to 100ms)
+function e(){var t={};for(var a in y=[],l)// skip if in prototype
+if(l.hasOwnProperty(a)){var s=[];l[a].__updated__=!1;var i=!1;// if we have activeEvents, we should check
+// if any of them apply to this class
+if(Object.keys(_).length){// check each of our activeEvents
+for(var r in _)// if it's on prototype, bail out
+if(_.hasOwnProperty(r)&&(i=!!l[a].__events__[r],i))// if we find that one of our active events could
+// affect this class, there's no reason to check the rest
+break;// check the class config's registered events
+}else i=!0;// spin over each plugin used by this class
+for(var e in l[a]){var o=void 0;// skip if we don't have a prop to handle this property
+if(0!==e.indexOf('__')&&l[a].hasOwnProperty(e))// skip if in prototype
+// ensure that the cache structure is constructed for this prop
+// if this property is invalid, the whole class is
+// not active, kill classes and go to the next class
+{var d=c[e];if(null!=c[e])if(d.cache=d.cache||{},d.cache[a]=d.cache[a]||{},i&&(!t.hasOwnProperty(e)&&(t[e]=d.getCurrentValue(),t[e]===d.currentValue?d.__updated__=!1:(d.currentValue=t[e],d.__updated__=!0)),l[a].__updated__=l[a].__updated__||d.__updated__),d.__updated__&&i||!d.cache[a].activeClasses?(o=d.getActiveClasses(d.currentValue,a,l[a][e]),d.cache[a].activeClasses=o):o=d.cache[a].activeClasses,!o.length){s=[];break}else s=s.concat(o)}}y=y.concat(s)}// reset active events
+_={},y=y.filter(function(e,n,t){return t.indexOf(e)===n}),n(),h=null}function n(){var e=g.className;// update currentClasses with active body classes
+// filter out anything we're not in charge of
+b=e.split(' ').filter(function(e){return v.includes(e)});// search for classes that are not currently active,
+// but should be, and add them
+for(var n,a=y.length;a--;)n=y[a],b.includes(n)||(e+=' '+n,l[n]&&r('enter',n,t(n))),l[n]&&r('update',n,t(n));// search for classes that are active,
+// but shouldn't be, and remove them
+for(var s,o=b.length;o--;)s=b[o],y.includes(s)||(e=e.replace(new RegExp('(^|\\s)'+s+'($|\\s)','g'),' '),l[s]&&r('leave',s,t(s)));// push the new classes to body... and filter out extra spaces
+g.className=e.split(' ').filter(function(e){return!!e}).join(' ')}// grabs all the property values that apply to a given class
+function t(e){var n={};for(var t in l[e])l[e].hasOwnProperty(t)&&c[t]&&(n[t]=o(t));return n}// resize debouncing, will execute resize code no more
+// than once every 100ms
+function a(n){return function(t){_[n]=t,h||(k?h=setTimeout(S,k):S())}}// initializes confg and attaches to events
+// ---------------------------------- //
+function s(n,t){// spin over each class (cls) and check out the
+// condition properties for each
+for(var s in Object.assign(l,n),n)// skip if in prototype
+if(l.hasOwnProperty(s))for(var r in l[s].__events__={},l[s])// skip if in prototype
+// setup any handlers that the plugin defines
+// setup the object for storing cached values
+if(l[s].hasOwnProperty(r)&&c[r])// skip if we don't have a prop to handle this property
+{var o=c[r];if(o.on)for(var d in o.on)o.on.hasOwnProperty(d)&&i(d,s,o.on[d]);o.cache=o.cache||{},o.cache[s]=o.cache[s]||{},o.watchElement=o.watchElement||p,'string'==typeof o.watchEvent&&(o.watchEvent=o.watchEvent.split(' '));var m=o.getAllClasses?o.getAllClasses(s,l[s][r]):[s];v=v.concat(m);for(var g,f=o.watchEvent.length;f--;)g=o.watchEvent[f],l[s].__events__[g]=!0,C[g]||(C[g]=[]),C[g].push(r),u[g]&&-1!==u[g].indexOf(o.watchElement)||(o.watchElement.addEventListener?o.watchElement.addEventListener(g,a(g),!1):o.watchElement.attachEvent('on'+g,a(g)),u[g]=u[g]||[],u[g].push(o.watchElement))}'number'==typeof t&&(k=t),e()}// ================================== //
+// Event Bus API methods
+// ================================== //
+function i(e,n,t){var s=e.split(' ');w[n]=w[n]||{};for(var r,o=s.length;o--;)r=s[o],w[n][r]=w[n][r]||[],w[n][r].push(t)}function r(e,n,t){if(null!=l[n]&&l[n].__updated__&&w[n]&&w[n][e]&&w[n][e].length)for(var a=w[n][e].length,s=0;s<a;s++)w[n][e][s](e,n,t,l[n])}// ================================== //
+// Javascript API Helpers
+// ================================== //
+function o(e){// get the latest value from cache if available
+return c[e].currentValue||c[e].getCurrentValue()}function d(e){return-1!==y.indexOf(e)}var l={},c={},u={},p=(0,eval)('this'),m=p.document,g=m.body,f=p.requestAnimationFrame||p.webkitRequestAnimationFrame||p.mozRequestAnimationFrame||function(e){p.setTimeout(e,1e3/60)},h=null,k=0,v=[],y=[],b=[],_={},w={},C={},S=function(){return f(e)};return{init:s,on:i,off:function(e,n,t){for(var s,r=e.split(' '),o=r.length;o--;)if(s=r[o],w[n]&&w[n][s]&&w[n][s].length)for(var d=w[n][s].length;d--;)w[n][s][d]===t&&w[n][s].splice(d,1)},prop:c,// for backward compatibility
+registerPlugin:function(e,n){c[e]=n},getPluginValue:o,isActive:d}}),function(e){//                                                 //
+// =============================================== //
+window.ambient.registerPlugin('height',e);// ================= Plugin Name ================= //
+//                                                 //
+}({// ================= Plugin Code ================= //
+//                                                 //
+getCurrentValue:function(){var e=window,n=document,t=n.body;return e.innerHeight||t.clientHeight},getActiveClasses:function(e,n,t){var a,s,i=t.min||0,r=t.max||1/0;return a=e>=i,s=e<r,a&&s?[n]:[]},watchEvent:'resize'//                                                 //
+// =============================================== //
+}),function(e){//                                                 //
+// =============================================== //
+window.ambient.registerPlugin('width',e);// ================= Plugin Name ================= //
+//                                                 //
+}({// ================= Plugin Code ================= //
+//                                                 //
+getCurrentValue:function(){var e=window,n=document,t=n.body;return e.innerWidth||t.clientWidth},getAllClasses:function(e,n){var t,a,s=[];if(n.min=n.min||0,n.max=n.max||1/0,n.bend=n.bend||0,s=s.concat([e,e+'-gte',e+'-lte']),n.bend)for(a=n.max===1/0?8192:n.max,t=~~((a-n.min)/n.bend);t--;)s.push(e+'-'+(t+1));return s},getActiveClasses:function(e,n,t){var a,s,r,o=[];if(s=e>=t.min,r=e<t.max,s&&r&&(o.push(n),t.bend))for(a=~~((e-t.min)/t.bend);a--;)o.push(n+'-'+(a+1));return s&&o.push(n+'-gte'),r&&o.push(n+'-lte'),o},watchEvent:'resize'//                                                 //
+// =============================================== //
+}),ambient.init({"sk-auto-collapse-nav":{width:{max:1260}},"sk-adjust-menu-columns":{height:{}},"sk-screen-small":{width:{max:1100}},"sk-screen-medium":{width:{min:1100,max:1260}},"sk-screen-large":{width:{min:1260}}},0);/**
+	 * @module Sidekick.AssetLoader
+	 * @memberOf Sidekick
+	 */var Oe=function(){for(var e=document.getElementsByTagName('script'),n=e.length;n--;){var t=e[n],a=t.src.split('?')[0];// Strip off any query strings
+if(a.endsWith('/sidekick.js'))return a.substr(0,a.length-12)}}(),Ne=function(){return Oe},Ae=function(n,t){var a=e('link',{rel:'stylesheet',media:'screen',charset:'utf-8',href:Oe+'/'+n},document.head),s=e('div',{style:'display: none;',class:'sidekick-stylesheet-test'},document.body),i=setInterval(function(){try{'hidden'===window.getComputedStyle(s).visibility&&(clearInterval(i),t(a),document.body.removeChild(s))}catch(n){}},50);// watch hidden element for style update from sidekick.css
+},ze=function(){var e=document.createElement('style');e.setAttribute('type','text/css'),e.setAttribute('media','print'),e.innerHTML='.sidekick { display: none !important; } .sidekick-wrapped-application {\tmargin: 0 !important } ',document.head.appendChild(e)},Le=function(e){var n=document.createElement('style');n.setAttribute('type','text/css'),n.innerHTML=Te[e.toLowerCase()],document.head.appendChild(n)},Te={"fl-icons":n('FL-Icons','FL-Icons','FL-Icons','normal','normal'),"open-sans":// Open Sans: regular
+n('open-sans','opensans-regular-webfont','open_sansregular',400,'normal')+// Open Sans: semi-bold
+n('open-sans','opensans-semibold-webfont','open_sanssemibold',600,'normal')+// Open Sans: bold
+n('open-sans','opensans-bold-webfont','open_sansbold',700,'normal')},Pe=/*#__PURE__*/Object.freeze({activityIndicator:function(e,n,t){return'<a href="'+e.url+'"><span sk-tooltip content="'+t('System Activity')+'"></span> <span class="sk--dots"><span class="sk--dot"></span> <span class="sk--dot"></span> <span class="sk--dot"></span></span></a>'},appSwitcher:function(e,n,t){return'<div sk-skip-nav context-store="sk-config"></div><button id="sk--app-switcher-title" class="app-title" tabindex="0" aria-controls="sk--app-switcher-menu" aria-pressed="false"><div class="sk--content"></div><span sk-tooltip content="'+t('Switch Apps')+'"></span></button><div id="sk--app-switcher-menu" class="sk--menu" role="menu" aria-hidden="true" aria-describedby="sk--app-switcher-instruction"><h3 id="sk--app-switcher-instruction" class="sk-instruction">'+t('Your Solutions')+'</h3><ul class="sk--menulist"></ul></div>'},contactOrg:function(){return''},header:function(){return'<div class="sk--header-content" role="menubar"><div sk-impersonated-user context-store="user-data"></div><div sk-app-switcher context-store="app-switcher-data" role="menuitem" aria-haspopup="true"></div><div sk-org-switcher context-store="org-switcher-data" role="menuitem" aria-haspopup="true"></div><div class="sk--impersonation-border-lr"></div><div class="sk--impersonation-border-b"></div><div class="sk--content-right"><div sk-activity-indicator context-store="activity-indicator"></div><div sk-search context-store="search"></div><div sk-help context-store="help" role="menuitem" aria-haspopup="true"></div><div sk-user-info context-store="user-data" role="menuitem" aria-haspopup="true"></div><div sk-notifications context-store="notifications"></div><button class="sk--impersonation-exit fa-li-close"></button></div></div>'},help:function(e,n,t){return'<button id="sk--help-menu-title" class="control fa-li-question-circle-before" aria-controls="sk--help-menu" aria-pressed="false" aria-label="'+t('Help Resources')+'"><span sk-tooltip content="'+t('Help Resources')+'"></span></button><div id="sk--help-menu" class="menu" role="menu" aria-hidden="true"><h3 id="sk--help-menu-instruction" class="sk-instruction">'+t('Help Resources')+'</h3><div class="help-org-contact" sk-contact-org context-store="current-org"></div><ul class="articles menulist"></ul><ul class="blocks menulist"></ul></div>'},impersonatedUser:function(e,n,t){return'<div sk-skip-nav context-store="sk-config"></div><div class="sk--viewing-as">'+t('viewing as')+'</div><div class="sk--user-name">'+e.firstName+' '+e.lastName+'</div>'},loader:function(e,n){return'<div class="sk-loading-container">'+(!n.statusText?'':'<div class="sk-status">'+n.statusText+'</div>')+'<div class="sk-logo-spinner"><span class="sk-bar sk-bar-1"></span> <span class="sk-bar sk-bar-2"></span> <span class="sk-bar sk-bar-3"></span> <span class="sk-bar sk-bar-4"></span> <span class="sk-bar sk-bar-5"></span> <span class="sk-bar sk-bar-6"></span></div></div>'+(!n.fill?'':'<div class="sk-cover"></div>')},nav:function(e,n,t){return'<div class="sk--content-dimmer"></div><div class="sk--back-drop"><span class="sk--fl-pattern"></span></div><div class="sk--org-branding"><div class="sk--org-brand-small"></div><div class="sk--org-brand-large"></div></div><div class="sk--nav-title">'+t('Navigation')+'</div><i class="sk--nav-arrow" tabindex="0" aria-describedby="sk--nav-arrow-tooltip"><span sk-tooltip class="sk--nav-arrow-tooltip" id="sk--nav-arrow-tooltip" content="'+t('Toggle Navigation')+'" position="right"></span></i><div class="sk--top-section"><ul class="sk--menu-items" role="menu"></ul></div><div class="sk--bottom-section"><div class="sk--frontline-branding"><div class="sk--logo-container sk--full-logo"><a class="fa fa-logo-frontline sk--frontline-logo" target="_blank" href="http://frontlineeducation.com"></a> <span class="sk--copyright-info">&copy; '+new Date().getFullYear()+' | '+t('All rights reserved')+'</span></div><div class="sk--logo-container sk--small-logo"><a class="fa fa-logo-frontline-small sk--frontline-logo" target="_blank" href="http://frontlineeducation.com" tabindex="-1"></a> <span class="sk--copyright-info">&copy; '+new Date().getFullYear()+'</span></div></div></div>'},navItem:function(e){return'<a class="sk--main-menu-item-container" href="'+(e.url||'#')+'" target="'+(e.url&&e.target?e.target:'_self')+'" role="menuitem"><i class="sk--nav-icon fa '+e.icon+'"></i> <span class="sk--badge"></span> <span class="sk--main-menu-title">'+e.title+'</span> <span sk-tooltip content="'+e.title+'" position="right"></span> '+(e.children&&e.children.length?'<i class="sk--more-items fa fa-angle-right"></i>':'')+'<div class="sk--hover-elem"></div></a>'},navItemMegaMenu:function(){return'<div class="mega"></div>'},navItemSubmenu:function(){return'<div class="no-mega"><ul class="menu-group" role="menu"></ul></div>'},notifications:function(e,n,t){return(null==e.url?'<button class="control" aria-label="'+t('notifications')+'"><span class="fa-li-bell-before"></span> <span class="sk--unread"></span> <span sk-tooltip content="'+t('Notifications')+'" arrow-shift="1px"></span></button>':'<a href="'+e.url+'" class="control" aria-label="'+t('notifications')+'"> <span class="fa-li-bell-before"></span> <span class="sk--unread"></span> <span sk-tooltip content="'+t('Notifications')+'" arrow-shift="1px"></span> </a>')+'<div class="menu"><h3 class="sk-instruction">'+t('Recent Notifications')+' <button type="button" tabindex="-1" class="ss-ctrl-clear fa-li-arrow-right2" aria-label="'+t('close panel')+'"></button></h3><ul class="menulist"></ul></div>'},orgSwitcher:function(e,n,t){return'<button id="sk--org-switcher-title" class="control" aria-controls="sk--org-switcher-menu" aria-pressed="false"><div class="content"></div><span sk-tooltip content="'+t('Switch Organizations')+'"></span></button><div id="sk--org-switcher-menu" class="menu" role="menu" aria-hidden="true" aria-describedby="sk--org-switcher-instruction"><h3 id="sk--org-switcher-instruction" class="sk-instruction">'+t('Select an Organization')+'</h3><div class="search"><div class="sk-input"><span class="sk--input-container fa-li-search-before"><input type="text" class="search-org" placeholder="'+t('Search')+'" autocomplete="off"> </span><button type="button" tabindex="-1" class="ss-ctrl-clear fa-li-close" aria-label="'+t('clear input')+'"></button></div></div><div class="menu-scroll"><ul class="menulist"></ul></div></div>'},pickApp:function(e,n,t){return'<h2 class="sk--filtered-org-name"></h2><h1>'+t('Select an Application')+'</h1><ul class="sk--org-app-list"></ul>'},pickOrg:function(e,n,t){return'<h2 class="sk--filtered-app-name sk-hidden"></h2><h1>'+t('Select an Organization')+'</h1><div class="sk-input sk-hidden"><span class="sk--input-container fa-li-search-before"><input class="search" type="text" value="" placeholder="'+t('Search Organizations')+'"> </span><button type="button" tabindex="-1" class="ss-ctrl-clear fa-li-close sk-hidden" aria-label="'+t('clear input')+'"></button></div><ul class="sk--org-app-list"></ul>'},pickOrgApp:function(){return'<div class="sk--picker-user-info"><div sk-user-info context-store="user-data"></div></div><div class="sk--panel-left"><i class="fa-logo-frontline"></i><div sk-pick-org context-store="pick-org-app-data"></div><div sk-pick-app context-store="pick-org-app-data"></div></div>'},search:function(e,n,t){return'<div class="sk-input"><span class="sk--input-container fa-li-search-before"><input class="search" type="text" value=""> </span><button type="button" class="ss-ctrl-clear fa-li-close" aria-label="'+t('clear input')+'"></button></div><div class="sk--menu"><h3 id="sk-search-results-title" class="sk-instruction">'+t('Search Results')+'</h3><div class="sk--loader" role="presentation"><div sk-loader fill></div></div><div class="sk--search-content"></div></div>'},sessionTimeout:function(e,n,t){return'<div class="sk--timer-mode"><div class="sk--content-dimmer"></div><div class="sk--session-timeout-modal modal"><div class="title">'+t('You will be signed out soon.')+'</div><div class="sk--timer"></div><div class="content">'+t('Due to inactivity, your session will end and you will be signed out. Do you want to stay signed in?')+'</div><div class="modal-button"><a class="sk-button sk-button-std sk--logout" href="#">'+t('No, Sign Me Out')+'</a> <a class="sk-button sk-button-pri sk--extend" href="#">'+t('Yes, Stay Signed In')+'</a></div></div></div><div class="sk--signed-out"><div class="sk--content"><div class="sk--logo"></div><h2>'+t('You have been signed out.')+'</h2><p>'+t('For your security and protection of your data, you have been signed out due to inactivity.')+'</p><div><a href="#" class="sk--sign-in-link">'+t('Sign In Again to Continue')+'</a></div></div></div>'},siteErrors:function(){return'<div class="sk--content"><div class="sk--logo"></div><h2>Something went wrong.</h2><p>We don\u2019t know what happened but something went wrong. Please wait a few minutes then try to sign in again.</p><div><a href="#" class="sk--sign-in-link">Sign In Again to Continue</a></div></div>'},skipNav:function(e,n,t){return'<a class="sk--skip-nav-link" href="#'+(e.mainId?e.mainId:'')+'">'+t('Skip to Main Content')+'</a>'},tooltip:function(e,n){return'<span class="sk-tip-chevron"></span> <span class="sk-tip-content">'+n.content+'</span>'},unsupportedBrowserAlert:function(){return'<div class="sk--unsupported-browser-message"><a href="https://help.frontlineeducation.com/hc/en-us/articles/360001607068" target="_blank" class="sk--message">Your web browser is not supported and may cause problems. <span>Learn More</span> </a><button><i>&#xe909;</i> <span>Dismiss</span></button></div>'},userInfo:function(e,n,t){return'<button id="sk--user-info-title" class="sk--control" aria-controls="sk--user-info-menu" aria-pressed="false" aria-label="'+e.firstName+' '+e.lastName+'"><span class="sk--user-name fa-angle-down-after" title="'+e.firstName+' '+e.lastName+'">'+e.firstName+' '+e.lastName+'</span> <span class="sk--current-role"></span></button><div id="sk--user-info-menu" class="sk--menu" role="menu" aria-hidden="true" aria-describedby="sk--user-info-instruction"><h3 id="sk--user-info-instruction" class="sk-instruction sk--fl-account-header">'+t('Your Frontline Account')+'</h3><ul class="sk--roles sk--menulist"></ul><ul class="sk--blocks sk--menulist"><li><a class="sk--settings fa-li-settings" href="#" role="menuitem">'+t('Account Settings')+'</a></li><li><a class="sk--logout fa-li-power" href="#" role="menuitem">'+t('Sign Out')+'</a></li></ul></div>'}}),Re=function(e,n){if(!(e instanceof n))throw new TypeError('Cannot call a class as a function')},De=function(){function e(e,n){for(var t,a=0;a<n.length;a++)t=n[a],t.enumerable=t.enumerable||!1,t.configurable=!0,'value'in t&&(t.writable=!0),Object.defineProperty(e,t.key,t)}return function(n,t,a){return t&&e(n.prototype,t),a&&e(n,a),n}}(),Me=function(e,n,t){return n in e?Object.defineProperty(e,n,{value:t,enumerable:!0,configurable:!0,writable:!0}):e[n]=t,e},Ue=function(){function e(e,n){var t=[],a=!0,s=!1,i=void 0;try{for(var r,o=e[Symbol.iterator]();!(a=(r=o.next()).done)&&(t.push(r.value),!(n&&t.length===n));a=!0);}catch(e){s=!0,i=e}finally{try{!a&&o['return']&&o['return']()}finally{if(s)throw i}}return t}return function(n,t){if(Array.isArray(n))return n;if(Symbol.iterator in Object(n))return e(n,t);throw new TypeError('Invalid attempt to destructure non-iterable instance')}}(),Fe=function(e){if(Array.isArray(e)){for(var n=0,t=Array(e.length);n<e.length;n++)t[n]=e[n];return t}return Array.from(e)},je=function(e){return new We(e)},qe=i,Ve=function(e){var n=document.createElement('span');return n.innerHTML=e,1===n.children.length?je(n.children[0]):je(n)},Be=window.requestAnimationFrame&&window.requestAnimationFrame.bind(window)||window.webkitRequestAnimationFrame&&window.webkitRequestAnimationFrame.bind(window)||window.mozRequestAnimationFrame&&window.mozRequestAnimationFrame.bind(window)||window.oRequestAnimationFrame&&window.oRequestAnimationFrame.bind(window)||window.msRequestAnimationFrame&&window.msRequestAnimationFrame.bind(window)||function(e){window.setTimeout(e,1e3/60)},Ye=[],We=function(){/**
+	  * @param {Element} domNode
+	  */function e(n){// if we have already built an EasyDom object for this domNode, pull it from cache
+return Re(this,e),null==n._easyDomID?void(this._=n,n._easyDomID=Ye.length,Ye.push(this)):Ye[n._easyDomID]}/**
+	  * @inner
+	  * @param {String} selector - Selector for finding an element
+	  * @return {EasyDom}
+	  */return De(e,[{key:'find',value:function(e){return i(e,this._)}/**
+	   * @param {String} cls - Classname to add
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'addClass',value:function(e){var n=this._.className.length?' ':'';return this.hasClass(e)||(this._.className+=''+n+e),this}/**
+	   * @param {String} cls - Classname to remove
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'removeClass',value:function(e){return this._.className=this._.className.split(' ').filter(function(n){return n!==e&&0<n.length}).join(' '),this}/**
+	   * @param {String} cls - Classname to test if this element has.
+	   * @return {Boolean} Whether or not this element has the classname specified.
+	   */},{key:'hasClass',value:function(e){return this._.className.split(' ').includes(e)}/**
+	   * @param {String} cls - Classname to toggle
+	   * @param {String} [state] - current state
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'toggleClass',value:function(e,n){return null==n&&(n=!this._.className.split(' ').includes(e)),this[(n?'add':'remove')+'Class'](e)}/**
+	   * @param {EasyDom|EasyDom[]} elem - Element to append to this element's children
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'append',value:function(n){if(null!=n){var t=n.length;if(null==t)this._.appendChild(n instanceof e?n._:n);else// we have an array of elements, recurse over the elements
+for(var a=0;a<t;a++)this.append(n[a]);return this}}/**
+	   * @param {String} name - Attribute name to get/set value for
+	   * @param {*} [value] - Value to set the attribute to
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'attr',value:function(e,n){return void 0===n?this._.getAttribute(e):null===n?(this._.removeAttribute(e),this):(this._.setAttribute(t(e),n),this)}/**
+	   * @param {String} name - Data attribute name to get/set value for
+	   * @param {*} [value] - Value to set the attribute to
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'data',value:function(e,n){return this.attr('data-'+t(e),n)}/**
+	   * Empties this element of any children
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'empty',value:function(){for(;this._.firstChild;)this._.removeChild(this._.firstChild);return this}/**
+	   * Sets the children to be the content being passed in.
+	   * @param {EasyDom|EasyDom[]} content
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'children',value:function(e){return this.empty().append(e)}/**
+	   * Returns the {@link EasyDom} parent for this element
+	   * @return {EasyDom}
+	   */},{key:'parent',value:function(){return new e(this._.parentNode)}/**
+	   * Registers an event handler to an event.
+	   * @param {String} evt - Event to react to
+	   * @param {Function} handler - Function to handle the event
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'on',value:function(e,n){return this._listeners=this._listeners||[],this._listeners.push({evt:e,handler:n}),this._.addEventListener(e,n),this}/**
+	   * Deregisters an event handler to an event.
+	   * @param {String} evt - Event to react to
+	   * @param {Function} handler - Function to handle the event
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'off',value:function(e,n){var t=this,a=[];// if we couldn't find the listener, bail out
+// for chaining
+return(a=null==e&&null==n?this._listeners||[]:null==n?this._listeners.filter(function(n){return n.evt===e}):[this._listeners.find(function(t){return t.evt===e&&t.handler===n})].filter(Boolean),0===a.length)?this:(a.forEach(function(e){return t._.removeEventListener(e.evt,e.handler)}),this._listeners=this._listeners.filter(function(e){return!a.includes(e)}),this);// remove the dom listeners
+}/**
+	   * Sets the css property(ies) to the values
+	   * @param {Object|String} target
+	   * @param {String|Number} [value] - Only used if the target is a String
+	   * @return {EasyDom} Reference to the current {@link EasyDom} element.
+	   */},{key:'css',value:function(e,n){if(!(e instanceof Array)){if(e instanceof Object)for(var t,s=Object.keys(e),r=s.length;r--;)t=s[r],this.css(t,e[t]);if('string'==typeof e){if(void 0===n)return window.getComputedStyle(this._)[e];this._.style[a(e)]=n}return this}}/**
+	   * Checks if this element currently has focus
+	   * @returns {Boolean}
+	   */},{key:'hasFocus',value:function(){return window.document.activeElement===this._}}]),e}(),He=/*#__PURE__*/Object.freeze({element:je,find:qe,parse:Ve,rAF:Be}),Ke=function(e){return c(e,'array')},Ge=function(e){return c(e,'object')},Qe=function(e){return c(e,'boolean')},Xe={},$e=[],Je={},Ze={"session.logout":'header.user-info.logout'},en=Object.keys(Ze).reduce(function(e,n){return e[Ze[n]]=n,e},{}),nn=function(e){return console&&console.error&&console.error('SIDEKICK => '+e)},tn=function(e,n){var t=!!(2<arguments.length&&void 0!==arguments[2])&&arguments[2],a=!!(3<arguments.length&&void 0!==arguments[3])&&arguments[3],s=!1,i=!1;if(Ge(t)){var r=t;null!=r.greedy&&(i=r.greedy),null!=r.once&&(a=r.once),null!=r.terminal&&(s=r.terminal)}else Qe(t)&&(i=t);var o=Xe[e]=Xe[e]||[];if($e.includes(e))return void nn('the event "'+e+'" is already handled by a terminal event. No additional handlers can be registered.');if(!0===s){// clear other handlers if this one is terminal
+var d=o.length;0<d&&(o.length=0,nn(d+' "'+e+'" event handler(s) have been removed due to a terminal handler registration.')),$e.push(e)}// check if this handler is already registered with this event
+return o.includes(n)?void nn('the event "'+e+'" is already handled by '+n):(n.$once=a,o.push(n),i&&Je[e]&&n.apply(null,Je[e]),function(){return sn(e,n)});// return a teardown function
+},an=function(e,n){var t=!!(2<arguments.length&&arguments[2]!==void 0)&&arguments[2];return tn(e,n,{greedy:t,once:!0})},sn=function(e,n){// we have no handlers for this event, get out
+if(null!=Xe[e]){null==n&&(Xe[e].length=0);// remove just the one handler
+var t=Xe[e],a=t.lastIndexOf(n);-1===a||t.splice(a,1)}// we are not removing a specific handler, remove all
+},rn=function e(n){for(var t=arguments.length,a=Array(1<t?t-1:0),s=1;s<t;s++)a[s-1]=arguments[s];// fire deprecated events for backward compatibility
+if(Ze.hasOwnProperty(n)&&e.apply(null,[Ze[n]].concat(a)),Je[n]=a,!!Xe[n])for(var r=Xe[n],o=r.length;o--;)r[o].apply(null,a),!0===r[o].$once&&sn(n,r[o])},on={on:u(tn),once:u(an),emit:u(rn),clear:function(){$e.length=0,Object.keys(Xe).forEach(function(e){return delete Xe[e]}),Object.keys(Je).forEach(function(e){return delete Je[e]})}},dn={},ln=['idm-data','sk-config','fl-internal-product-ids'],cn=function(e,n){dn[e]=n,rn('_store.set-'+e,n)},un=function(e){return dn[e]||null},pn=function(e,n){return tn('_store.set-'+e,n,!0)},mn=function(e,n){return an('_store.set-'+e,n,!0)},gn={set:p(function(){for(var e=arguments.length,n=Array(e),t=0;t<e;t++)n[t]=arguments[t];var a=n[0];return null==a?void(console&&console.error&&console.error('SIDEKICK.STORE: the first parameter %ckey<String>%c is required.','color:blue;font-weight:bold;','')):ln.includes(a)||a.startsWith('_')?void(console&&console.error&&console.error('SIDEKICK.STORE: "'+a+'" is a read only value')):cn.apply(null,n)}),get:p(un),onValue:p(pn),onValueOnce:p(mn),clear:function(){return Object.keys(dn).forEach(function(e){return delete dn[e]})}},fn='en',hn={},kn=[],vn={fr:{"You have been signed out.":'Vous avez \xE9t\xE9 d\xE9connect\xE9.',"For your security and protection of your data, you have been signed out due to inactivity.":'Pour votre s\xE9curit\xE9 et protection de vos donn\xE9es, vous avez \xE9t\xE9 d\xE9connect\xE9 en raison de l\'inactivit\xE9.',"Sign In Again to Continue":'Se connecter pour continuer',"Account Settings":'Param\xE8tres du compte',"All rights reserved":'Tous les droits sont r\xE9serv\xE9s',"clear input":'entr\xE9e libre',"close panel":'fermer le panneau',"Contact Your Organization":'Contactez votre organisme',"Due to inactivity, your session will end and you will be signed out. Do you want to stay signed in?":'En raison de l\'inactivit\xE9, votre session prendra fin et vous serez d\xE9connect\xE9. Voulez-vous rester connect\xE9?',Fax:'Fax',"Help Resources":'Ressources d\'aide',Navigation:'La navigation',"No, Sign Me Out":'Non, Signez-moi',"No Results Found":'Aucun r\xE9sultat trouv\xE9',Notifications:'Notifications',notifications:'notifications',Phone:'T\xE9l\xE9phone',"Recent Notifications":'Notifications r\xE9centes',Search:'Chercher',"Search Organizations":'Organismes de recherche',"Search Results":'R\xE9sultats de la recherche',"Select an Application":'S\xE9lectionnez une application',"Select an Organization":'S\xE9lectionnez une organisation',"Sign Out":'Se d\xE9connecter',"Skip to Main Content":'Passer au contenu principal',"Switch Apps":'Applications de commutation',"Switch Organizations":'Organisations Switch',"System Activity":'Activit\xE9 du syst\xE8me',"Yes, Stay Signed In":'Oui, Restez connect\xE9',"You have no notifications":'Vous avez aucune notification',"You will be signed out soon.":'Vous serez bient\xF4t d\xE9connect\xE9',"Your Frontline Account":'Votre compte Frontline',"Your Solutions":'Vos Solutions',"viewing as":'Voir Comme',"Minimize Navigation":'Minimiser Navigation',"Expand Navigation":'D\xE9velopper Navigation',"Toggle Navigation":'Navigation Bascule',"System Configuration":'Configuration du syst\xE8me',"Manage User Access":'G\xE9rer l\'acc\xE8s des utilisateurs',"Additional Resources":'Ressources additionnelles'},it:{"You have been signed out.":'Sei stato lasciato fuori conto.',"For your security and protection of your data, you have been signed out due to inactivity.":'Per la tua sicurezza e la protezione dei tuoi dati, sei uscito per l\'inattivit\xE0.',"Sign In Again to Continue":'Accedi nuovamente per continuare',"Account Settings":'Impostazioni dell \'account',"All rights reserved":'Tutti i diritti riservati',"clear input":'ingresso libero',"close panel":'Chiudi pannello',"Contact Your Organization":'Contattare la propria organizzazione',"Due to inactivity, your session will end and you will be signed out. Do you want to stay signed in?":'A causa di inattivit\xE0, la sessione si concluder\xE0 e si saranno firmati fuori. Vuoi rimanere firmato a?',Fax:'Fax',"Help Resources":'Risorse di assistenza',Navigation:'Navigazione',"No, Sign Me Out":'No, Mi Esci',"No Results Found":'Nessun risultato trovato',Notifications:'notifiche',notifications:'notifiche',Phone:'Telefono',"Recent Notifications":'Notifiche recenti',Search:'Ricerca',"Search Organizations":'Le organizzazioni di ricerca',"Search Results":'risultati di ricerca',"Select an Application":'Selezionare un\'applicazione',"Select an Organization":'Seleziona una Organizzazione',"Sign Out":'Disconnessione',"Skip to Main Content":'Vai al contenuto principale',"Switch Apps":'applicazioni Interruttore',"Switch Organizations":'Organizzazioni di commutazione',"System Activity":'Attivit\xE0 del sistema',"Yes, Stay Signed In":'S\xEC, Resta connesso',"You have no notifications":'Non ci sono notifiche',"You will be signed out soon.":'Verr\xE0 firmato presto',"Your Frontline Account":'Il tuo account Frontline',"Your Solutions":'Le nostre soluzioni',"viewing as":'visualizzazione come',"Minimize Navigation":'Ridurre Navigazione',"Expand Navigation":'Espandere Navigazione',"Toggle Navigation":'Attiva Navigazione',"System Configuration":'Configurazione di sistema',"Manage User Access":'Gestisci l\'accesso degli utenti',"Additional Resources":'Risorse addizionali'},es:{"You have been signed out.":'Se ha cerrado la sesi\xF3n.',"For your security and protection of your data, you have been signed out due to inactivity.":'Para su seguridad y protecci\xF3n de sus datos, se ha cerrado la sesi\xF3n debido a la inactividad.',"Sign In Again to Continue":'Iniciar sesi\xF3n de nuevo para continuar',"Account Settings":'Configuraciones de la cuenta',"All rights reserved":'Todos los derechos reservados',"clear input":'entrada de borrado',"close panel":'panel de cierre',"Contact Your Organization":'P\xF3ngase en contacto con su organizaci\xF3n',"Due to inactivity, your session will end and you will be signed out. Do you want to stay signed in?":'Debido a la inactividad, su sesi\xF3n finalizar\xE1 y se cerrar\xE1 sesi\xF3n. \xBFQuiere permanecer conectado?',Fax:'Fax',"Help Resources":'Recursos de ayuda',Navigation:'Navegaci\xF3n',"No, Sign Me Out":'No, firmeme',"No Results Found":'No se han encontrado resultados',Notifications:'Notificaciones',notifications:'notificaciones',Phone:'Tel\xE9fono',"Recent Notifications":'Notificaciones recientes',Search:'Buscar',"Search Organizations":'Organizaciones de la b\xFAsqueda',"Search Results":'Resultados de la b\xFAsqueda',"Select an Application":'Seleccione una aplicaci\xF3n',"Select an Organization":'Seleccione una Organizaci\xF3n',"Sign Out":'Desconectar',"Skip to Main Content":'Saltar al contenido principal',"Switch Apps":'Aplicaciones del interruptor',"Switch Organizations":'Organizaciones de conmutaci\xF3n',"System Activity":'Actividad del sistema',"Yes, Stay Signed In":'S\xED, permanece firmado',"You have no notifications":'No tiene notificaciones',"You will be signed out soon.":'Saldr\xE1 pronto',"Your Frontline Account":'Su cuenta en primera l\xEDnea',"Your Solutions":'sus Soluciones',"viewing as":'viendo como',"Minimize Navigation":'Minimizar Navegaci\xF3n',"Expand Navigation":'Expandir Navegaci\xF3n',"Toggle Navigation":'Alternar Navegaci\xF3n',"System Configuration":'Configuraci\xF3n del sistema',"Manage User Access":'Administrar acceso de usuario',"Additional Resources":'Recursos adicionales'}},yn={tadev:'ta',taqa:'ta',tastage:'ta',taqalocal:'ta',absmgmtdev:'absmgmt',absmgmtqa:'absmgmt',absmgmtstage:'absmgmt',ieplegacylocal:'ieplegacy',ieplegacydev:'ieplegacy',ieplegacybeta:'ieplegacybeta',ieplegacyrc:'ieplegacy',"504legacylocal":'504legacy',"504legacydev":'504legacy',"504legacybeta":'504legacybeta',"504legacyrc":'504legacy',rtilegacylocal:'rtilegacy',rtilegacydev:'rtilegacy',rtilegacybeta:'rtilegacybeta',rtilegacyrc:'rtilegacy',esalegacylocal:'esalegacy',esalegacydev:'esalegacy',esalegacybeta:'esalegacybeta',esalegacyrc:'esalegacy',medicaidlegacylocal:'medicaidlegacy',medicaidlegacydev:'medicaidlegacy',medicaidlegacybeta:'medicaidlegacybeta',medicaidlegacyrc:'medicaidlegacy',pdlocal:'pd',pddev:'pd',pdqa:'pd',pdstage:'pd',pdkkuhl:'pd',pdprodtest:'pd',elevateqa:'cc',elevatedev:'cc',elevatestage:'cc',elevatetest:'cc',applitracktest:'recruit',applitrackqa:'recruit',recruitstage:'recruit',recruitlocal:'recruit',iepenrichlocal:'iepenrich',iepenrichdev:'iepenrich',iepenrichbeta:'iepenrich'},bn={EC:'employee',TADEV:'abs_time_user_dev',TAQA:'abs_time_user_qa',TASTAGE:'abs_time_user_stage',AbsMgmtDev:'abs_time_user_dev',AbsMgmtQA:'abs_time_user_qa',IepLegacyLocal:'ss_tri_state_user_local',"504LegacyLocal":'ss_tri_state_user_local',RtiLegacyLocal:'ss_tri_state_user_local',EsaLegacyLocal:'ss_tri_state_user_local',MedicaidLegacyLocal:'ss_tri_state_user_local',IepLegacyDev:'ss_tri_state_user_dev',"504LegacyDev":'ss_tri_state_user_dev',RtiLegacyDev:'ss_tri_state_user_dev',EsaLegacyDev:'ss_tri_state_user_dev',MedicaidLegacyDev:'ss_tri_state_user_dev',pdLocal:'pd_user_local',ELEVATEQA:'ELEVATEQA_user',ELEVATEDEV:'ELEVATEDEV_user',pdDev:'pd_user_dev',AbsMgmtStage:'abs_time_user_stage',AppliTrackTest:'AppliTrackTest_user',IepEnrichLocal:'ss_enrich_user_local',IepEnrichDev:'ss_enrich_user_dev',pdQA:'pd_user_qa',TAQALocal:'abs_time_user_qa',pdKkuhl:'pd_user_kkuhl',AppliTrackQA:'AppliTrackTest_user',pdStage:'pd_user_stage',IepLegacyBeta:'ss_tri_state_user_beta',"504LegacyBeta":'ss_tri_state_user_beta',RtiLegacyBeta:'ss_tri_state_user_beta',EsaLegacyBeta:'ss_tri_state_user_beta',MedicaidLegacyBeta:'ss_tri_state_user_beta',ELEVATESTAGE:'ELEVATESTAGE_user',RecruitStage:'RecruitStage_user',IepEnrichBeta:'ss_enrich_user_beta',ELEVATETEST:'ELEVATETEST_user',IepLegacyRc:'ss_tri_state_user_rc',"504LegacyRc":'ss_tri_state_user_rc',RtiLegacyRc:'ss_tri_state_user_rc',EsaLegacyRc:'ss_tri_state_user_rc',MedicaidLegacyRc:'ss_tri_state_user_rc',DOC:'DOC_user',pdProdTest:'pd_user_prodtest',RecruitLocal:'RecruitLocal_user',platformtools:'fl-employee'},_n=/*#__PURE__*/Object.freeze({dev:{ecSand:'https://ecsandproxyawsdev.flqa.net',productUserTypeMap:bn,productIdMap:yn},qa:{ecSand:'https://ecsandproxyawsqa.flqa.net',productUserTypeMap:bn,productIdMap:yn},stage:{ecSand:'https://ecsandproxyawsstage.flqa.net',productUserTypeMap:bn,productIdMap:yn},prod:{ecSand:'https://api2.frontlineeducation.com',productUserTypeMap:{EC:'employee',IepLegacyBeta:'ss_tri_state_user_beta',"504LegacyBeta":'ss_tri_state_user_beta',RtiLegacyBeta:'ss_tri_state_user_beta',EsaLegacyBeta:'ss_tri_state_user_beta',MedicaidLegacyBeta:'ss_tri_state_user_beta',IepLegacy:'ss_tri_state_user',"504Legacy":'ss_tri_state_user',RtiLegacy:'ss_tri_state_user',EsaLegacy:'ss_tri_state_user',MedicaidLegacy:'ss_tri_state_user',ta:'abs_time_user',AbsMgmt:'abs_time_user',pd:'pd_user',recruit:'recruit_user',IepEnrich:'ss_enrich_user',cc:'cc_user',platformTools:'fl-employee'},productIdMap:{}},productIdFromMap:k,environmentFromIdmGatewayUrl:v}),wn=null,Cn=null,Sn=null,xn=null;/**
+	 * Loads a style sheet
+	 * @function stylesheet
+	 * @instance
+	 * @param  {String} fileName
+	 * @param  {Function} success
+	 * @param  {Function} failure
+	 *//**
+	 * Loads the sidekick print styles (hides sidekick for print)
+	 * @function printStyles
+	 * @instance
+	 *//**
+	 * Loads a font
+	 * @function fontFace
+	 * @instance
+	 * @param  {String} fontName
+	 *//**
+	 * @module Sidekick.EasyDom
+	 * @memberOf Sidekick
+	 *//**
+	 * Creates a new {@link EasyDom} element from the Element.
+	 * @function element
+	 * @instance
+	 * @param {Element} el - Element from which to wrap in {@link EasyDom}
+	 * @return {EasyDom} the new {@link EasyDom} element
+	 *//**
+	 * Finds an {@link EasyDom} element based on the selector.
+	 * @function find
+	 * @instance
+	 * @param {String} selector - Selector to look for elements from
+	 * @param {EasyDom} [parent=false] - Parent element to start the search in
+	 * @return {Array}
+	 *//**
+	 * Parses an HTML string, creates an Element, then returns it as an {@link EasyDom} element.
+	 * @function parse
+	 * @instance
+	 * @param {Element} el - Element from which to wrap in {@link EasyDom}
+	 * @return {EasyDom} the new {@link EasyDom} element
+	 *//**
+	 * Runs a function on a timer (requestAnimationFrame)
+	 * @function rAF
+	 * @instance
+	 * @param {Function} callback - Callback when the timer runs
+	 *//**
+	 * EasyDom wrapper around HTML elements.
+	 * @class
+	 */// map of all handlers for all events
+// events that are handled by terminal handlers (only 1 allowed)
+// map of last data emitted for each event (for greedy event handlers)
+// eslint-disable-line
+/**
+	 * Event Bus Module
+	 * @module Sidekick.EventBus
+	 * @memberOf Sidekick
+	 *//**
+	 * Registers an event listener.
+	 * @function on
+	 * @instance
+	 * @param  {String} evt - Event to respond to
+	 * @param  {Function} handler - function to handle the event
+	 * @param  {Object} [config] - the event handler config
+	 * @param  {Boolean} [config.greedy=false] - execute immediately with last emitted data if possible
+	 * @param  {Boolean} [config.once=false] - Run once?
+	 * @param  {Boolean} [config.terminal=false] - Do not allow other handlers to listen to this event?
+	 * @return {Function} - Deregister function
+	 *//**
+	 * Registers an event listener to run once.
+	 * @function once
+	 * @instance
+	 * @param  {String} evt - Event to respond to
+	 * @param  {Function} handler - function to handle the event
+	 * @param  {Boolean} [greedy=false] -
+	 * @return {Function}
+	 *//**
+	 * Deregisters an event listener.
+	 * @function off
+	 * @instance
+	 * @param  {String} evt - Event to respond to
+	 * @param  {Function} handler - function to handle the event
+	 *//**
+	 * Emits an event.
+	 * @function emit
+	 * @instance
+	 * @param  {String} evt - Event to respond to
+	 * @param  {...*} args - Parameters to pass to the handler function for this event
+	 *//**
+	 * Deregisters all event listeners.
+	 * @function clear
+	 * @instance
+	 *//**
+	 * The object that exposes the events public api and logs warnings when internal
+	 * events are emitted or listened to
+	 *//**
+	 * @module Sidekick.Store
+	 * @memberOf Sidekick
+	 *//**
+	 * Sets a value to the store.
+	 * @function set
+	 * @instance
+	 * @param  {String} key - Key for the value
+	 * @param  {Function} value - value stored under the key
+	 * @emits ${eventPrefix}-$key
+	 *//**
+	 * Returns the value stored at the key or null.
+	 * @function get
+	 * @instance
+	 * @param  {String} key
+	 * @return {*} value - Value (or null) found (or not) at the key.
+	 *//**
+	 * Creates a listener for this key.
+	 * @function onValue
+	 * @instance
+	 * @param  {String} key - key for the handler
+	 * @param  {Function} handler - function to handle the event
+	 *//**
+	 * Creates a listener for this key that runs once.
+	 * @function onValueOnce
+	 * @instance
+	 * @param  {String} key - key for the handler
+	 * @param  {Function} handler - function to handle the event
+	 *//**
+	 * Returns the value stored at the key or null.
+	 * @function clear
+	 * @instance
+	 *//**
+	 * The object that exposes the events public api and logs warnings when internal
+	 * events are emitted or listened to
+	 */// get the token and idmData from the sidekick, store in local vars
+an('token-ready',function(e){var n=e.get;wn=n,b()},!0),mn('idm-data',function(e){Cn=e,b()});// wait for nav component to send us the translations service instance
+var In=function(e,n){Sn=n,xn=e,b()},En={" ":32,// space
+arrowdown:40,arrowleft:37,arrowright:39,arrowup:38,enter:13,escape:27,tab:9},On=window.localStorage,Nn={},An=function(e,n,t){if(null==e)return!1;var a=window.location,s=a.host,i=a.protocol,r=i+'//'+s,o=''+r+e;// if a matcher value is provided, check it first
+return'string'==typeof t&&t.length?(null==Nn[t]&&(Nn[t]=new RegExp(t,'i')),Nn[t].test(e)||Nn[t].test(o)):t instanceof Array?(null==t._re&&(t._re=t.map(function(e){return new RegExp(e,'i')})),t._re.reduce(function(n,t){return n||t.test(e)||t.test(o)},!1)):!('string'!=typeof n)&&(n.startsWith(r)&&(n=n.slice(r.length)),e.startsWith(n));// all attempts to match this route have failed
+},zn=function(){var e=window.location.search;if(0===e.length)return{};var n=e.slice(1).split('&');return n.reduce(function(e,n){var t=n.split('='),a=Ue(t,2),s=a[0],i=a[1];return e[decodeURIComponent(s)]=decodeURIComponent(i),e},{})},Ln=0,Tn=!1,Pn={},Rn={},Dn=['app-switcher','search','help','notifications'],Mn=['app-switcher','search'],Un=['user-info','org-switcher'],Fn=['impersonated-user','org-switcher'],jn=function(e,n,t){var a=3<arguments.length&&arguments[3]!==void 0?arguments[3]:0,s=4<arguments.length&&arguments[4]!==void 0?arguments[4]:'normal 15px',i=null==Rn[e];Rn[e]={elem:n,text:t,adjustment:a,font:s},'user-info'===e&&i&&U(),D()},qn=document.createElement('canvas').getContext('2d');///////
+// calculating and distribute the top bar extra width
+// to dynamic width elements
+//
+/**
+	 * cmptDynamicWidth - registers a header component that should be dynamic
+	 * width and occupy as much space (max-width) as possible
+	 *
+	 * @param {EasyDomElement} elem - the element that should be dynamic
+	 * @param {String} text - the dynamic text content to use for measurements
+	 * @param {Number} adjustment - the px amount to add to measurement to compensate for padding
+	 */tn('_header.impersonation',function(e){Tn=e,D()}),tn('_activity-indicator-initialized',function(e){tn('activity-indicator.visible',function(n){Ln=n?parseFloat(e.css('width'))+parseFloat(e.css('margin-right')):0,D()},!0)},!0),Dn.forEach(function(e){tn('_'+e+'-initialized',function(n){return F(e,n)},!0)});var Vn={type:'session',expires:30// in minutes
+},Bn={session:'local',local:'session'},Yn=window.sessionStorage,Wn=window.localStorage,Hn=function(e,n,t){var a=Object.assign({},Vn,t,{data:n});if('number'==typeof a.expires&&isFinite(a.expires)){a.expires=Date.now()+a.expires*60000}else a.expires=null;window[a.type+'Storage'].setItem('SK_'+e,JSON.stringify(a)),window[Bn[a.type]+'Storage'].removeItem('SK_'+e)},Kn=function(e){var n=Yn.getItem('SK_'+e)||Wn.getItem('SK_'+e)||null;if(null==n)return null;var t=JSON.parse(n);// if the data has expired, return null
+return null!=t.expires&&t.expires<Date.now()?null:t.data};// cleanup the expired persistence values when we first load
+mn('sk-config',function(e){var n=e.cleanCache;// clean out anything that is expired
+[Wn,Yn].forEach(function(e){for(// spin all the items in local/session storage
+var t=e.length;t--;){// get the key to inspect
+var a=e.key(t);// if it's not a SideKick value, don't mess with it
+if(a.startsWith('SK_')){// can we get data for this key?
+var s=Kn(a.slice(3));// if the data is null or we are in a clearing cache state, remove it
+(null==s||n)&&e.removeItem(a)}}})});var Gn,Qn={detect:function(){return'undefined'==typeof navigator?se():ie(navigator.userAgent)},detectOS:ae,getNodeVersion:se,parseUserAgent:ie}.detect,Xn=[{name:'chrome',version:50},{name:'firefox',version:40},{name:'safari',version:11,os:'mac os'},{name:'ie',version:11},{name:'edge'},{os:'ios'}],$n={header:h,nav:z,navItem:L,notifications:j,navItemSubmenu:q,userInfo:V,help:B,search:Y,loader:W,orgSwitcher:H,appSwitcher:K,contactOrg:function(e,n,t,a){function s(n){t!==n&&(t=n);var s='';null!=t.phone&&t.phone.length&&(s=a('Phone')+': '+t.phone),null!=t.fax&&t.fax.length&&(s.length&&(s+=', '),s+=a('Fax')+': '+t.fax),e.children(Ve('<dl class="sk--org">\n\t\t\t<dt><h4>'+a('Contact Your Organization')+'</h4></dt>\n\t\t\t<dd class="sk--name">'+t.name+'</dd>\n\t\t\t'+(null!=t.contactName&&t.contactName.length?'<dd class="sk--contact-name">'+t.contactName+'</dd>':'')+'\n\t\t\t'+(s.length?'<dd class="sk--phones">'+s+'</dd>':'')+'\n\t\t\t'+(null==t.email?'':'<dd class="sk--email"><a href="mailto:'+t.email+'">'+t.email+'</a></dd>')+'\n\t\t\t'+(null!=t.comments&&t.comments.length?'<dd class="sk--comments">'+t.comments+'</dd>':'')+'\n\t\t</dl>'))}pn('current-org',s)},tooltip:G,pickOrgApp:function(e){var n,t;rn('header.visible',!1),rn('nav.visible',!1),Be(function(){return Be(function(){return e.addClass('sk--fade-in')})}),tn('_pick-org.org-id-selected',function(e){return n=e}),tn('_pick-app.product-id-selected',function(e){t=e,rn('_pick-org-app.selected',{orgId:n,productId:t})}),tn('pick-org-app.abort',function(){e.css('display','none')},!0)},pickOrg:Q,pickApp:X,impersonatedUser:$,activityIndicator:J,navItemMegaMenu:Z,sessionTimeout:ee,siteErrors:ne,skipNav:te,unsupportedBrowserAlert:le/*cmptInject*/},Jn=!1,Zn=null,et=['productId','access','user','session','roles'],nt=function(e){var n=1<arguments.length&&void 0!==arguments[1]?arguments[1]:{},t=n.users,a=n.targetOrgId;// ensure our orgId is always a string so that we can correctly do comparisons
+'number'==typeof a&&(a=a.toString());var s=Object.keys(e),i=et.reduce(function(e,n){return e||!s.includes(n)},!1);// if we are waiting on data, don't process yet
+if(!(i||null==t)){var r=un('fl-internal-product-ids')||[],o=r.includes(e.productId.toLowerCase()),d=e.productId.toUpperCase(),c=e.access.filter(ye).filter(function(e){return e.ProductId.toUpperCase()===d}).filter(function(e){return!r.includes(e.ProductId.toLowerCase())}),u=e.session&&e.session.State||{};'number'==typeof u.currentOrg&&(u.currentOrg=u.currentOrg.toString());var p=a||u.currentOrg||null,m=e.roles.map(function(e){return e.toLowerCase()}).includes('idmadministrator');// if the user is NOT an IDM Administrator and they are trying to access an internal screen
+// redirect them to the /select screen so they can pick something they are allowed to see
+// if the user is an IdmAdministrator and they are accessing an org they don't
+// have access to, or an internal product, create a fake access record for them
+if(!m&&o&&(window.location.href=Ne()+'/select/'),m&&d&&(null!=p||o)){var g=o?null:c.find(function(e){return p===e.OrganizationId});if(null==g){var f=e.product&&e.product.DefaultSignInUrl||'',h=e.product&&e.product.OrgNavigationUrlTemplate||'',k=e.product&&e.product.Name||'',v=e.product&&e.product.LegacyName||null,y={FlId:t.Id.toString(),Disabled:!1,OrganizationId:o?null:p,OrganizationName:o?'':'IDM ADMIN: '+p,ProductId:e.productId,ProductName:k,ProductLegacyName:v,DefaultSignInUrl:f,OrgNavigationUrlTemplate:h,Url:f,UserKey:null,Fake:!0,Internal:o};c.push(y),e.access.push(y)}}// this account has no access at all
+if(0===e.access.length)return console&&console.log&&console.log('NO ACCESS RECORDS'),void rn('idm.no-access',e.user);// couldn't find an access record for the current product
+// if we have a user context and OrganizationUsers, aggregate the identities
+// that are within this organization context
+if(0===c.length)return he(e);// if we have just one product access record that matches this app
+if(1===c.length)e.userContext=Object.assign({},c[0]);else if(1<c.length)// we are targeting a specific org
+if(null!=p){// try to find a legit product access record for the requested org
+var b=c.find(function(e){return p.toString()===e.OrganizationId});// if we couldn't find a real access record and we are not an idmAdmin
+if(null==b)// we have access to this app, but not for the org we are targeting
+// we are also not an idmAdmin
+return he(e);// we are not targeting a specific org
+e.userContext=Object.assign({},b)}else// have the user pick the org they want to access
+return he(e);if(null!=e.userContext&&null!=t.OrganizationUsers){var _=e.userContext.OrganizationId;e.identities=t.OrganizationUsers.reduce(function(e,n){return n.OrganizationId===_&&(e=e.concat(n.Identities)),e},[].concat(t.Identities||[]))}if(null!=e.userContext){// common deprecation attrs
+var w=e.userContext;l({attr:'FlId',newLoc:'STORE(idm-data).user.profileId',obj:w,objLoc:'STORE(idm-data).userContext'},e.user.profileId.toString()),l({attr:'Description',obj:w,objLoc:'STORE(idm-data).userContext'},null),l({attr:'UserKey',obj:w,objLoc:'STORE(idm-data).userContext'},function(){var n=e.product.DefaultUserType,t=e.identities.filter(function(e){return e.Type===n});return t[0]&&t[0].Id||null});var C={LegacyName:'ProductLegacyName',DefaultSignInUrl:'Url',OrgNavigationUrlTemplate:'Url'};Object.keys(C).forEach(function(n){var t=C[n];l({attr:n,obj:w,objLoc:'STORE(idm-data).userContext',newLoc:'STORE(idm-data).userContext.'+t},function(){return e.userContext[t]})})}cn('idm-data',e);var S=je(window),x=p!==u.currentOrg,I=p!==e.userContext.OrganizationId;(x||I)&&we(),S.on('focus',we),tn('_nav.expand-arrow',function(e){Se(e)})}// ensure our orgId is always a string so that we can correctly do comparisons
+},tt=function(e){var n=e.productId.toUpperCase();// idmData
+cn('org-switcher-data',be(e)),cn('app-switcher-data',_e(e)),cn('user-data',e.user),tn('header.org-switcher.change',function(t){var s=t.id,a=e.access.find(function(e){return e.ProductId.toUpperCase()===n&&e.OrganizationId===s});dt(s,function(){return null==a?he(e,{orgId:s}):void(window.location.href=a.Url)})})},at=function(e,n){var t=2<arguments.length&&arguments[2]!==void 0?arguments[2]:[];// if the user's session has expired, bail out!
+ve()||ge('GET',e,null,ke(n),[{key:'Authorization',value:'Bearer '+Ce()},{key:'Accept',value:'*/*'}].concat(t))},st=function(e,n){var t=2<arguments.length&&arguments[2]!==void 0?arguments[2]:function(){},a=3<arguments.length&&arguments[3]!==void 0?arguments[3]:[];// if the user's session has expired, bail out!
+ve()||ge('POST',e,JSON.stringify(n),ke(t),[{key:'Authorization',value:'Bearer '+Ce()},{key:'Content-Type',value:'application/json'}].concat(a))},it=function(e,n,t){var a=3<arguments.length&&arguments[3]!==void 0?arguments[3]:[];// if the user's session has expired, bail out!
+ve()||ge('PUT',e,JSON.stringify(n),ke(t),[{key:'Authorization',value:'Bearer '+Ce()},{key:'Accept',value:'*/*'}].concat(a))},rt=function(e,n,t){var a=3<arguments.length&&arguments[3]!==void 0?arguments[3]:[];// if the user's session has expired, bail out!
+ve()||ge('PATCH',e,JSON.stringify(n),ke(t),[{key:'Authorization',value:'Bearer '+Ce()},{key:'Accept',value:'*/*'}].concat(a))},ot=function(e){var n=1<arguments.length&&arguments[1]!==void 0?arguments[1]:function(){},t=2<arguments.length&&arguments[2]!==void 0?arguments[2]:[];// if the user's session has expired, bail out!
+ve()||ge('DELETE',e,null,ke(n),[{key:'Authorization',value:'Bearer '+Ce()},{key:'Content-Type',value:'application/json'}].concat(t))},dt=function(e,n){var t=un('idm'),a=t.idGatewayUrl;st(a+'/sessions/state',{currentOrg:e},n)},lt={type:'local',// local storage
+expires:1440// 1 day
+},ct={};// shorthand for these long attributes that are used often
+// shorthand get
+// shorthand post
+// shorthand put
+// shorthand patch
+// shorthand delete
+mn('idm',function(e){function n(e){function n(e,n){if(null!=e&&null!=n){var t={productId:i};r.users=e,t.roles=e.Roles.map(function(e){return e.Name}),t.user={profileId:e.Id,firstName:e.FirstName,lastName:e.LastName,email:e.Email,emailConfirmed:e.EmailIsVerified,roles:t.roles,isFrontlineUser:!0===e.IsFrontlineUser};// set deprecated user fields
+['username','middleName','birthday','gender','militaryStatus','emailSent'].forEach(function(e){l({obj:t.user,attr:e,objLoc:'STORE(idm-data).user'},null)}),t.access=n.map(function(n){var t=Object.assign({Disabled:!1},n),s=t;// deprecation defaults
+l({obj:s,objLoc:'STORE(idm-data).access[*]',attr:'FlId',newLog:'STORE(idm-data).user.profileId'},a),l({obj:s,objLoc:'STORE(idm-data).access[*]',attr:'Description'},null),l({obj:s,objLoc:'STORE(idm-data).access[*]',attr:'UserKey'},function(){var n=d.productUserTypeMap[t.ProductId],a=t.OrganizationId,s=e.OrganizationUsers.reduce(function(e,t){return t.OrganizationId===a&&(e=e.concat(t.Identities.filter(function(e){return e.Type===n}))),e},[]);return s[0]&&s[0].Id||null});var i={LegacyName:'ProductLegacyName',DefaultSignInUrl:'Url',OrgNavigationUrlTemplate:'Url'};return Object.keys(i).forEach(function(e){var n=i[e];l({obj:s,objLoc:'STORE(idm-data).access[*]',attr:e,newLoc:'STORE(idm-data).access[*].'+n},function(){return t[n]})}),t}),nt(Object.assign(ct,t),r)}}/////
+// Process User Data
+//
+var s=Kn('rawUser-'+a+'-'+e),o=Kn('rawProductLinks-'+a+'-'+e);// get user data
+if(null==s){var c=t+'/productaccessservice/v0/api/users/id/'+a;at(c,function(t){Hn('rawUser-'+a+'-'+e,t,lt),s=t,n(s,o)})}else n(s,o);// get product links data
+if(null==o){var u=t+'/productaccessservice/v0/api/productlinks?userId='+a;at(u,function(t){Hn('rawProductLinks-'+a+'-'+e,t,lt),o=t,n(s,o)})}else n(s,o)}var t=e.idGatewayUrl,a=e.flId,s=e.currentOrg,i=e.product,r={targetOrgId:s,users:null},o=v(t),d=_n[o];t.endsWith('/')&&(e.idGatewayUrl=t=t.slice(0,-1)),mn('idm-data',function(e){function n(e){cn('org-branding-data',e.data.attributes.branding)}/////
+// get the org-co-branding data from the org service
+//
+if(null!=e.userContext&&null!=e.userContext.OrganizationId){var t=e.userContext.OrganizationId,a=d.ecSand,s=Kn('rawOrgBrand-'+t);if(null==s){at(a+'/OrganizationAPI/api/organizations/'+t+'?fields=branding',function(e){Hn('rawOrgBrand-'+t,e,lt),n(e)},[{key:'FlUser',value:'{"OrganizationId": "'+t+'"}'}])}else n(s)}});var c=Kn('rawProduct-'+i.toUpperCase());0<i.length&&null==c?at(t+'/api/products/'+i,function(e){Hn('rawProduct-'+i.toUpperCase(),e,lt);[{attr:'FlId',newLoc:'STORE(idm-data).user.profileId',getter:function(){return a}},{attr:'ProductName',newLoc:'STORE(idm-data).product.Name',getter:function(){return e.Name}},{attr:'OrganizationId',newLoc:'STORE(idm-data).userContext.OrganizationId',getter:function(){return ct.userContext.OrganizationId}},{attr:'OrganizationName',newLoc:'STORE(idm-data).userContext.OrganizationName',getter:function(){return ct.userContext.OrganizationName}},{attr:'UserKey',newLoc:null,getter:function(){return ct.identities.find(function(n){return n.Type===e.DefaultUserType}).Id||''}},{attr:'Disabled',newLoc:null,getter:function(){return!1}}].forEach(function(n){var t=n.attr,a=n.newLoc,s=n.getter;l({obj:e,attr:t,newLoc:a,objLoc:'STORE(idm-data).product'},s)}),nt(Object.assign(ct,{product:e}),r)}):nt(Object.assign(ct,{product:c}),r),at(t+'/sessions',function(e){nt(Object.assign(ct,{session:e}),r),n(e.Id)})}),mn('idm',function(){return rn('token-ready',{get:at,post:st,put:it,patch:rt,del:ot})}),mn('idm-data',tt),tn('_pick-org-app.selected',function(e){var n=e.orgId,t=e.productId;if(null!=n&&null!=t){var a=ct.access.find(function(){var e=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},a=e.OrganizationId,s=e.ProductId;return null!=a&&null!=s&&a.toString()===n.toString()&&s.toUpperCase()===t.toUpperCase()});null==a||dt(a.OrganizationId,function(){location.href=a.Url})}});var ut=(0,eval)('this');// eslint-disable-line no-eval
+/////
+// register the global sidekick object
+//
+ut.sidekick!==void 0&&console&&console.error&&console.error('TOO MANY SIDEKICKS => the sidekick was loaded twice on this page.'),ut.sidekick=ut.sidekick||{init:function(){function e(){r.className.length&&(r.className+=' '),r.className+='sidekick-wrapped-application';for(var e=t.length;e--;){var n=t[e],a=n.name,s=n.ctxStore,o=document.createElement('div');o.setAttribute('sk-'+a,''),s&&o.setAttribute('context-store',s),null==r.firstChild?r.appendChild(o):r.insertBefore(o,r.firstChild)}ce()}var n=0<arguments.length&&arguments[0]!==void 0?arguments[0]:{};// prevent a second init of the sidekick
+if(null==un('sk-config')){var t=[{name:'header',ctxStore:!1},{name:'unsupported-browser-alert',ctxStore:'idm'},{name:'nav',ctxStore:'nav'},{name:'pick-org-app',ctxStore:'pick-org-app-data'},{name:'session-timeout',ctxStore:'session-timeout'},{name:'site-errors',ctxStore:!1}],a={appElement:document.body,// the html element the sk should surround
+mainElement:null,// the main content element for the "skip nav" link
+addIcons:!0,// automagically add the icon font
+addOpenSans:!0,// automagically add open sans font-face
+addSidekickCss:!0,// automagically add sidekick.css to the header
+autoAppendAppNameInTitle:!1,// scans the title to ensure app name is appended
+cleanCache:!1,// cleans out the local and session storage cache
+language:'en'// language to set any translations strings
+},s=Object.assign({},a,n);// setup the app config values
+cn('sk-config',s),cn('fl-internal-product-ids',['platformtools','doc']),m(s.language);var r=s.appElement;s.addIcons&&Le('Fl-Icons'),s.addOpenSans&&Le('Open-Sans'),s.addSidekickCss?Ae('sidekick.css',e):e(),s.autoAppendAppNameInTitle&&pe(),ze()}},cycle:ce,dom:He,store:gn,events:on}})();
+//# sourceMappingURL=sidekick.js.map

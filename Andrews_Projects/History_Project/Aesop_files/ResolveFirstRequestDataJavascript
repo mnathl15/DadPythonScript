@@ -1,0 +1,10 @@
+var RRImportantNotification = "Important Notifications"; 
+var RRDismiss = "Dismiss"; 
+var RRPrevious = "Previous"; 
+var RRConfirm = "Confirm"; 
+var RRNext = "Next"; 
+var RRMaybeLater = "Maybe Later"; 
+var RRGoToDistrictList = "Go to District List"; 
+var RRAddAllDistricts = "Add All Districts"; 
+var RRCreateMOSPinButton = "Create multiple district pin"; 
+var RRAdditionalDistricts = "Additional Districts"; 

@@ -1,0 +1,1521 @@
+﻿var caldata = {
+    dateKeyFormat: "yyyyMMdd",
+
+    AvailableJobs: [],
+    AssignedJobs: [],
+    NonWorkDays: [],
+    Tenants: [],
+    VisibleTenants: [],
+    AvailableJobsFromAg: false,
+    AvailableJobsFromDb: false,
+    AvailableJobsFromCache: false,
+    SelectedSubCancelReason:-1,
+
+    setBasicData: function (tenants, loadFilters) {
+        this.Tenants = tenants;
+        if (loadFilters === true)
+            this.LoadVisibleTenantFilter();
+    },
+
+    setCalData: function (availableJobs, currentAssignments, nwds, tenants, loadFilters) {
+        this.setBasicData(tenants, loadFilters);
+        this.AvailableJobs = availableJobs.list;
+        this.AvailableJobsFromAg = availableJobs.fromAg;
+        this.AvailableJobsFromDb = availableJobs.fromDb;
+        this.AvailableJobsFromCache = availableJobs.fromCache;
+        this.AssignedJobs = currentAssignments;
+        this.NonWorkDays = nwds;
+        this.parseData();
+        this.inflateData();
+    },
+
+    ItemIsVisible: function (item) {
+        if ((!this.VisibleTenants) || (this.VisibleTenants.length == 0)) {
+            this.LoadVisibleTenantFilter();
+            if ((!this.VisibleTenants) || (this.VisibleTenants.length == 0))
+                return true;
+        }
+
+        if (item.TenantIds === undefined) {
+            if (item.TenantId === undefined) {
+                // Somebody called this code with elements that don't have the expected structure.
+                return true;
+            }
+            return (this.VisibleTenants[item.TenantId] == "True");
+        } else {
+            for (var j = 0; j < item.TenantIds.length; j++) {
+                var tenantId = item.TenantIds[j];
+                if (this.VisibleTenants[tenantId] == "True") {
+                    return true;    // Count only once per NonWorkDay, no matter how many tenants it applies to.
+                }
+            }
+            return false;
+        }
+    },
+
+    VisibleCount: function (alist) {
+        var result = 0;
+        for (var i = 0; i < alist.length; i++) {
+            var listItem = alist[i];
+            if (this.ItemIsVisible(listItem))
+                result++;
+        }
+        return result;
+    },
+
+    DeleteVisibleTenantFilter: function () {
+        $.cookie("visibleTenants", null, { path: '/' });
+    },
+
+    LoadVisibleTenantFilter: function () {
+        var tenantLength = $.DictionarySize(this.Tenants);
+        if (tenantLength == 1)
+            this.DeleteVisibleTenantFilter();
+
+        var temp = $.cookie("visibleTenants", { path: '/' });
+        if ((temp == null) || (temp == "")) {
+            for (var key in this.Tenants) {
+                this.VisibleTenants[key] = "True";
+            }
+            this.SaveVisibleTenantFilter();
+        }
+        else {
+            var tenants = temp.split(";");
+            for (var i = 0; i < tenants.length; i++) {
+                var tenantInfo = tenants[i];
+                if (tenantInfo.length > 0) {
+                    var keyAndValue = tenantInfo.split(":");
+                    this.VisibleTenants[keyAndValue[0]] = keyAndValue[1];
+                }
+            }
+
+            // Check if the loaded visible tenants is valid
+            if (tenantLength != $.DictionarySize(this.VisibleTenants)) {
+                this.DeleteVisibleTenantFilter();
+                this.LoadVisibleTenantFilter();
+            }
+            else {
+                for (var key in this.Tenants) {
+                    if (this.VisibleTenants[key] === undefined) {
+                        this.DeleteVisibleTenantFilter();
+                        this.LoadVisibleTenantFilter();
+                        return;
+                    }
+                }
+            }
+        }
+    },
+
+    SaveVisibleTenantFilter: function () {
+        var temp = "";
+        for (var key in this.VisibleTenants) {
+            if (this.VisibleTenants[key] === undefined) continue;
+            var tenantInfo = key.toString() + ":" + this.VisibleTenants[key].toString() + ";";
+            temp = temp + tenantInfo;
+        }
+        $.cookie("visibleTenants", temp, { expires: 7, path: '/' });
+    },
+
+    RemoveTenantFilter: function () {
+        for (var key in this.VisibleTenants) {
+            this.VisibleTenants[key] = "True";
+        }
+        this.SaveVisibleTenantFilter();
+    },
+
+    PastAssignedJobs: function () {
+        var result = [];
+        var today = Date.today();
+        for (var i = 0; i < this.AssignedJobs.length; i++) {
+            var job = this.AssignedJobs[i];
+            if (job.EndDate < today)
+                result.push(job);
+        }
+        return result;
+    },
+
+    CurrentAssignedJobs: function () {
+        var result = [];
+        var today = Date.today();
+        for (var i = 0; i < this.AssignedJobs.length; i++) {
+            var job = this.AssignedJobs[i];
+            if (job.EndDate >= today)
+                result.push(job);
+        }
+        return result;
+    },
+     
+    loadAllCalData: function (startDate, endDate, callback, forceDb) {
+        this.loadAvailableJobs(startDate, endDate, callback, forceDb);
+        this.loadCurrentAssignments(startDate, endDate, callback);
+        this.loadNonWorkDays(startDate, endDate, callback);
+    },
+
+    loadAvailableJobs: function (startDate, endDate, callback, forceDb) {
+        aesopData.AvailableJobs(startDate, endDate,
+            function (data, textStatus) {
+                caldata.AvailableJobs = data.list;
+                caldata.AvailableJobsFromAg = data.fromAg;
+                caldata.AvailableJobsFromDb = data.fromDb;
+                caldata.AvailableJobsFromCache = data.fromCache;
+                caldata.parseData();
+                caldata.inflateData();
+                if (jQuery.isFunction(callback)) callback();
+            },
+            forceDb
+        );
+    },
+
+    loadCurrentAssignments: function (startDate, endDate, callback) {
+        aesopData.CurrentAssignments(startDate, endDate,
+            function (data, textStatus) {
+                caldata.AssignedJobs = data;
+                caldata.parseData();
+                caldata.inflateData();
+                if (jQuery.isFunction(callback)) callback();
+            }
+        );
+    },
+
+    loadNonWorkDays: function (startDate, endDate, callback) {
+        aesopData.NonWorkDays(startDate, endDate,
+            function (data, textStatus) {
+                caldata.NonWorkDays = data;
+                caldata.parseData();
+                caldata.inflateData();
+                if (jQuery.isFunction(callback)) callback();
+            }
+        );
+    },
+
+    loadTenants: function (callback) {
+        aesopData.TenantNames(
+            function (data, textStatus) {
+                caldata.Tenants = data;
+                caldata.parseData();
+                caldata.inflateData();
+                if (jQuery.isFunction(callback)) callback();
+            }
+        );
+    },
+
+    ObjectSize: function (obj) {
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
+    },
+
+    tenantList: function () {
+        var ar = [];
+        for (var key in this.Tenants) {
+            ar.push({ id: key, name: this.Tenants[key] });
+        }
+        return ar;
+    },
+
+    tenantNames: function (ids, separator) {
+        if (!separator) separator = ", ";
+
+        var tenants = this.Tenants;
+        if (ids.length == $.DictionarySize(tenants)) return "All Districts";
+
+        var str = "";
+        for (var i = 0; i < ids.length; i++) {
+            str = str + tenants[ids[i]];
+            if (i + 1 < ids.length) str = str + separator;
+        }
+
+        return str;
+    },
+
+    getClassForDay: function (date) {
+        var css = "";
+
+        if (pageVars && pageVars.startDate) {
+            if(date < pageVars.startDate) {
+                css = "pastDisabled";
+            }
+        }
+
+        var dateData = this.getDateData(date);
+        if (dateData) {
+            css = caldata.appendClassStringFromList(css, dateData.AvailableJobs);
+            css = caldata.appendClassStringFromList(css, dateData.AssignedJobs);
+            css = caldata.appendClassStringFromList(css, dateData.NonWorkDays);
+        }
+
+        return css;
+    },
+
+    appendClassStringFromList: function (css, list) {
+        if (list) {
+            for (var i = 0; i < list.length; i++) {
+                if (css.indexOf(list[i].ItemType) <= 0) css = css + list[i].ItemType + " ";
+            }
+        }
+        return css;
+    },
+
+    getDateData: function (date) {
+        if (this.EventsByDate) {
+            return this.EventsByDate[date.formatDate(this.dateKeyFormat)];
+        }
+    },
+
+    parseData: function () {
+        var avJobs = this.AvailableJobs;
+        var curJobs = this.AssignedJobs;
+        var nwds = this.NonWorkDays;
+        var tenants = this.Tenants;
+        this.StartDate = Date.parse(this.StartDate);
+        this.EndDate = Date.parse(this.EndDate);
+
+        for (var i = 0; i < avJobs.length; i++) {
+            this.parseJob(avJobs[i], "av", tenants);
+        }
+
+        for (var i = 0; i < curJobs.length; i++) {
+            this.parseJob(curJobs[i], "work", tenants);
+        }
+
+        for (var i = 0; i < nwds.length; i++) {
+            var item = nwds[i];
+            if (item.parsed) continue;
+            item.parsed = true;
+            item.Start = Date.parse(item.Start);
+            item.End = Date.parse(item.End);
+            item.Created = Date.parse(item.Created);
+
+            if (item.IsSystemGenerated) {
+                item.ItemType = "nwdsys";
+            } else {
+                item.ItemType = "nwd";
+            }
+        }
+    },
+
+    parseJob: function (job, itemType, tenants) {
+
+        if (job.parsed) return;
+        job.parsed = true;
+        job.TenantName = tenants[job.TenantId];
+        job.Start = Date.parse(job.Start);
+        job.EndDate = Date.parse(job.EndDate);
+        job.FirstInst = (typeof job.Items[0] != "undefined") ? job.Items[0].Institution : null;
+        job.WorkerIsVacancy = (job.WorkerIsVacancy == true || job.WorkerIsVacancy == "True");
+        job.HasNotes = (job.HasNotes == true || job.HasNotes == "True");
+        job.HasAttachments = (job.HasAttachments == true || job.HasAttachments == "True");
+
+        for (var j = 0; j < job.Items.length; j++) {
+            var item = job.Items[j];
+            item.Start = Date.parse(item.Start);
+            item.End = Date.parse(item.End);
+            item.Duration = Date.parse(item.Duration);
+            item.BreakDuration = Date.parse(item.BreakDuration);
+            item.NonPayTime = Date.parse(item.NonPayTime);
+
+            item.Parent = job;
+            item.ItemType = itemType;
+        }
+    },
+
+    inflateData: function () {
+        var avJobs = this.AvailableJobs;
+        var curJobs = this.AssignedJobs;
+        var nwds = this.NonWorkDays;
+        var tenants = this.Tenants;
+        this.EventsByDate = new Array(); // { "AvailableJobs" : new Array(), "AssignedJobs" : new Array(), "NonWorkDays" : new Array() };
+
+        for (var i = 0; i < avJobs.length; i++) {
+            var job = avJobs[i];
+            if (!caldata.ItemIsVisible(job))
+                continue;
+
+            for (var j = 0; j < job.Items.length; j++) {
+                var item = job.Items[j];
+                var dateKey = item.Start.formatDate(this.dateKeyFormat);
+                if (!this.EventsByDate[dateKey]) this.EventsByDate[dateKey] = new Object();
+                var list = this.EventsByDate[dateKey].AvailableJobs;
+                if (!list) {
+                    this.EventsByDate[dateKey].AvailableJobs = new Array();
+                    list = this.EventsByDate[dateKey].AvailableJobs;
+                }
+                list.push(item);
+            }
+        }
+
+        for (var i = 0; i < curJobs.length; i++) {
+            var job = curJobs[i];
+            for (var j = 0; j < job.Items.length; j++) {
+                var item = job.Items[j];
+                var dateKey = item.Start.formatDate(this.dateKeyFormat);
+                if (!this.EventsByDate[dateKey]) this.EventsByDate[dateKey] = new Object();
+                var list = this.EventsByDate[dateKey].AssignedJobs;
+                if (!list) {
+                    this.EventsByDate[dateKey].AssignedJobs = new Array();
+                    list = this.EventsByDate[dateKey].AssignedJobs;
+                }
+                list.push(item);
+            }
+        }
+
+        for (var i = 0; i < nwds.length; i++) {
+            var item = nwds[i];
+            var dateKey = item.Start.formatDate(this.dateKeyFormat);
+            if (!this.EventsByDate[dateKey]) this.EventsByDate[dateKey] = new Object();
+            var list = this.EventsByDate[dateKey].NonWorkDays;
+            if (!list) {
+                this.EventsByDate[dateKey].NonWorkDays = new Array();
+                list = this.EventsByDate[dateKey].NonWorkDays;
+            }
+            list.push(item);
+        }
+    }
+
+};
+
+var calendarview = {
+    initJobListEvents: function () {
+        $(document)
+            .on("click", ".qtip .showDetailsButton", calendarview.showDetailsOverlay)
+            .on("click", ".jobList .showDetailsButton", calendarview.toggleDetails)
+            .on("click", ".jobList .hideDetailsButton", calendarview.toggleDetails)
+            .on("click", ".jobDetailDialog .jobList .hideDetailsButton", function() {
+                $(this).parents(".ui-dialog-content:first").dialog("close");
+            })
+            .on("click", ".filterTenants", calendarview.filterTenantsClick)
+            .on("click", ".acceptButton", calendarview.acceptJobClick)
+            .on("click", ".rejectButton", calendarview.rejectJobClick)
+            .on("click", ".cancelButton", calendarview.cancelJobClick)
+            .on("click", ".cancelDayButton", calendarview.cancelDayClick)
+            .on("click", ".notesIcon", calendarview.showNotesClick)
+            .on("click", ".filesIcon", calendarview.showFilesClick)
+            .on("click", ".jobList th.sortable", calendarview.sortJobGrid)
+            .on("click", ".calendarPopoutClose", calendarview.closePopout)
+            .on("click", ".calendarPopoutNext", calendarview.showNextItemForDate)
+            .on("click", ".calendarPopoutPrevious", calendarview.showPrevItemForDate)
+            .on("change", ".subCancelReasons", calendarview.setCancelReason);
+       
+
+    },
+    initNwdListEvents: function () {
+        $(document).on("click", ".removeNwdButton", calendarview.removeNonWorkDayClick);
+        $(".addNwdButton").bind("click", calendaractions.AddNonWorkDay);
+    },
+
+    // Calendars
+    // relies on #months container and #monthsNavLeft and #monthsNavRight
+    buildMonths: function (startDate, endDate, historyDays, numMonths) {
+        // remove current months
+        var container = $("#months");
+        //container.children().remove();
+
+        numMonths = 3;
+        var firstOfMonth = new Date(startDate).moveToFirstDayOfMonth();
+        var minDate = new Date(startDate).addDays(-1 * historyDays).moveToFirstDayOfMonth(); // min date 
+        var maxDate = new Date(endDate).addMonths(1).moveToFirstDayOfMonth().addDays(-1);
+        var prevPicker;
+
+        // Initialize Calendars
+        for (var i = 0; i < numMonths; i++) {
+            var month = $("<div />");
+            container.append(month);
+
+            var thisMaxDate = new Date(maxDate).addMonths(i + 1 - numMonths).moveToLastDayOfMonth();
+            month.datepicker({
+                showOtherMonths: false,
+                minDate: minDate,
+                maxDate: thisMaxDate,
+                dayNamesMin: Date.CultureInfo.abbreviatedDayNames,
+                beforeShowDay: function (date) { return [true, caldata.getClassForDay(date) + ' ' + date.toString(caldata.dateKeyFormat)]; },
+                onSelect: calendarview.showDataForDate
+            });
+            var setDate = new Date(firstOfMonth).addMonths(i);
+            if (setDate.is().saturday() || setDate.is().sunday()) {
+                setDate = setDate.next().monday();
+            }
+            //month.datepicker("setDate", new Date(firstOfMonth).addMonths(i));
+            month.datepicker("setDate", setDate);
+            month.data('prevPicker', prevPicker);
+            if (prevPicker) prevPicker.data('nextPicker', month);
+            prevPicker = month;
+
+            if (i == 0) month.addClass("firstDatepicker");
+            if (i == numMonths - 1) month.addClass("lastDatepicker");
+        }
+        container.append("<div class='clear'></div>");
+
+        // Set event to cascade month change
+        $(".firstDatepicker").datepicker('option', 'onChangeMonthYear', function (year, month, picker) {
+            var firstOfMonth = new Date(year, month).addMonths(-1);
+
+            var curpicker = $(this).data('nextPicker');
+            var i = 0;
+            while (curpicker && curpicker.length > 0) {
+                i++;
+                curpicker.datepicker('setDate', new Date(firstOfMonth).addMonths(i));
+                curpicker = curpicker.data('nextPicker');
+            }
+        });
+
+        // Setup Navigation Buttons
+        $("#monthsNavLeft").unbind("click").click(function (evt) {
+            if ($("#monthsNavLeft").hasClass("disabled")) return;
+            calendarview.scrollMonth(-1);
+            evt.preventDefault();
+        });
+
+        $("#monthsNavRight").unbind("click").click(function (evt) {
+            if ($("#monthsNavRight").hasClass("disabled")) return;
+            calendarview.scrollMonth(1);
+            evt.preventDefault();
+        });
+    },
+
+    scrollMonth: function (numMonths) {
+        var dp = $(".firstDatepicker");
+        var newDate = dp.datepicker("getDate");
+        newDate.moveToFirstDayOfMonth().addMonths(numMonths);
+
+        this.setMonthNavDisabled(newDate);
+        dp.datepicker("setDate", newDate);
+
+        calendarview.balanceCalendarRows();
+    },
+
+    setMonthNavDisabled: function (curDate) {
+        var dp = $(".firstDatepicker");
+        var minDate = dp.datepicker("option", "minDate");
+        var maxDate = dp.datepicker("option", "maxDate");
+
+        var nextBackwardMonth = new Date(curDate).addMonths(-1);
+        var nextForwardMonth = new Date(curDate).addMonths(1);
+
+        if (nextBackwardMonth < minDate) {
+            $("#monthsNavLeft").addClass("disabled");
+        } else {
+            $("#monthsNavLeft").removeClass("disabled");
+        }
+
+        if (nextForwardMonth > maxDate) {
+            $("#monthsNavRight").addClass("disabled");
+        } else {
+            $("#monthsNavRight").removeClass("disabled");
+        }
+    },
+
+    refreshMonths: function (startDate, endDate, historyDays, setToEnd) {
+        if (startDate) {
+            var numMonths = 3;
+            var minDate = new Date(startDate).addDays(-1 * historyDays).moveToFirstDayOfMonth();
+            var maxDate = new Date(endDate).addMonths(1).moveToFirstDayOfMonth().addDays(-1);
+            var i = 0;
+            var firstPicker = $("#months .firstDatepicker");
+            var picker = firstPicker;
+            while (picker.length > 0) {
+                var thisMaxDate = new Date(maxDate).addMonths(i + 1 - numMonths).moveToLastDayOfMonth();
+                picker.datepicker("option", "minDate", minDate);
+                picker.datepicker("option", "maxDate", thisMaxDate);
+
+                picker = picker.next(".hasDatepicker");
+                i++;
+            }
+
+            var adjustedEndDate = new Date(maxDate).addMonths(-1 * numMonths + 1);
+            var setToDate = setToEnd && adjustedEndDate > startDate ? adjustedEndDate : startDate;
+            firstPicker.datepicker("setDate", setToDate);
+            this.setMonthNavDisabled(setToDate);
+
+        }
+        var pickers = $("#months .hasDatepicker");
+        pickers.datepicker("refresh");
+        this.balanceCalendarRows();
+    },
+
+    balanceCalendarRows: function () {
+        var calendars = $("#months .hasDatepicker table");
+
+        var maxRows = 0;
+        for (var i = 0; i < calendars.length; i++) {
+            maxRows = Math.max(maxRows, $(calendars[i]).find("tr").length);
+        }
+
+        for (var i = 0; i < calendars.length; i++) {
+            var curpicker = $(calendars[i]);
+            if (curpicker.find("tr").length < maxRows) {
+                curpicker.parents(".hasDatepicker:first").addClass("padForExtraWeek");
+            } else {
+                curpicker.parents(".hasDatepicker:first").removeClass("padForExtraWeek");
+            }
+        }
+    },
+
+
+    showDataForDate: function (dateText, inst) {
+        var date = $(this).datepicker("getDate"); //calendarview.activeShowDate;
+
+        inst.inline = false;
+        var key = date.toString(caldata.dateKeyFormat);
+        var dateData = caldata.getDateData(date);
+        var list = [];
+        if (dateData) {
+            if (dateData.AssignedJobs) list = list.concat(dateData.AssignedJobs);
+            if (dateData.AvailableJobs) list = list.concat(dateData.AvailableJobs);
+            if (dateData.NonWorkDays) list = list.concat(dateData.NonWorkDays);
+        }
+
+        var popoutEl = $("#calendarPopoutTemplate").clone().attr("id", "calendarPopout"); //clone the template
+        $("#calendarPopout").remove();  // remove the previous one
+        popoutEl.find(".calendarPopoutHeader .calendarPopoutDate").html(date.toString("MMMM d"));
+
+        var clickedEl = $(this).find("." + key);
+        if (clickedEl.hasClass("pastDisabled"))
+            popoutEl.addClass("pastDisabled");
+        
+        clickedEl.qtip({
+            content: { text: popoutEl },
+            show: { ready: true, event: 'click', solo: true },
+            hide: { event: "click" },
+            events: {
+                show: function () { popoutEl.show(); },
+                visible: function (event, api) { $(this).css("z-index", "999"); }
+            },
+            position: { my: "top center", at: "bottom center", adjust: { y: 0 }, viewport: $(window) },
+            style: { def: false, classes: "ui-tooltip-calendarPopout shadowed", tip: { height: 10, width: 20} }
+        });
+
+        popoutEl.find(".addNwdButton").click(function (evt) {
+            calendaractions.AddNonWorkDay(evt, date);
+        });
+        popoutEl.data("list", list);
+        popoutEl.data("curIndex", 0);
+        popoutEl.data("clicked", $(this));
+
+        calendarview.showItemForDate(popoutEl, 0, date);
+
+    },
+
+    showNextItemForDate: function () {
+        calendarview.showItemForDate($("#calendarPopout"), 1);
+    },
+
+    showPrevItemForDate: function () {
+        calendarview.showItemForDate($("#calendarPopout"), -1);
+    },
+
+    setCancelReason: function() {
+       caldata.SelectedSubCancelReason = parseInt($('.subCancelReasons').val());
+    },
+    
+
+    showItemForDate: function (el, increment, date) {
+        var list = el.data("list");
+        var curIndex = el.data("curIndex");
+        curIndex = curIndex + increment
+
+        // end or beginning of list
+        if (curIndex < 0 || (curIndex > 0 && list && curIndex >= list.length)) return;
+
+        //clear css
+        el.removeClass("availableJobs pastJobs scheduledJobs acceptedJobs nwdList noData past av work nwd nwdsys")
+
+        // no data
+        if (list.length == 0) {
+            el.addClass("noData");
+            if (date < Date.today()) el.addClass("past");
+            return;
+        }
+
+        // Show item
+        var item = list[curIndex];
+        el.data("curIndex", curIndex);
+
+        el.find(".curNum").text(curIndex + 1);
+        el.find(".totalNum").text(list.length);
+        el.addClass(item.ItemType);
+        el.addClass(calendarview.getListClassFromItem(item));
+
+        //Show/hide multi-day status info
+        var multidayInfo = el.find(".multidayInfo");
+        multidayInfo.hide();
+        var dayCount = (item.ItemType !== "nwd") ? item.Parent.Items.length : 0;
+        el.removeClass("multiple");
+        if (list.length > 1) {
+            el.addClass("multiple");
+        }
+        if (dayCount > 1)
+            multidayInfo.show();
+
+        var inner = el.children(":first");
+        inner.removeClass("job nwd");
+        switch (item.ItemType) {
+            case "av":
+            case "work":
+                calendarview.setJobData(inner, item.Parent);
+                calendarview.setJobDetailData(inner, item.Parent, item, -1);
+                inner.addClass("job");
+                break;
+            default:
+                calendarview.setNwdData(inner, item);
+                inner.addClass("nwd");
+                break;
+        }
+
+        $(".qtip").qtip("reposition");
+    },
+
+    getListClassFromItem: function (item) {
+        switch (item.ItemType) {
+            case "av":
+                return "availableJobs";
+            case "work":
+                return "acceptedJobs " + (item.Parent.EndDate < Date.today() ? "pastJobs" : "scheduledJobs");
+            default:
+                return "nwdList";
+        }
+    },
+
+    closePopout: function (evt) {
+        $(evt.target).parents(".qtip:first").qtip("hide");
+    },
+
+    showDetailsOverlay: function (evt) {
+        var job = $(evt.target).parents(".job:first").data("data");
+        var jobEl = $("#" + job.Id);
+        var clone = jobEl.parents("table:first").parent().clone();
+        clone.find("tbody").remove();
+        clone.find("listheader").remove();
+
+        calendarview.buildJobGridItem(job, $("#jobTemplate tbody"), clone.find("table:first"));
+        calendarview.toggleDetailsOnEl(clone.find("tbody:first"));
+
+        var dialog = $.dialog(clone, { width: 960, modal: true, closeOnUnfocus: true });
+        dialog.addClass("jobDetailDialog");
+
+        clone.show();
+    },
+
+
+    // Grid
+    buildJobGrid: function (targetSelector, jobsData, sort, descending, checkFilters) {
+        var template = $("#jobTemplate tbody");
+        var target = $(targetSelector);
+
+        var sortByFields = sort;
+        if (!sortByFields) sortByFields = "Start,WorkerLastName";
+        sortByFieldsAr = sortByFields.split(",");
+
+        var jobs = jobsData.sort(sort_by(sortByFieldsAr, descending));
+        var currentLast = target.children("tbody:last");
+
+        target.data("data", jobsData);
+        target.find(".noData:first").toggleClass("hidden", jobs.length > 0);
+
+
+        for (var i = 0; i < jobs.length; i++) {
+            var job = jobs[i];
+            if ((checkFilters !== true) || (caldata.ItemIsVisible(job)))
+                this.buildJobGridItem(job, template, target);
+        }
+
+        // Remove the items that were previously in the list
+        // This waits until the end to keep the browser from scrolling up when all the elements are removed.
+        currentLast.prevAll("tbody").addBack().remove();
+    },
+
+    buildJobGridItem: function (job, template, target) {
+        var html = template.clone().attr("id", job.Id);
+
+        //Update Data
+        calendarview.setJobData(html, job)
+
+        // Job Details
+        var detailTemplate = html.find(".detail");
+        job.Items = job.Items.sort(sort_by("Start"));
+        for (var j = 0; j < job.Items.length; j++) {
+            this.buildJobGridDetailRow(job, job.Items[j], detailTemplate, j);
+        }
+
+        // remove the template from the clone before adding to DOM
+        detailTemplate.remove();
+
+        // Append to DOM
+        target.append(html.show());
+    },
+
+    buildJobGridDetailRow: function (job, item, detailTemplate, rowIndex) {
+        var detail = detailTemplate.clone();
+
+        // Update Data
+        calendarview.setJobDetailData(detail, job, item, rowIndex)
+
+        // Append to DOM
+        detailTemplate.before(detail);
+    },
+
+    setJobData: function (html, job) {
+        // attach data
+        html.data("data", job);
+
+        // assign CSS
+        if (job.Items.length > 1)
+            html.addClass("multiday collapsed");
+
+        if (job.UserCanRemoveSub)
+            html.addClass("canCancel");
+
+        // Update Data
+        var name = job.WorkerLastName;
+        if (!job.WorkerIsVacancy) {
+            name = name + ", " + job.WorkerFirstName;
+        }
+        html.find(".name").html(name);
+        html.find(".title").html(job.WorkerTitle);
+        html.find(".confNum").html(job.Id);
+        if (job.WorkerReportLocation) {
+            html.find(".reportToLocation").html(job.WorkerReportLocation);
+            html.find(".reportTo").show();
+        } else {
+            html.find(".reportTo").hide();
+        }
+
+        var leaveFbBtn = html.find(".leaveFeedbackButton");
+        if (!job.AwaitingFeedback) {
+            leaveFbBtn.hide();
+        } else {
+            leaveFbBtn.attr("href", leaveFbBtn.attr("href").replace("/0", "/" + job.Id));
+            html.find(".feedback").hide();
+        }
+
+
+        html.find(".rateit").html(""); // Hack to make sure the template doesn't already have stars applied
+
+        var feedbackFromMe = html.find(".feedbackfromme");
+        if (job.FeedbackRatingFromSub) {
+            feedbackFromMe.find(".rateit").rateit({ readonly: true });
+            feedbackFromMe.find(".rateit").rateit("value", job.FeedbackRatingFromSub);
+            feedbackFromMe.attr("href", leaveFbBtn.attr("href").replace("/0", "/" + job.Id));
+        } else {
+            feedbackFromMe.hide();
+        }
+
+        var feedbackAboutMe = html.find(".feedbackaboutme");
+        if (job.FeedbackRatingFromWorker && (job.CanViewFeedback || job.CanViewFeedbackRating)) {
+            // setup link or remove it
+            if (job.CanViewFeedback) {
+                feedbackAboutMe.attr("href", feedbackAboutMe.attr("href").replace("/0", "/" + job.Id));
+            } else {
+                feedbackAboutMe.removeAttr("href");
+            }
+            if (job.CanViewFeedbackRating) {
+                //html.find(".feedback span").hide(); // hide text we're showing stars
+                feedbackAboutMe.find(".rateit").rateit({ readonly: true });
+                feedbackAboutMe.find(".rateit").rateit("value", job.FeedbackRatingFromWorker);
+            } else {
+                feedbackAboutMe.find(".rateit").hide();
+                feedbackAboutMe.find("span").css("display", "block");
+            }
+        } else {
+            feedbackAboutMe.hide();
+        }
+
+
+
+
+        var email = html.find(".emailIcon")
+        if ((job.ShowWorkerEmailAddrToSub) && (job.WorkerEmail)) {
+            email.attr("href", "mailto:" + job.WorkerEmail);
+        } else {
+            email.hide();
+        }
+
+        var notes = html.find(".notesIcon");
+        if (job.HasNotes) {
+            notes.addClass("hasNotes");
+        } else {
+            notes.removeClass("hasNotes");
+        }
+    },
+
+    setJobDetailData: function (detail, job, item, rowIndex) {
+        // attach data
+        detail.data("detail", item);
+
+        // assign CSS
+        if (rowIndex > 0)
+            detail.addClass("multiDetail");
+
+        if (item.UserCanRemoveSubFromVacyItem)
+            detail.addClass("canCancelDetail");
+
+        // Update Data
+        var element = (rowIndex < 0)? job: item;
+        detail.find(".itemDate").html(element.Start.toString("ddd") + ", " + element.Start.toString(Date.CultureInfo.formatPatterns.shortDate));
+        detail.find(".startDate").html(job.Start.toString("ddd") + ", " + job.Start.toString(Date.CultureInfo.formatPatterns.shortDate));
+        detail.find(".multiEndDate").html(job.EndDate.toString("ddd") + ", " + job.EndDate.toString(Date.CultureInfo.formatPatterns.shortDate));
+        detail.find(".startTime").html(item.Start.toString(Date.CultureInfo.formatPatterns.shortTime));
+        detail.find(".endTime").html(item.End.toString(Date.CultureInfo.formatPatterns.shortTime));
+        var duration = (item.ShiftType == 4) ? item.Duration.toString("HH:mm") : shiftName(item.ShiftType);
+        detail.find(".durationName").html(duration);
+        detail.find(".durationIcon").removeClass("shiftIcon1 shiftIcon2 shiftIcon3 shiftIcon4");
+        detail.find(".durationIcon").addClass("shiftIcon" + item.ShiftType);
+
+        if (item.NonPayTime != null) detail.find(".nonpay").html(item.NonPayTime.toString("HH:mm"));
+
+        // if MOS then display tenant name
+
+        detail.find(".locationName").html(item.Institution.Name);
+        var tenants = caldata.Tenants;
+        if (caldata.ObjectSize(tenants) > 1)
+            detail.find(".tenantName").html(job.TenantName);
+        else
+            detail.find(".tenantName").remove();
+
+        var phone = detail.find(".locationPhone");
+        var phoneText = item.Institution.Phone;
+        if ((!phoneText) || (!item.Institution.ShowLocationPhoneToSub)) {
+            phoneText = RRNotAvailable;
+            phone.addClass("disabled");
+            phone.attr("title", null);
+        }
+        phone.qtip({
+            content: { title: RRSchoolPhone, text: phoneText },
+            style: {
+                tip: { width: 10 },
+                classes: "ui-tooltip-dark",
+                def: false
+            },
+            position: { at: "leftMiddle", my: "rightMiddle" },
+            show: { event: 'click' },
+            hide: { event: 'unfocus click' }
+        });
+
+        var mapUrl = mapLink(item.Institution.City, item.Institution.State, item.Institution.Zip, item.Institution.Street1);
+
+        var map = detail.find(".locationMap");
+        if (mapUrl) {
+            map.attr("href", mapUrl).attr("target", "_blank");
+        } else {
+            map.addClass("disabled").attr("title", null).qtip({
+                content: { text: RRMapNA },
+                style: { classes: "ui-tooltip-dark", tip: true },
+                position: { at: "left center", my: "right center" },
+                show: { event: 'click' },
+                hide: { event: 'unfocus' }
+            });
+        }
+    },
+
+    sortJobGrid: function (evt) {
+        if ($(evt.target).parent().hasClass("filterTenants")) {
+            return;
+        }
+
+        var hdr = $(evt.target).closest("th");
+        var grid = hdr.parents("table:first");
+        var indicator = grid.find("th .sortIndicator");
+        var descending = false;
+        indicator.parent().removeClass("sorted");
+        hdr.addClass("sorted");
+        if (indicator.parent()[0] == hdr[0]) {
+            descending = indicator.hasClass("sortAsc"); // currently ascending
+            indicator.toggleClass("sortAsc").toggleClass("sortDesc");
+        }
+        else {
+            indicator.addClass("sortAsc").removeClass("sortDesc");
+            hdr.append(indicator);
+        }
+        calendarview.buildJobGrid(grid, grid.data("data"), hdr.attr("sortString"), descending, true);
+
+
+    },
+
+    buildNwdGrid: function (targetSelector, nwdData) {
+        var template = $("#nwdTemplate tr");
+        var target = $(targetSelector);
+
+        var sortByFields = "Start";
+        sortByFieldsAr = sortByFields.split(",");
+
+        var nwds = nwdData.sort(sort_by(sortByFieldsAr));
+        var currentLast = target.children("tr:last");
+
+        target.data("data", nwdData);
+        target.parent().find(".noData:first").toggleClass("hidden", nwds.length > 0);
+
+        for (var i = 0; i < nwds.length; i++) {
+            var nwd = nwds[i];
+            this.buildNwdGridItem(nwd, template, target);
+        }
+
+        // Remove the items that were previously in the list
+        // This waits until the end to keep the browser from scrolling up when all the elements are removed.
+        currentLast.prevAll("tr").addBack().remove();
+    },
+
+    buildNwdGridItem: function (nwd, template, target) {
+        var html = template.clone().attr("id", "");
+
+        calendarview.setNwdData(html, nwd);
+
+        target.append(html.show());
+    },
+
+    setNwdData: function (html, nwd) {
+        if (nwd.IsSystemGenerated) {
+            html.attr("class", "nwdsys detail");
+            html.attr("title", RRNonWorkDayCreated + calendarview.formatDateTime(nwd.Created));
+        }
+
+        html.data("data", nwd);
+
+        // Insert Data
+        html.find(".date").html(nwd.Start.toString("ddd") + ", " + nwd.Start.toString(Date.CultureInfo.formatPatterns.shortDate));
+        if (nwd.AllDay) {
+            html.find(".times").html(RRAllDay);
+        } else {
+            html.find(".startTime").html(nwd.Start.toString(Date.CultureInfo.formatPatterns.shortTime));
+            html.find(".endTime").html(nwd.End.toString(Date.CultureInfo.formatPatterns.shortTime));
+        }
+        html.find(".districts").html(caldata.tenantNames(nwd.TenantIds, "<br/>"));
+        html.find(".description").html(nwd.Description);
+
+        var removeLink = html.find(".removeNwdButton");
+        if ((nwd.IsSystemGenerated) || (nwd.Start < new Date())) {
+            removeLink.hide();
+        } else {
+            removeLink.addClass("removeNwdButtonShow");
+        }
+    },
+
+    setupAddNwdDialog: function (el, date) {
+        var startDate = el.find("input[name='StartDate']");
+        var dateVal = date ? date : Date.today();
+        startDate.val(dateVal.toString(Date.CultureInfo.formatPatterns.shortDate));
+        startDate.change(function () {
+            var curDate = Date.parse($(this).val());
+            if (!curDate) return;
+            $("#nwdRecur .weekdayname").text(curDate.toString("dddd"));
+            el.find("input[name='EndDate']").datepicker("option", "minDate", curDate);
+        }).trigger("change");
+
+        el.find(".date").dateField({ minDate: new Date() });
+        el.find(".time").timeField({ format: Date.CultureInfo.formatPatterns.shortTime });
+        el.find("input[name='Repeat']").click(function () {
+            $("#nwdRecur").toggleClass("hidden", !$(this).is(":checked"));
+        });
+        el.find("input[name='AllDay']").click(function () {
+            el.find(".time").attr("disabled", $(this).is(":checked"));
+            if ($(this).is(":checked")) {
+                el.find("input.time").val('');
+            } else {
+                el.find("input.time").each(function() {
+                    $(this).val($(this).attr("data-default")).blur();
+                });
+            }
+        });
+
+        var tenants = caldata.tenantList().sort(sort_by("name"));
+        var hiddenTenantIdInput = el.find("#nwdDistricts input[type='hidden']");
+        var template = el.find("label.districtName");
+        if (tenants.length == 1) {
+            hiddenTenantIdInput.val(tenants[0].id);
+        } else {
+            hiddenTenantIdInput.remove();
+            $("#nwdDistricts").show();
+            for (var i = 0; i < tenants.length; i++) {
+                var clone = template.clone();
+                clone.find("input").val(tenants[i].id);
+                clone.find("span").text(tenants[i].name);
+                template.before(clone.show());
+            }
+        }
+        template.remove();
+
+        //$("input").checkBox();
+    },
+
+    setCount: function (selector, count) {
+        $(selector).find(".legend").html(count);
+    },
+
+    handleAddNonWorkDayErrors: function (data) {
+        addMessagesToDialog($("#AddNwd"), data.MessageList);
+    },
+
+    // Event Handlers
+    toggleDetails: function (evt) {
+        calendarview.toggleDetailsOnEl($(evt.target).parents("tbody:first"));
+    },
+
+    toggleDetailsOnEl: function (el) {
+        el.toggleClass("collapsed expanded");
+    },
+
+    filterTenantsClick: function (evt) {
+        evt.preventDefault();
+
+        var popoutEl = $("#tenantFilterTemplate").clone().attr("id", "tenantFilterPopout"); //clone the template
+        $("#tenantFilterPopout").remove();  // remove the previous one
+
+        // Build the Rows for each District
+        var tableEl = popoutEl.find("#tenantFilterTable");
+        var rowCntr = 0;
+        for (var tenantId in caldata.Tenants) {
+            var rowEl = popoutEl.find("#tenantFilterRowTemplate").clone().attr("id", "FilterTenantRow_" + rowCntr);
+            rowEl.attr("tenantId", tenantId);
+            rowEl.find(".DistrictName").html(caldata.Tenants[tenantId]);
+            if (caldata.VisibleTenants[tenantId] == "True")
+                rowEl.find("#DistrictSelected").attr("checked", "checked");
+            else
+                rowEl.find("#DistrictSelected").removeAttr("checked");
+            tableEl.append(rowEl);
+            rowCntr++;
+        }
+        popoutEl.find("#tenantFilterRowTemplate").remove();
+
+        var clickedEl = $(evt.target);
+        clickedEl.qtip({
+            content: { text: popoutEl },
+            show: { ready: true, event: 'click', solo: true },
+            hide: { event: "click" },
+            events: {
+                show: function () { popoutEl.show(); },
+                visible: function (event, api) { $(this).css("z-index", "999"); }
+            },
+            position: { my: "top center", at: "bottom center", adjust: { y: 0 }, viewport: $(window) },
+            style: { def: false, classes: "ui-tooltip-calendarPopout shadowed", tip: { height: 10, width: 20} }
+        });
+
+        popoutEl.find("#SaveTenantFilters").click(function (evt2) {
+            for (var indx = 0; indx < rowCntr; indx++) {
+                rowEl = tableEl.find("#FilterTenantRow_" + indx);
+                tenantId = rowEl.attr("tenantid");
+                var numChecked = $(rowEl).find(":checked").length;
+                if (numChecked == 0)
+                    caldata.VisibleTenants[tenantId] = "False";
+                else
+                    caldata.VisibleTenants[tenantId] = "True";
+            }
+            calendarview.closePopout(evt2);
+            caldata.SaveVisibleTenantFilter();
+            caldata.inflateData();
+            pageView.refreshView();
+        });
+
+        popoutEl.data("visibleTenants", caldata.VisibleTenants);
+        popoutEl.data("clicked", $(this));
+
+        $(".qtip").qtip("reposition");
+    },
+
+    acceptJobClick: function (evt) {
+        var job = $(evt.target).parents(".job:first").data("data");
+        if (job.HasNotes && job.Notes == null) {
+            calendarview.showNotes(job, function () { calendaractions.AcceptJob(job.Id, job.TenantId); });
+        } else {
+            calendaractions.AcceptJob(job.Id, job.TenantId);
+        }        
+        evt.preventDefault();
+    },
+
+    rejectJobClick: function (evt) {
+        var job = $(evt.target).parents(".job:first").data("data");
+        calendaractions.RejectJob(job.Id, job.TenantId);
+        evt.preventDefault();
+    },
+    cancelJobClick: function (evt) {
+        evt.preventDefault();
+        var job = $(evt.target).parents(".job:first").data("data");
+        var messageText = "<div class='cancel-message'>" + calendarview.generateCancelMessage(job) + "</div>";
+        calendaractions.CancelJob(job.Id, job.TenantId, messageText);
+    },
+
+    cancelDayClick: function (evt) {
+        var vacancyItem = $(evt.target).parents(".detail:first").data("detail");
+        var messageText = "<div class='cancel-message'>" + calendarview.generateCancelDayMessage(vacancyItem) + "</div>";
+        calendaractions.CancelDay(vacancyItem.VacancyId, vacancyItem.Id, vacancyItem.Parent.TenantId, messageText);
+        evt.preventDefault();
+    },
+
+    removeNonWorkDayClick: function (evt) {
+        var nwd = $(evt.target).parents(".nwd:first").data("data");
+        calendaractions.DeleteNonWorkDay(nwd);
+        evt.preventDefault();
+    },
+
+    showNotesClick: function (evt) {
+        evt.preventDefault();
+        var job = $(evt.target).parents(".job:first").data("data");
+        calendarview.showNotes(job);
+    },
+
+    showNotes: function (job, callback) {
+        if (!job.HasNotes) return;
+        if (!job.Notes) {
+            return calendaractions.RetrieveNotes(job, callback);
+        }
+        if (callback) {
+            var buttonOpts = {};
+            buttonOpts[RRDoNotAccept] = function () { $(this).dialog("close"); };
+            buttonOpts[RRAccept] = function () { $(this).dialog("close"); callback(); };
+
+        }
+        $.dialog(job.Notes, { title: RRNotes, buttons: buttonOpts, modal: true });
+
+        return false;
+    },
+
+    showFilesClick: function (evt) {
+        evt.preventDefault();
+        var job = $(evt.target).parents(".job:first").data("data");
+        calendarview.showFiles(job);
+    },
+
+    showFilesForId: function (id) {
+        var job = $("#" + id).data("data");
+        calendarview.showFiles(job);
+    },
+
+    showFiles: function (job) {
+
+        if (!job.Files) {
+            return calendaractions.RetrieveFiles(job);
+        }
+        $.dialog(job.Files, { title: RRFile, modal: true });
+
+        return false;
+    },
+
+    formatDOW: function (DateValue) {
+        var Result = DateValue.toString("ddd");
+        return Result;
+    },
+
+    formatDateOnly: function (DateValue) {
+        var Result = DateValue.toString(Date.CultureInfo.formatPatterns.shortDate);
+        return Result;
+    },
+
+    formatDate: function (DateValue) {
+        var Result = calendarview.formatDOW(DateValue) + ", " + calendarview.formatDateOnly(DateValue);
+        return Result;
+    },
+
+    formatTime: function (DateTimeValue) {
+        var Result = DateTimeValue.toString(Date.CultureInfo.formatPatterns.shortTime);
+        return Result;
+    },
+
+    formatDateTime: function (DateTimeValue) {
+        var Result = calendarview.formatDate(DateTimeValue) + " " + calendarview.formatTime(DateTimeValue);
+        return Result;
+    },
+
+    generateCancelMessage: function (job) {
+        var text = "";
+        if (job.SubWouldBePunishedForCancellingJob) {
+            text = RRCancelJobWarning;
+
+            var JobDay = job.Items[0];
+            if (job.Items.length == 1) {
+                text = text + calendarview.formatDate(JobDay.Start) + " " + RRFrom + " " + calendarview.formatTime(JobDay.Start) + " " + RRTo + " " + calendarview.formatTime(JobDay.End) + ".<br/>";
+            }
+            else {
+                text = text + RRTheseDates + "<br/><br/>";
+                text += "<table class='jobList'>";
+                text += "<tr>";
+                text += "<th>" + RRDay + "</th>";
+                text += "<th>" + RRDate + "</th>";
+                text += "<th>" + RRFrom + "</th>";
+                text += "<th>" + RRTo + "</th>";
+                text += "</tr>";
+                for (var ItemNum in job.Items) {
+                    JobDay = job.Items[ItemNum];
+                    //text = text + "&nbsp;&nbsp; on " + calendarview.formatDate(JobDay.Start) + " from " + calendarview.formatTime(JobDay.Start) + " to " + calendarview.formatTime(JobDay.End) + ".<br/>";
+                    text += "<tr>";
+                    text += "<td>" + calendarview.formatDOW(JobDay.Start) + "</td>";
+                    text += "<td>" + calendarview.formatDateOnly(JobDay.Start) + "</td>";
+                    text += "<td>" + calendarview.formatTime(JobDay.Start) + "</td>";
+                    text += "<td>" + calendarview.formatTime(JobDay.End) + "</td>";
+                    text += "</tr>";
+                }
+                text += "</table>";
+            }
+            text = text + "<br/>";
+        }
+        return text + RRConfirmCancelJob + job.Id + "?"
+    },
+
+    generateCancelDayMessage: function (JobDay) {
+        var text = "";
+        //only warn sub if they would be punished
+        if (JobDay.Parent.SubWouldBePunishedForCancellingJob) {
+            text = RRCancelJobWarning;
+            text = text + calendarview.formatDate(JobDay.Start) + " " + RRFrom + " " + calendarview.formatTime(JobDay.Start) + " " + RRTo + " " + calendarview.formatTime(JobDay.End) + ".<br/>";
+            text = text + "<br/>";
+            text = text + RRConfirmCancelJob + JobDay.VacancyId + "?";
+        } else {
+            text = RRSubCalendar_CancelDayAssignment_Message + " " + calendarview.formatDate(JobDay.Start) + "?";
+        }
+        
+        return text;
+    }
+}
+
+
+// Depend on
+var calendaractions = {
+    AcceptJob: function (id, tenantId) {
+        var jobData = $("#" + id).data("data");
+        aesopData.AcceptJob(id, tenantId,
+        function (data) {
+            if (data.IsValid) {
+                var html = $(data.Html);
+                html.find(".showFilesLink").click(function (evt) { evt.preventDefault(); calendarview.showFiles(jobData); });
+                topMessage(html.find(".message"), "success", false);
+            }
+            else {
+                topMessage(data.MessageList[0].Message, "error", false);
+            }
+            pageView.refreshData();
+        });
+    },
+    RejectJob: function (id, tenantId) {
+        aesopData.RejectJob(id, tenantId,
+        function (data) {
+            if (data.IsValid) {
+                $.RemoveById(caldata.AvailableJobs, data.Data.id);
+                caldata.inflateData(caldata);
+                topMessage(data.Html, "success", true);
+            }
+            else {
+                topMessage(data.MessageList[0].Message, "error", false);
+            }
+            pageView.refreshData();
+        });
+    },
+    CancelJob: function (id, tenantId, messageText) {
+        var buttonOpts = [
+            {
+                text: RRNo,
+                click: function() {
+                    $(this).dialog("close");
+                }
+            }, {
+                text: 'Yes, Cancel Job',
+                "class": 'negativeDefault',
+                click: function() {
+                    $(this).dialog("close");
+
+                    aesopData.CancelJob(id, tenantId, caldata.SelectedSubCancelReason,
+                        function(data) {
+                            if (data.IsValid) {
+                                topMessage(data.Html, "success", true);
+                            } else {
+                                topMessage(data.MessageList[0].Message, "error", false);
+                            }
+                            pageView.refreshData();
+                        });
+                }
+            }
+        ];
+
+        messageText += getSubCancellationReasonsDropdownHtml(tenantId);
+
+        $.dialog(messageText, {
+            modal: true,
+            title: 'Cancelling Job',
+            width: 500,
+            buttons: buttonOpts
+        });
+    },
+    CancelDay: function (id, vacancyItemId, tenantId, messageText) {
+        var buttonOpts = [
+            {
+                text: RRNo,
+                click: function() {
+                    $(this).dialog("close");
+                }
+            },
+            {
+                text: 'Yes, Cancel Portion',
+                "class": 'negativeDefault',
+                click: function() {
+                    $(this).dialog("close");
+                    aesopData.CancelDay(id, vacancyItemId, tenantId, caldata.SelectedSubCancelReason,
+                        function(data) {
+                            if (data.IsValid) {
+                                topMessage(data.Html, "success", true);
+                            } else {
+                                topMessage(data.MessageList[0].Message, "error", false);
+                            }
+                            pageView.refreshData();
+                        });
+                }
+            }
+        ];
+        
+        messageText += getSubCancellationReasonsDropdownHtml(tenantId);
+
+        $.dialog(messageText, {
+            modal: true,
+            title: 'Cancelling Job Portion',
+            width: 500,
+            buttons: buttonOpts
+        });
+    },
+    RetrieveNotes: function (job, callback) {
+        aesopData.AbsrNotes(job.Id, function (data) { job.Notes = data.Notes; calendarview.showNotes(job, callback); });
+    },
+    RetrieveFiles: function (job) {
+        aesopData.AbsrFilesHtml(job.Id, job.TenantId, function (data) { job.Files = data; calendarview.showFiles(job); });
+    },
+    AddNonWorkDay: function (evt, date) {
+        aesopData.AddNonWorkDay(date,
+            function (data) {
+
+                var buttonOpts = {};
+                buttonOpts[RRCancel] = function () { $(this).dialog("close"); };
+                buttonOpts[RRSave] = function (evt) { calendaractions.DoAddNonWorkDay(evt, dialog); };
+
+
+                var dialog = $.dialog(data.Html, { title: RRAddNonWorkDay, modal: true, width: 350,
+                    buttons: buttonOpts
+                });
+                calendarview.setupAddNwdDialog(dialog, date);
+            }
+        );
+    },
+    DoAddNonWorkDay: function (evt, dialog) {
+        if (dialog.data("Submitted"))
+            return;
+
+        var form = $("#AddNwd").find("form:first");
+        var start = Date.parse($("#AddNwd").find(".date").val());
+        var endshowing = $("#AddNwd").find("input[name='Repeat']").is(":checked");
+        var end = start;
+
+        if (endshowing) {
+            end = Date.parse($("#AddNwd").find("input[name='EndDate']").val());
+        }
+
+        if (!start || !end) {
+            alert(RRInvalidDate);
+            return;
+        }
+
+        dialog.data("Submitted", true);
+        form.ajaxSubmit({
+            success: function (data) {
+                if (data.IsValid) {
+                    topMessage(data.Html, "success", true);
+                    pageView.refreshData();
+                    dialog.dialog("close");
+                } else {
+                    dialog.data("Submitted", false);
+                    calendarview.handleAddNonWorkDayErrors(data);
+                }
+            }
+        });
+    },
+    DeleteNonWorkDay: function (nwd) {
+        var buttons = [
+            {
+                text: RRSubCalendar_NonWorkDay_Dialog_Cancel,
+                "class": 'button',
+                click: function () { $(this).dialog("close"); }
+            }, {
+                text: RRSubCalendar_NonWorkDay_Dialog_Remove,
+                "class": 'negativeDefault',
+                click: function () {
+                    $(this).dialog("close");
+                    var buttonOptsInner = {};
+                    buttonOptsInner[RRRemoveGroup] = function () {
+                        $(this).dialog("close");
+                        calendaractions.DoDeleteNonWorkDay(nwd, true);
+                    };
+                    buttonOptsInner[RRRemoveDay] = function () {
+                        $(this).dialog("close");
+                        calendaractions.DoDeleteNonWorkDay(nwd, false);
+                    };
+
+                    if (nwd.IsPartOfGroup) {
+                        $.dialog(RRRecurringGroupNonWorkDay, {
+                            modal: true,
+                            buttons: buttonOptsInner
+                        });
+                    } else {
+                        calendaractions.DoDeleteNonWorkDay(nwd, false);
+                    }
+                }
+            }
+        ];
+        $.dialog(RRSubCalendar_NonWorkDay_Dialog_Message, {
+            title: RRSubCalendar_NonWorkDay_Dialog_Title,
+            modal: true,
+            buttons: buttons,
+            closeOnEscape: false
+        });
+    },
+    DoDeleteNonWorkDay: function (nwd, wholeGroup) {
+        aesopData.DeleteNonWorkDay(nwd, wholeGroup,
+            function (data) {
+                if (data.IsValid) {
+                    topMessage(data.Html, "success", true);
+                    pageView.refreshData();
+                }
+                else {
+                    topMessage(data.MessageList[0].Message, "error", false);
+                }
+            });
+    }
+};
+
+var pageView = {
+    refreshData : function() {},
+    refreshDataComplete : function() {},
+    refreshView : function() {}
+}
+
+function shiftName(shiftId) {
+    switch (shiftId) {
+        case 1: return RRFullDay;
+        case 2: return RRHalfDayAM;
+        case 3: return RRHalfDayPM;
+        case 4: return RRCustom;
+    }
+    return RRUnknown;
+}
+
+
+//Check if job list table has multiple absences and if not, disable sortable column
+function disableSortForSingleAbsence() {
+    $("table.jobList").each(function (index) {
+        var tbl = $(this);
+        if (tbl.find("tr.summary").length <= 1) {
+            tbl.find("thead th").removeClass("sortable sorted");
+        }
+    });
+}
+
+function getSubCancellationReasonsDropdownHtml(tenantId) {
+    var html = "";
+    var cancelReasons = (pageVars.subCancelReasons.length) ? pageVars.subCancelReasons.filter(function (item) { return item.TenantId == tenantId; }) : [];
+    if (cancelReasons.length) {
+        html += '<div class="label-split-CancelReason">' + RRSubCalendar_SubCancellationReason_Label + '</div>';
+        html += '<select class="subCancelReasons">';
+        html += '<option value="0">' + RRNoneSelected + '</option>';
+        for (var x = 0; x < cancelReasons.length; x++) {
+            html += '<option value=' + cancelReasons[x].Id + '>' + htmlEncode(cancelReasons[x].Description) + '</option>';
+        }
+        html += '</select>';
+    }
+    return html;
+}
+
+function htmlEncode(t) {
+     return $("<div>").text(t).html();
+}

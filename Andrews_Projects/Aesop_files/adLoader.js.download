@@ -1,0 +1,30 @@
+﻿$(function () {
+    var reviveDataElem = $('#reviveDataElem'),
+        reviveUserId = reviveDataElem.data('userid') || '',
+        reviveData = window.sessionStorage && window.sessionStorage.getItem('reviveData'),
+        getUrl;
+
+    if (reviveData) {
+        reviveData = JSON.parse(reviveData);
+    }
+
+    if (reviveData == null || !reviveData.UserId || reviveData.UserId !== reviveUserId) {
+        getUrl = aesopData.GetAdUrl();
+    } else {
+        getUrl = $.Deferred().resolve(reviveData);
+    }
+
+    getUrl.done(function (data) {
+        if (data != null) {
+            var url = data.Url;
+
+            url += "&cb=" + Math.floor(Math.random() * 99999999999);
+            url += "&loc=" + escape(window.location);
+            $.getScript(url).done(function () {
+                if (!!adData) {
+                    $(data.ElementSelector).html(adData);
+                }
+            });
+        }
+    });
+});

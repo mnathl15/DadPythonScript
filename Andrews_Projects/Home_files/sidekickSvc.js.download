@@ -1,0 +1,360 @@
+﻿function sideKickSvc(data) {
+
+    var notificationsData = { url: "/notifications/WebAlerts" };
+    sidekick.store.set('notifications', notificationsData);
+    sidekick.events.emit('notifications.unread-count', data.notificationCount);
+    
+    var helpData = { articles: [], blocks: [] };
+        if (data.helpIsAvailable) {
+            helpData.blocks.push({
+                'title': data.helpLinkText,
+                'url': data.helpUrl,
+                'icon': data.helpIcon,
+                'target': '_blank'
+            });
+        }
+        sidekick.store.set('help', helpData);
+
+        var impersonationData = userIsImpersonating();
+        if (impersonationData.isImpersonating) {
+            if (!impersonationData.impersonationIsValid) {
+                window.location.href = window.siteConfig.angularSiteUrl + '/impersonate?userKey=' + impersonationData.impersonateeUserKey;
+            }
+        }
+
+
+        function setUpSidekickNoIdm() {
+            var appData = {
+                currentApp: 'AE',
+                apps: [{ id: 'AE', name: SideKickResources.ProductDisplayNameAesop }]
+            }
+            if (data.veritimeIsAvailable) {
+                appData.apps.push({ id: 'VT', name: SideKickResources.ProductDisplayNameVeritime });
+            }
+            sidekick.store.set('app-switcher-data', appData);
+
+            var userData = { userKey: data.user.userKey, firstName: data.user.firstName, lastName: data.user.lastName, showAcctSettings: false };
+            sidekick.store.set('user-data', userData);
+
+            var roleName = processRole(data.user.userKey);
+
+
+
+            if (roleName) {
+                var role = [{ id: data.user.userKey, name: roleName }];
+                var roleData = {
+                    currentRole: data.user.userKey,
+                    roles: role
+                };
+
+                sidekick.store.set('roles', roleData);               
+            }
+
+
+            sidekick.events.on('header.app-switcher.change', function (item) {
+                if (item.id === appData.currentApp) { return; }
+                if (data.idmOn) {
+                    window.location.href = data.timeAndAttendanceUrl;
+                } else {                   
+                    window.location.href = '/Veritime/List';
+                }
+                
+            });
+
+
+        }
+
+        if (data.idmOn) {
+            flAuth.ready().then(function () {
+                flAuth.profile.then(function (profile) {
+                    var isPassThru = profile.claims.idp.toLowerCase() === window.siteConfig.passThroughProvider.toLowerCase();
+                    sidekick.events.emit('header.impersonation', impersonationData.impersonationIsValid && !isPassThru);
+                    if (isPassThru || impersonationData.impersonationIsValid) {
+                        setUpSidekickNoIdm();
+                        getContactInformation(true);
+                    }
+                    else {
+                        // Identity provider is Frontline (using IDM)
+                        var idm = {
+                            idGatewayUrl: window.siteConfig.identityGatewayBaseUri,
+                            getAccessToken: function () {
+                                return flAuth.accessToken;
+                            },
+                            product: window.siteConfig.productId,
+                            flId: flAuth.isImpersonating ? flAuth.isImpersonating : flAuth.profileId
+                        }
+
+                        sidekick.store.set('idm', idm);
+                        $.support.cors = true;
+                        getContactInformation(false);
+                        $.ajax({
+                            type: 'GET',
+                            global: false,
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader('Authorization', 'Bearer ' + flAuth.accessToken);
+                            },
+                            url: window.siteConfig.apiUrl + 'api/v1.0/UserSessions/Roles?orgXrefId=' + data.orgSvcId,
+                            success: function (result) {
+                                var processedRoleData = processRoles(result.data);
+                                //confirm the current Aesop user is in the list of accesses
+                                if (processedRoleData.filter(function (a) { return a.id === data.user.userKey; }).length == 0) {
+                                    //the current Aesop User is NOT in the list of the current Frontline User's accesses, redirect to the Access page
+                                    window.location.href = window.siteConfig.startWorkflowUrl;
+                                }
+                                var roleData = {
+                                    currentRole: data.user.userKey,
+                                    roles: processedRoleData
+                                };
+                                sidekick.store.set('roles', roleData);
+                            }
+                        });
+                    }
+                });
+            });
+        } else {
+            setUpSidekickNoIdm();
+            getContactInformation(true);
+        }
+      
+
+
+
+
+        
+        function userIsImpersonating() {
+            var cookieRegex = /{("originalUser":"[0|4|7]-\d+"),("impersonatedUser":"[2-5]-\d+"),"startedFrom":"(AM|TA)"}/;
+            var cookieval = $.cookie(data.isImpersonatingCookieName);
+
+            var isImpersonating = false;
+            var impersonationIsValid = false;
+            var impersonateeUserKey;
+            if (cookieval !== null && cookieRegex.test(cookieval)) {
+                var parsedVal = JSON.parse(cookieval);
+                impersonateeUserKey = parsedVal.impersonatedUser;
+                impersonationIsValid = (impersonateeUserKey.split('-')[1] == data.userId);
+                isImpersonating = true;
+            }
+
+            return {
+                isImpersonating: isImpersonating,
+                impersonationIsValid: impersonationIsValid,
+                impersonateeUserKey: impersonateeUserKey
+            }
+        }
+        
+        function getContactInformation(setOrg) {            
+           aesopData.getContactInformationJson(null, function (result) {
+               function findOrg(item){
+                   return item.id == data.aesopOrgId
+               }
+
+               var org = {};
+               var firstOrg = result.Data.model.find(findOrg);
+               org = {
+                   id: firstOrg.id,
+                   name: firstOrg.districtName,
+                   phone: firstOrg.phone,
+                   email: firstOrg.email,
+                   contactName: firstOrg.contactName,
+                   fax: firstOrg.fax,
+                   comments: firstOrg.comments
+               };
+               sidekick.store.set('current-org', org);
+               if (data.user.userType != '9' && (!data.idmOn || setOrg)) {
+                   sidekick.store.set('org-switcher-data', {
+                       currentOrg: firstOrg.id,
+                       orgs: [
+                           { id: firstOrg.id, name: firstOrg.districtName }
+                       ]
+                   });
+               }
+           });
+       }
+
+
+        var processedMenu = { menuItems: data.rawMenu.map(function (a) { return processMenu(a); }) }
+        sidekick.store.set('nav', processedMenu);
+        sidekick.events.emit('available-badge', data.availableJobs);
+
+      
+        sidekick.events.on('nav.menu-item-clicked', function (item) {
+            if (item.route.length > 0) {
+                window.location = item.route;
+            }
+            else {
+                if (item.onClick != null) {
+                    item.onClick();
+                }
+            }
+        });
+
+
+        sidekick.events.on('header.user-info.account-settings', function (item) {
+            if (data.idmOn) {
+                location.href = flAuth.accountSettingsUrl(location.href, true);
+            } else {
+                window.location = data.profileUrl;
+            }
+        });
+
+        sidekick.events.on('session.logout', function (item) {
+            if (data.idmOn) {
+                if (flAuth.isImpersonating) {
+                    flAuth.endImpersonate();
+                }
+                else {
+                    if (isMOPInUse()) {
+                        window.location.href = '/Login/Logout';
+                    } else {
+                        flAuth.signout('/Login/Logout?idmOn=true');
+                    }
+                }
+            } else {
+                window.location = '/Login/Logout';
+            }
+        });
+
+
+        sidekick.events.on('header.user-info.role', function (role) {
+            window.location.href = window.siteConfig.startWorkflowUrl + '?userKey=' + role.id;
+        });
+
+
+
+        sidekick.events.on('header.end-impersonation', function (item) {
+            window.location.href = window.siteConfig.angularSiteUrl + '/endImpersonate';
+        });
+
+
+
+        function processMenu(rawMenu) {
+            var item = {
+                title: rawMenu.ResolvedDisplayText,
+                icon: rawMenu.IconName,
+                route: rawMenu.Url,
+                id: rawMenu.MenuId,
+                onClick: eval(rawMenu.OnClick)
+            };
+            if(rawMenu.eventBadge){
+                item.badgeEvent = rawMenu.eventBadge;
+            }
+            if (rawMenu.routeMatchers) {
+                item.routeMatcher = rawMenu.routeMatchers;
+            }
+            if(rawMenu.ItemList) {
+                item.children = rawMenu.ItemList.map(function (a) { return processMenu(a); });
+            }
+            return item;
+        }
+
+        function setSidekickData(type, data) {
+            sidekick.store.set(type, data);
+        }
+
+
+        function processRole(userKey) {
+            var userType = userKey.split('-')[0];
+
+            if(userType === '2') {
+                return SideKickResources.UserType.Employee;
+            }
+
+            if(userType === '3') {
+                return SideKickResources.UserType.Substitute;
+            }
+
+            if(userType === '9') {
+                return SideKickResources.UserType.MultiOrgSub;
+            }
+
+            if(userType === '5') {
+                return SidekickResources.UserType.CampusUser;
+            }
+
+            return null;
+        }
+
+
+        function processRoles(userRoles) {
+            if (userRoles) {
+                return userRoles.map(function (a) {
+                    var parseMnemonic = a.userTypeMnemonic.split('.');
+                    var key = parseMnemonic[0];
+                    var value = parseMnemonic[1];
+                    var roleLabel = SideKickResources[key][value];
+                    if (a.userTitle) {
+                        roleLabel += " (" + a.userTitle + ")";
+                    }
+                    return {
+                        id: a.userKey,
+                        name: roleLabel
+                    }
+                });
+            }
+            return [];
+        }
+
+        function isMOPInUse() {
+            return !!$.cookie('MOPInUse');
+        }
+
+
+    //on click function for menu items that need to be setup via JS 
+        function onFrontlineContentPlatformClicked() {
+            $.ajax({
+                type: 'POST',
+                global: false,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + flAuth.accessToken);
+                },
+                url: data.pdmsUrl + "/webapi/contentuser/passthru/" + data.orgSvcId,
+                data: { firstname: data.user.firstName, lastname: data.user.lastName, email: data.user.email },
+                success: function (result) {
+                    //This will ensure if the PG user has been created for the first time and the user app switches
+                    //back to Absence Management, that the App Switcher will be updated to include the PG app
+                    if (result.RefreshToken) {
+                        flAuth.profile.then(function(profile) {
+                            sessionStorage.setItem("skClearCache", "1");
+                            var url = result.RedirectUrl;
+                            flAuth.authenticate({ returnUrl: url, productId: window.siteConfig.productId });
+                        });
+                    } else {
+                        flAuth.profile.then(function (profile) {
+                            //backwards compatibility. If result doesn't have a redirecturl property, then result is the redirect url.
+                            if (result.RedirectUrl) {
+                                window.location.href = result.RedirectUrl;
+                            }
+                            else {
+                                window.location.href = result;
+                            }
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    if (error && error.responseJSON && error.responseJSON.Message) {
+                        alert(error.responseJSON.Message);
+                    }
+                }
+            });
+        }
+
+        return {
+            init: function () {
+                //if we are on the Districts List page and we have merged accounts (either through Aesop or IDM) then we want to make sure
+                //that we clear Sidekick's cache so we can get the correct list of Organizations and user information
+                var clearCache = (document.location.pathname === '/Substitute/Districts/List' && document.location.search.indexOf('AccountsMerged') > -1);
+                if (sessionStorage.getItem("skClearCache")) {
+                    clearCache = true;
+                    sessionStorage.removeItem("skClearCache");
+                }
+
+                if (clearCache) {
+                    sidekick.init({ cleanCache: true });
+                } else {
+                    sidekick.init();
+                }
+            },
+            setSidekick: sidekick.store.set
+        }
+    }

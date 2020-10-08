@@ -1,0 +1,450 @@
+$.widget("custom.timeField", {
+    options: {
+        format: "hh:mm T",
+        size: 8,
+        parseoninit: true,
+        onerror: null,
+        roundMinutes: null
+    },
+
+    _create: function () {
+        this.element.prop("data-isTimeField", true);
+        this.element.attr("size", this.options.size);
+        //update value on "Enter"
+        this._on(this.element, {
+            "keypress": function (e) {
+                if (e.keyCode == 13) this.element.blur();
+            }
+        });
+        //blur will still update
+        this._on(this.element, {
+            "blur": function (e) {
+                this.update();
+            }
+        });
+        if (this.options.parseoninit) this.update();
+    },
+
+    //update the timefield value in the ui
+    update: function () {
+        try {
+            var val = this.element.context.value.replace(/\s/g, "");
+            if (val == "") return;
+
+            var dt = Date.parseTime(val);
+            if (dt == false) {
+                if (this.options.onerror) {
+                    return this.options.onerror(this, e);
+                }
+            }
+            if (this.options.roundMinutes) {
+                dt = Date.roundMinutes(dt, this.options.roundMinutes);
+            }
+            this.element.context.value = dt.formatDate(this.options.format);
+        }
+        catch (e) {
+            if (this.options.onerror) {
+                return this.options.onerror(this, e);
+            }
+        }
+    }
+});
+
+//$.fn.timeField = function (options) {
+//    var settings = {
+//        format: "hh:mm T",
+//        size: 8,
+//        parseoninit: true,
+//        onerror: null,
+//        roundMinutes: null
+//    };
+
+//    if (options) {
+//        jQuery.extend(settings, options);
+//    };
+
+//    return this.each(function () {
+//        $(this).prop("data-isTimeField", true);
+//		$(this).attr("size", settings["size"]);
+//		$(this).bind("blur", function(e){
+//			try
+//			{
+//			    var val = $(this).val().replace(/\s/g, "");
+//			    if (val == "") return;
+
+//				var dt = Date.parseTime(val);
+//				if(dt == false) 
+//				{
+//					if(settings["onerror"])
+//					{
+//						return settings["onerror"](this, e);
+//					}
+//				}
+//				if (settings.roundMinutes) {
+//				    dt = Date.roundMinutes(dt, settings.roundMinutes);
+//				}
+//				$(this).val(dt.formatDate(settings["format"]));
+//			}
+//			catch (e)
+//			{
+//				if(settings["onerror"])
+//				{
+//					return settings["onerror"](this, e);
+//				}
+//			}
+			
+//		});
+
+//		$(this).bind("keypress", function(e){
+//			if(e.keyCode==13) $(e.target).trigger("blur");
+//		});
+
+//		if(settings["parseoninit"]) $(this).trigger("blur");
+//	});
+
+//};
+
+////////////////////////////////////////////////////////////
+// Extended DateTime functions
+//
+String.repeat = function(chr, count) {
+    var str = "";
+    for (var x = 0; x < count; x++) {
+        str += chr;
+    }
+    return str;
+};
+
+String.prototype.padL = function(width, pad) {
+    if (!width || width < 1)
+        return this;
+
+    if (!pad) pad = " ";
+    var length = width - this.length;
+    if (length < 1) return this.substr(0, width);
+
+    return (String.repeat(pad, length) + this).substr(0, width);
+};
+
+String.prototype.padR = function(width, pad) {
+    if (!width || width < 1)
+        return this;
+
+    if (!pad) pad = " ";
+    var length = width - this.length;
+    if (length < 1) this.substr(0, width);
+
+    return (this + String.repeat(pad, length)).substr(0, width);
+};
+
+Date.prototype.formatDate = function(format) {
+    var date = this;
+    if (!format)
+        format = "MM/dd/yyyy";
+
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    if (format.indexOf("MM") > -1) {
+        format = format.replace("MM", month.toString().padL(2, "0"));
+    }
+    if (format.indexOf("M") > -1) {
+        format = format.replace("M", month.toString());
+    }
+
+    if (format.indexOf("yyyy") > -1)
+        format = format.replace("yyyy", year.toString());
+    else if (format.indexOf("yy") > -1)
+        format = format.replace("yy", year.toString().substr(2, 2));
+
+    if (format.indexOf("dd") > -1) {
+        format = format.replace("dd", date.getDate().toString().padL(2, "0"));
+    }
+    if (format.indexOf("d") > -1) {
+        format = format.replace("d", date.getDate().toString());
+    }
+
+    var hours = date.getHours();
+
+    if (format.indexOf("tt") > -1) {
+        if (hours > 11)
+            format = format.replace("tt", "pm");
+        else
+            format = format.replace("tt", "am");
+    }
+    if (format.indexOf("t") > -1) {
+        if (hours > 11)
+            format = format.replace("t", "pm");
+        else
+            format = format.replace("t", "am");
+    }
+    if (format.indexOf("TT") > -1) {
+        if (hours > 11)
+            format = format.replace("TT", "PM");
+        else
+            format = format.replace("TT", "AM");
+    }
+    if (format.indexOf("T") > -1) {
+        if (hours > 11)
+            format = format.replace("T", "PM");
+        else
+            format = format.replace("T", "AM");
+    }
+    if (format.indexOf("HH") > -1)
+        format = format.replace("HH", hours.toString().padL(2, "0"));
+    if (format.indexOf("hh") > -1) {
+        if (hours > 12) hours -= 12;
+        if (hours == 0) hours = 12;
+        format = format.replace("hh", hours.toString().padL(2, "0"));
+    }
+    if (format.indexOf("H") > -1)
+        format = format.replace("H", hours.toString());
+    if (format.indexOf("h") > -1) {
+        if (hours > 12) hours -= 12;
+        if (hours == 0) hours = 12;
+        format = format.replace("h", hours.toString());
+    }
+    if (format.indexOf("mm") > -1)
+        format = format.replace("mm", date.getMinutes().toString().padL(2, "0"));
+    if (format.indexOf("ss") > -1)
+        format = format.replace("ss", date.getSeconds().toString().padL(2, "0"));
+
+    //handle times formatted as a double        -DTN 4/16/14
+    if (format == "n") {
+        var minutes = date.getMinutes();
+        var seconds = date.getSeconds();
+        var milliseconds = date.getMilliseconds();
+
+        format = hours + ((minutes + ((seconds + (milliseconds / 1000)) / 60)) / 60);
+        if (Math.round(format) !== format) {
+            format = format.toFixed(2);
+        }
+    }
+
+    return format;
+};
+
+Date.prototype.Add = function(timeU, byMany) {
+    var dateObj = this;
+
+    var millisecond = 1;
+    var second = millisecond * 1000;
+    var minute = second * 60;
+    var hour = minute * 60;
+    var day = hour * 24;
+    var year = day * 365;
+
+    var newDate;
+    var dVal = dateObj.valueOf();
+    switch (timeU) {
+    case "ms":
+        newDate = new Date(dVal + millisecond * byMany);
+        break;
+    case "s":
+        newDate = new Date(dVal + second * byMany);
+        break;
+    case "mi":
+        newDate = new Date(dVal + minute * byMany);
+        break;
+    case "h":
+        newDate = new Date(dVal + hour * byMany);
+        break;
+    case "d":
+        newDate = new Date(dVal + day * byMany);
+        break;
+    case "y":
+        newDate = new Date(dVal + year * byMany);
+        break;
+    }
+    return newDate;
+};
+
+Date.Diff = function(date1, date2, timeU) {
+    var dateObj = this;
+
+    var millisecond = 1;
+    var second = millisecond * 1000;
+    var minute = second * 60;
+    var hour = minute * 60;
+    var day = hour * 24;
+    var year = day * 365;
+
+    var t1 = date1.getTime();
+    var t2 = date2.getTime();
+
+    var diff = date2.getTime() - date1.getTime();
+
+    switch (timeU) {
+    case "ms":
+        return diff;
+    case "s":
+        return Math.floor(diff / second);
+    case "mi":
+        return Math.floor(diff / minute);
+    case "h":
+        return Math.floor(diff / hour);
+    case "d":
+        return Math.floor(diff / day);
+    case "y":
+        return Math.floor(diff / year);
+    }
+    return null;
+};
+
+/**
+ * Magic time parsing, based on Simon Willison's Magic date parser
+ * @see http://simon.incutio.com/archive/2003/10/06/betterDateInput
+ * @author Stoyan Stefanov &lt;stoyan@phpied.com&gt;
+ *
+ * Modified by Mike Sheldon 4/29/2009 Modified my Matt Harris 12/8/2010 to handle input of null
+ */
+Date.parseTime = function(s) {
+    if (s == null) {
+        return false;
+    }
+    for (var i = 0; i < Date.timeParsePatterns.length; i++) {
+        var re = Date.timeParsePatterns[i].re;
+        var handler = Date.timeParsePatterns[i].handler;
+        var bits = re.exec(s.toLowerCase().replace(new RegExp(" ", "gi"), ""));
+        if (bits) {
+            return handler(bits);
+        }
+    }
+    return false;
+};
+
+Date.roundMinutes = function(time, toNearest) {
+    var mins = time.getMinutes();
+    var quarterHours = Math.round(mins / toNearest);
+    if (quarterHours == (60 / toNearest)) {
+        time.setHours(time.getHours() + 1);
+    }
+    var rounded = (quarterHours * toNearest) % 60;
+    time.setMinutes(rounded);
+    return time;
+};
+
+/**
+ * Array of objects, each has:
+ * <ul><li>'re' - a regular expression</li>
+ * <li>'handler' - a function for creating a date from something
+ *     that matches the regular expression</li>
+ * <li>'example' - an array of examples that show matching examples</li>
+ * Handlers may throw errors if string is unparseable.
+ * Examples are used for automated testing, so they should be updated
+ *   once a regexp is added/modified.
+ */
+Date.timeParsePatterns = [
+// Now
+    {re: /^now/i,
+    example: new Array('now'),
+    handler: function () {
+        return new Date();
+    }
+},
+// hh:mm:ss
+    {re: /(\d{1,2}):(\d{1,2}):(\d{1,2}(p?)(a?))/,
+    example: new Array('9:55:00', '19:55:00', '19:5:10', '9:5:1', '9:55:00 a.m.', '11:55:00a'),
+    handler: function (bits) {
+        var d = new Date();
+        var h = parseInt(bits[1], 10);
+        if (bits[3].indexOf('a') > 0 && h == 12) {
+            h -= 12;
+        }
+        if (bits[3].indexOf('p') > 0 && h < 12) {
+            h += 12;
+        }
+        d.setHours(h);
+        d.setMinutes(parseInt(bits[2], 10));
+        d.setSeconds(parseInt(bits[3], 10));
+        d.setMilliseconds(0);
+        return d;
+    }
+},
+// hh:mm
+    {re: /(\d{1,2}):(\d{1,2}(p?)(a?))/,
+    example: new Array('9:55', '19:55', '19:5', '9:55 a.m.', '11:55a'),
+    handler: function (bits) {
+        var d = new Date();
+        var h = parseInt(bits[1], 10);
+        if (bits[2].indexOf('a') > 0 && h == 12) {
+            h -= 12;
+        }
+        if (bits[2].indexOf('p') > 0 && h < 12) {
+            h += 12;
+        }
+        d.setHours(h);
+        d.setMinutes(parseInt(bits[2], 10));
+        d.setSeconds(0);
+        d.setMilliseconds(0);
+        return d;
+    }
+},
+// hh.xx
+    //{re: /(\d{1,2})[.](\d{1,2})/,
+    //Add handling for when the number starts with a decimal - DTN 4/10/14
+    {re: /(\d{1,2}[.]|[.])(\d{1,2})/,
+    example: new Array('9.25', '11.5', '11.50', '9', '11.75', '.25'),
+    handler: function (bits) {
+        var d = new Date();
+        var h = 0;
+        if (bits[1] != ".")
+            h = parseInt(bits[1], 10);
+        if (bits[2].indexOf('a') > 0 && h == 12) {
+            h -= 12;
+        }
+        if (bits[2].indexOf('p') > 0 && h < 12) {
+            h += 12;
+        }
+        if (h > 24)
+            h = 24;
+        var pctStr = bits[2];
+        var pct = parseInt(pctStr, 10);
+        if (pct > 99) pct = 100;
+        if (pct < 0) pct = 0;
+        if (pctStr.length == 1)
+            pct = pct * 10;
+        var m = 60 * pct / 100;
+        d.setHours(h);
+        d.setMinutes(parseInt(m, 10));
+        var s = (m - d.getMinutes()) * 60;
+        d.setSeconds(parseInt(s,10));
+        var ms = Math.round((s - d.getSeconds()) * 1000);
+        d.setMilliseconds(ms);
+        return d;
+    }
+},
+// hhmmss
+    {re: /(\d{1,6}(p?)(a?))/,
+    example: new Array('9', '9a', '9am', '19', '1950', '195510', '0955'),
+    handler: function (bits) {
+        var d = new Date();
+        var h;
+
+        if (bits[1].substring(0, 1) > 2 || bits[1].substring(0, 2) > 24 || bits[1].replace('a', '').replace('p', '').length == 3) {
+            bits[1] = '0' + bits[1];
+            h = parseInt(bits[1].substring(1, 2), 10);
+        }
+        else {
+            h = parseInt(bits[1].substring(0, 2), 10);
+        }
+
+        var m = parseInt(bits[1].substring(2, 4), 10);
+        var s = parseInt(bits[1].substring(4, 6), 10);
+
+        if (bits[1].indexOf('a') > 0 && h == 12) {
+            h -= 12;
+        }
+        if (bits[1].indexOf('p') > 0 && h < 12) {
+            h += 12;
+        }
+        if (isNaN(m)) { m = 0; }
+        if (isNaN(s)) { s = 0; }
+        d.setHours(parseInt(h, 10));
+        d.setMinutes(parseInt(m, 10));
+        d.setSeconds(parseInt(s, 10));
+        d.setMilliseconds(0);
+        return d;
+    }
+}
+];

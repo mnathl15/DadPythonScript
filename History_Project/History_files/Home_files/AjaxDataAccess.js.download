@@ -1,0 +1,1024 @@
+﻿var aesopData = {}
+
+//#region Substitute Job Commands
+aesopData.AcceptJob = function (id, tenantId, callback) {
+    $.post("/Vacancy/Details/Accept", { vacancyId: id, tenantId: tenantId }, callback, "json");
+};
+
+aesopData.RejectJob = function (id, tenantId, callback) {
+    $.post("/Vacancy/Details/Reject", { vacancyId: id, tenantId: tenantId }, callback, "json");
+};
+
+aesopData.CancelJob = function (id, tenantId, subCancelReason, callback, subId) {
+    $.post("/Vacancy/Details/CancelAssignment", { vacancyId: id, tenantId: tenantId, subId: subId, subCancelReasonId: subCancelReason }, callback, "json");
+};
+
+aesopData.RemoveSub = function (id, subId, hideJob, notifySub, preventSubFromWorking, requestedBy, subCancelReasonId, callback) {
+    $.post("/Vacancy/Details/CancelAssignment", {
+        vacancyId: id, 
+        subId: subId, 
+        hideJobFromSub : hideJob, 
+        sendSubRemovedNotification : notifySub, 
+        preventSubFromWorking : preventSubFromWorking, 
+        requestedBy: requestedBy,
+        subCancelReasonId: subCancelReasonId
+    }, callback, "json");
+};
+
+
+aesopData.CancelDay = function (id, vacancyItemId, tenantId, subCancelReason, callback) {
+    $.post("/Vacancy/Details/CancelAssignmentDay", { vacancyId: id, vacancyItemId: vacancyItemId, tenantId: tenantId, subCancelReasonId: subCancelReason}, callback, "json");
+};
+//#endregion
+
+//#region NonWorkDay Commands
+aesopData.AddNonWorkDay = function (date, callback) {
+    $.get("/Substitute/NonWorkDays/New", {}, callback);
+};
+
+aesopData.DeleteNonWorkDay = function (nwd, wholeGroup, callback) {
+    $.post("/Substitute/NonWorkDays/Delete", { idString: nwd.Ids.toString(), wholeGroup: wholeGroup }, callback, "json");
+};
+//#endregion
+
+//#region Retrieve Schedule
+aesopData.AvailableJobs = function (startDate, endDate, callback, forceDb) {
+    $.post("/Substitute/Schedule/AvailableJobsJSON",
+            { StartDate: startDate.formatDate("yyyy-MM-dd"), EndDate: endDate.formatDate("yyyy-MM-dd"), forceDb: forceDb },
+            callback, "json");
+};
+
+aesopData.AvailableJobCount = function (callback) {
+    $.post("/Substitute/Home/AvailableJobsCount",
+            {},
+            callback, "json");
+};
+
+aesopData.CurrentAssignments = function (startDate, endDate, callback) {
+    $.post("/Substitute/Schedule/CurrentAssignmentsJSON",
+            { StartDate: startDate.formatDate("yyyy-MM-dd"), EndDate: endDate.formatDate("yyyy-MM-dd") },
+            callback, "json");
+};
+
+aesopData.NonWorkDays = function (startDate, endDate, callback) {
+    $.post("/Substitute/NonWorkDays/ListJSON",
+            { StartDate: startDate.formatDate("yyyy-MM-dd"), EndDate: endDate.formatDate("yyyy-MM-dd") },
+            callback, "json");
+};
+
+aesopData.AbsrNotes = function (id, callback) {
+    $.post("/Vacancy/Details/Notes",
+            { vacancyId: id },
+            callback, "json");
+};
+
+aesopData.AbsrFilesHtml = function (id, tenantId, callback) {
+    $.post("/Vacancy/Files/List",
+            { vacancyId: id, tenantId: tenantId },
+            callback, "html");
+};
+
+aesopData.AbsencesForWorker = function (startDate, endDate, callback) {
+    $.post("/Employee/Schedule/CurrentAbsencesJSON",
+            { StartDate: startDate.formatDate("yyyy-MM-dd"), EndDate: endDate.formatDate("yyyy-MM-dd") },
+            callback, "json");
+};
+
+aesopData.pastAbsenceJSON = function (startDate, endDate, callback) {
+    $.post("/Employee/Schedule/pastAbsenceJSON", { StartDate: startDate.formatDate("yyyy-MM-dd"), EndDate: endDate.formatDate("yyyy-MM-dd") }, callback, "json");
+};
+
+aesopData.CancelAbsence = function (id, cancelReasonId, cancelNotes, callback) {
+    $.post("/AbsenceRequest/Details/Delete", { absrId: id, cancelReasonID: cancelReasonId, cancelNotes: cancelNotes }, callback, "json");
+};
+aesopData.AbsrFilesHtmlForReconciliation = function (id, callback) {
+    $.post("/Vacancy/Files/ListForReconciliation",
+            { vacancyId: id },
+            callback, "html");
+};
+
+
+//#endregion
+
+//#region Reference Data
+aesopData.TenantNames = function (callback) {
+    $.post("/UserSession/TenantDictionary", {}, callback, "json");
+};
+
+//#endregion
+
+/*#region PersonalInfo */
+aesopData.EditSubPersonalInfo = function (subId, tenantId, callback) {
+    $.post("/Substitute/UserProfile/EditPersonalInfo", { subId: subId, tenantId: tenantId }, callback);
+};
+/*#endregion PersonalInfo */
+
+/*#region EmployeePersonalInfo */
+aesopData.EditEmployeePersonalInfo = function (personalInfoString, callback) {
+    $.post("/Employee/UserProfile/SavePersonalInfo", { personalInfoString: personalInfoString }, callback);
+};
+/*#endregion PersonalInfo */
+
+/*#region CallTimes */
+aesopData.EditSubCallTimes = function (subId, tenantId, dow, commType, callback) {
+    $.post("/Substitute/CallTimes/Edit", { subId: subId, tenantId: tenantId, dow: dow, commType: commType }, callback);
+};
+aesopData.NeverCall = function (tenantId, subId, commType, callback) {
+    $.post("/Substitute/CallTimes/NeverCall", { OrgId: tenantId, SubID: subId, commType: commType }, callback);
+};
+aesopData.MissingCallTimeDisclaimers = function (tenantId, subId, commType, callback) {
+    $.ajax("/Substitute/CallTimes/MissingCallTimeDisclaimers", { async: false, type: "POST", data: { OrgId: tenantId, SubID: subId, commType: commType }, success: callback });
+};
+aesopData.AcknowledgeDisclaimersAndNeverCall = function (tenantId, subId, commType, callback) {
+    $.post("/Substitute/CallTimes/AcknowledgeDisclaimersAndNeverCallMe", { OrgId: tenantId, SubID: subId, commType: commType }, callback);
+};
+aesopData.CallAnyTime = function (tenantId, subId, commType, callback) {
+    $.post("/Substitute/CallTimes/CallAnyTime", { OrgId: tenantId, SubID: subId, commType: commType }, callback);
+};
+/*#endregion CallTimes */
+
+aesopData.ConfirmNotifications = function (maxNotificationId, callback) {
+    $.post("/Notifications/Confirm", { MaxNotificationId: maxNotificationId }, callback);
+};
+
+aesopData.AddKnownMosDistricts = function (subIds, tenantIds, callback) {
+    $.post("/Substitute/Districts/AddKnownDistrictList", { OtherSubIDList: subIds, OtherOrgIDList: tenantIds }, callback);
+};
+
+aesopData.BlockAd = function (advertisementid, callback) {
+    $.post("/Marketing/Block", { id: advertisementid }, callback);
+};
+
+aesopData.ReleaseAbsenceLock = function (absrID, callback) {
+    $.post("/AbsenceRequest/Details/ReleaseLock", { absrId: absrID }, callback);
+};
+
+aesopData.substitutePhoneList = function (subMask, callback) {
+    $.post("/Employee/Directory/GetQualifiedSubstitutePhoneList", { subMask: subMask }, callback);
+};
+
+
+
+aesopData.SearchPrefferedSubstitute = function (subMask, callback) {
+    $.post("/Employee/PreferredSubstitutes/ListAvailableSubsToAdd", { subMask: subMask }, callback);
+};
+
+
+aesopData.revertChangesPrefSub = function (callback) {
+    $.ajax({
+        type: 'GET',
+        url: '/Employee/PreferredSubstitutes/Revert',
+        success: callback
+    });
+};
+
+aesopData.revertChangesExcludedSub = function (callback) {
+    $.ajax({
+        type: 'GET',
+        url: '/Employee/ExcludedSubstitutes/Revert',
+        success: callback
+    });
+};
+
+
+
+aesopData.addPrefSubstitute = function (subId, callback) {
+    $.ajax({
+        data: { subId: subId },
+        type: 'POST',
+        url: '/Employee/PreferredSubstitutes/Add',
+        success: callback
+    });
+};
+
+aesopData.savePrefSubstitute = function (callGroupData, excludeSubs, callback) {
+    $.ajax({
+        data: { callGroupData: callGroupData, excludeSubs: excludeSubs },
+        type: 'POST',
+        url: '/Employee/PreferredSubstitutes/Save',
+        success: callback
+    });
+};
+
+aesopData.addExcludedSubstitute = function (subId, callback) {
+    $.ajax({
+        data: { subId: subId },
+        type: 'POST',
+        url: '/Employee/ExcludedSubstitutes/Add',
+        success: callback
+    });
+}
+
+
+aesopData.saveAbsence = function (absenceData, canExceedWorkerBalance,canSubOverWorked, canSubOverWorkedCrossDistrict, callback) {
+    $.ajax({
+        data: { absenceJson: absenceData, ignoreEntitlementBalanceOverage: canExceedWorkerBalance, ignoreSubOverworked: canSubOverWorked, ignoreXdSubOverworked: canSubOverWorkedCrossDistrict },
+        type: 'POST',
+        url: '/AbsenceRequest/Details/Save',
+        success: callback
+    });
+};
+
+aesopData.getAbsenceForEdit = function (absrId, forWrite, callback) {
+    $.post("/AbsenceRequest/Details/EditJson", { absrId: absrId, forWrite: forWrite }, callback);
+};
+
+aesopData.getAbsenceForSplit = function (absrId, callback) {
+    $.post("/AbsenceRequest/Details/EditForSplitJson", { absrId: absrId}, callback);
+};
+
+
+aesopData.getAbsenceForReconcile = function (absrId, callback) {
+    $.post("/AbsenceRequest/Details/EditForReconcileJson", { absrId: absrId }, callback);
+};
+
+
+aesopData.splitAbsence = function (absenceSplitData, callback) {
+    $.ajax({
+        data: {
+            absenceSplitJson: absenceSplitData
+        },
+        type: 'POST',
+        url: '/AbsenceRequest/Details/Split',
+        success: callback
+    });
+};
+
+aesopData.getAbsenceApprovalStatus = function (absrId, callback) {
+    $.post("/AbsenceRequest/Approval/ViewStatus", { absrId: absrId }, callback);
+}
+
+aesopData.getAbsenceApproverList = function (absrId, callback) {
+    $.post("/AbsenceRequest/Approval/GetListOfApprovers", { absrId: absrId }, callback);
+}
+
+
+aesopData.saveAbsenceFiles = function (data, callback) {
+
+    switch (parseInt(data.userType)) {
+        case 2:
+            $.ajax({
+                data: { fileAttachmentJsonString: data.fileAttachmentJSON },
+                type: 'POST',
+                url: '/Employee/Files/Save',
+                success: callback
+            });
+            break;
+        case 4:
+        case 5:
+            $.ajax({
+                data: { fileAttachmentJsonString: data.fileAttachmentJSON, instId: data.instId },
+                type: 'POST',
+                url: '/Location/Files/Save',
+                success: callback
+            });
+            break;
+        default:
+    }
+
+
+};
+
+
+aesopData.deleteFileAttachment = function (data, callback) {
+    switch (parseInt(data.userType)) {
+        case 2:
+            $.ajax({
+                data: { fileID: data.fileId },
+                type: 'POST',
+                url: '/Employee/Files/Delete',
+                success: callback
+            });
+            break;
+        case 4:
+        case 5:
+            $.ajax({
+                data: { fileID: data.fileId },
+                type: 'POST',
+                url: '/Location/Files/Delete',
+                success: callback
+            });
+            break;
+        default:
+    }
+};
+
+aesopData.deleteFileAttachmentForAbsenceRequest = function(fileID, absrID, callback) {
+    $.ajax({
+        data: { fileID: fileID, absrID: absrID },
+        type: 'POST',
+        url: '/AbsenceRequest/Files/Delete',
+        success: callback
+    });
+};
+
+aesopData.PreferredSubsOnWrkCgrp = function (absrID, absrIsNew, callback) {
+    $.ajax({
+        type: 'POST',
+        data: { absrID: absrID, absrIsNew: absrIsNew },
+        url: '/Vacancy/Details/PreferredAvailableSubs',
+        success: callback
+    });
+};
+
+aesopData.getSubstituteForWorker = function (subMask, absrID, callback) {
+    $.ajax({
+        url: '/Vacancy/Details/SearchAvailableSubsJson',
+        type: "POST",
+        data: {
+            subMask: subMask,
+            absrID: absrID
+        },
+        success: callback
+    });
+};
+
+aesopData.getEligibleSubsForInstitutionPreferenceList = function (instId, subMask, offset, isGlobal, callback) {
+    // was: '/Employee/PreferredSubstitutes/ListAvailableSubsToAddForInstitution'
+    $.ajax({
+        url: '/Location/PreferredSubstitutes/ListEligibleSubsJSON',
+        type: "POST",
+        global: isGlobal,
+        data: {
+            instId: instId,
+            subMask: subMask,
+            offSet: offset
+        },
+        success: callback
+    });
+};
+
+aesopData.getEligibleSubsForInstitutionExclusionList = function (instId, subMask, offset, isGlobal, callback) {
+    $.ajax({
+        url: '/Location/ExcludedSubstitutes/ListEligibleSubsJSON',
+        type: "POST",
+        global: isGlobal,
+        data: {
+            instId: instId,
+            subMask: subMask,
+            offSet: offset
+        },
+        success: callback
+    });
+};
+
+aesopData.getEligibleSubsForEmployeePreferenceList = function (workId, subMask, offset, isGlobal, callback) {
+    $.ajax({
+        url: '/Employee/PreferredSubstitutes/ListEligibleSubsJSON',
+        type: "POST",
+        global: isGlobal,
+        data: {
+            workId: workId,
+            subMask: subMask,
+            offSet: offset
+        },
+        success: callback
+    });
+};
+
+
+aesopData.getEligibleSubsForEmployeeExcludedList = function (workId, subMask, offset, isGlobal, callback) {
+    $.ajax({
+        url: '/Employee/ExcludedSubstitutes/ListEligibleSubsJSON',
+        type: "POST",
+        global: isGlobal,
+        data: {
+            workId: workId,
+            subMask: subMask,
+            offSet: offset
+        },
+        success: callback
+    });
+};
+
+
+aesopData.addSubstitutesToInstitutionPreferenceList = function (instId, subIds, isGlobal, callback) {
+    // was: '/Admin/PreferenceList/AddSubstitutesToCallGroup'
+    $.ajax({
+        url: '/Location/PreferredSubstitutes/AddEligibleSubs',
+        type: "POST",
+        global: isGlobal,
+        data: {
+            instId: instId,
+            subIds: subIds
+        },
+        success: callback
+    });
+};
+
+aesopData.addSubstitutesToInstitutionExcludedList = function (instId, subIds, isGlobal, callback) {
+    $.ajax({
+        url: '/Location/ExcludedSubstitutes/AddEligibleSubs',
+        type: "POST",
+        global: isGlobal,
+        data: {
+            instId: instId,
+            subIds: subIds
+        },
+        success: callback
+    });
+};
+
+aesopData.addSubstitutesToEmployeePreferenceList = function (workId, subIds, isGlobal, callback) {
+    $.ajax({
+        url: '/Employee/PreferredSubstitutes/AddEligibleSubs',
+        type: "POST",
+        global: isGlobal,
+        data: {
+            workId: workId,
+            subIds: subIds
+        },
+        success: callback
+    });
+};
+
+aesopData.addSubstitutesToEmployeeExcludedList = function (workId, subIds, isGlobal, callback) {
+    $.ajax({
+        url: '/Employee/ExcludedSubstitutes/AddEligibleSubs',
+        type: "POST",
+        global: isGlobal,
+        data: {
+            workId: workId,
+            subIds: subIds
+        },
+        success: callback
+    });
+};
+
+aesopData.addSubstitutesToEmployeeExcludedListByObject = function (workId, subs, isGlobal, callback) {
+    $.ajax({
+        url: '/Employee/ExcludedSubstitutes/AddEligibleSubsByObject',
+        type: "POST",
+        global: isGlobal,
+        data: {
+            workId: workId,
+            substitutesJson: JSON.stringify(subs)
+        },
+        success: callback
+    });
+};
+
+aesopData.ChangeOrAssignSubstitute = function (absrID, subID, isSubOverworked, callback) {
+    $.ajax({
+        url: '/Vacancy/Details/ChangeOrAssignSubstitute',
+        type: "POST",
+        data: {
+            absrID: absrID,
+            subID: subID,
+            isSubOverworked: isSubOverworked
+        },
+        success: callback
+    });
+};
+
+
+aesopData.saveOrganizationUserPersonalInfo = function (data, callback) {
+    $.ajax({
+        url: '/Admin/Details/SavePersonalInfo',
+        type: "POST",
+        data: { data: data },
+        success: callback
+    });
+};
+
+
+aesopData.getContactInformation = function(data, callback) {
+    $.ajax({
+        type: 'GET',
+        url: '/Help/Index',
+        cache: false,
+        success: callback
+    });
+};
+
+aesopData.getContactInformationJson = function (data, callback) {
+    $.ajax({
+        type: 'GET',
+        url: '/Help/ContactInfo',
+        cache: false,
+        success: callback
+    });
+};
+
+aesopData.getAbsenceLog = function(absrId, callback) {
+    $.post("/AbsenceRequest/Details/ViewLog", { absrId: absrId }, callback);
+};
+
+aesopData.getFulfillmentlog = function(absrId, callback) {
+    $.post("/AbsenceRequest/Details/Callhistory", { absrId: absrId }, callback);
+};
+
+aesopData.getApproverLog = function(absrId, callback) {
+    $.post("/AbsenceRequest/Approval/ViewLog", { absrId: absrId }, callback);
+};
+
+
+aesopData.GetWorkerJson = function (query, offset, isVacancy, callback) {
+    $.ajax({
+        data: { query: query, offSet: offset, isVacancy: isVacancy },
+        type: 'POST',
+        global: false,
+        url: '/AbsenceRequest/Details/GetWorkerJson',
+        success: callback
+    });
+};
+
+aesopData.GetNewJson = function (workId, lastStringSearched, isVacancy, callback) {
+    $.ajax({
+        data: { workId: workId, stringSearched: lastStringSearched, isVacancy: isVacancy },
+        type: 'POST',
+        url: '/AbsenceRequest/Details/NewJSON',
+        success: callback
+    });
+}
+
+
+aesopData.HoldAbsenceFor30Minutes = function(absrId, callback) {
+    $.ajax({
+        data: { absrId: absrId },
+        type: 'POST',
+        url: '/AbsenceRequest/Details/HoldAbsenceFor30Minutes',
+        success: callback
+    });
+};
+
+
+aesopData.ListAvailableSubJson = function (subMask,absrId,showOnlyQualifiedAndAvailable,nextStringAfter,global,callback) {
+    $.ajax({
+        url: '/Vacancy/Details/ListAvailableSubsJson',
+        type: "POST",
+        global: global,
+        data: {
+            subMask: subMask,
+            absrID: absrId,
+            showOnlyQualifiedAndAvailable: showOnlyQualifiedAndAvailable,
+            startingAfter: nextStringAfter
+        },
+        success: callback
+    });
+}
+
+
+aesopData.GetFileAttachmentsBasedOnInstIdsAndDate = function (instIdsCsv, datesCsv, workId, callback) {
+    $.ajax({
+        url: "/AbsenceRequest/Files/ListRelatedJSON",
+        data: { instIdCsv: (instIdsCsv == null) ? "" : instIdsCsv, datesCsv: (datesCsv == null) ? "" : datesCsv, workId: workId },
+        global: false,
+        type: "POST",
+        success: callback
+    });
+}
+
+aesopData.GetWorkerJsonForReport = function (workerMask,callback) {
+    $.ajax({
+        url: '/Reports/SubSignIn/GetWorkersJSON',
+        type: "POST",
+        data: {
+            workerMask: workerMask
+        },
+        success:callback
+    });
+
+}
+
+
+aesopData.MakeManualCallToSub = function(absrId,subId,callback) {
+    $.ajax({
+        url: '/Vacancy/Details/MakeManualCallToSub',
+        type: "POST",
+        data: {
+            absrID: absrId,
+            subId: subId
+        },
+        success:callback
+    });
+}
+
+aesopData.GetManualCallStatus = function (id,callback) {
+    $.ajax({
+        url: '/Vacancy/Details/GetManualCallStatus',
+        type: "POST",
+        global: false,
+        data: {
+            Id:id
+        },
+        success:callback
+    });
+}
+
+
+aesopData.SaveAndReconcileOrUnReconcileAbsence = function (data, reconcile, index, globalCall, callback) {
+    $.ajax({
+        url: '/Vacancy/Reconciliation/SaveAbsence/',
+        type: "POST",
+        global: globalCall,
+        data: {
+            data: data,
+            reconcile: reconcile,
+            index: index
+        },
+        success: function (result) {
+            callback(result);
+        }
+    });
+}
+
+
+aesopData.RefreshDetailsReconcileOrUnReconcileAbsence = function (date,reconcile,filter,callback) {
+    $.ajax({
+        url: '/Vacancy/Reconciliation/RefreshDetials/',
+        type: "POST",
+        data: {
+            fdate: date,
+            tDate: date,
+            reconcile: reconcile,
+            filter:filter
+        },
+        success: callback
+    });
+}
+
+
+aesopData.GetSchoolList = function (callback) {
+    aesopData.ServerCall('/Location/Details/GetSchoolList',
+        false,
+        { },
+        callback
+    );
+};
+
+aesopData.GetPreferredSubListInstitution = function (instId,callback) {
+    aesopData.ServerCall('/Location/PreferredSubstitutes/ListJSON',
+            false,
+            { instId: instId },
+            callback
+        );
+};
+
+aesopData.GetExcludedSubListInstitution = function (instId, callback) {
+    aesopData.ServerCall('/Location/ExcludedSubstitutes/ListJSON',
+            false,
+            { instId: instId },
+            callback
+        );
+};
+
+aesopData.GetPreferredSubListEmployee = function (callback) {
+    aesopData.ServerCall('/Employee/PreferredSubstitutes/ListJSON',
+            false,
+            {},
+            callback
+        );
+};
+
+aesopData.GetExcludedSubListEmployee = function (callback) {
+    aesopData.ServerCall('/Employee/ExcludedSubstitutes/ListJSON',
+            false,
+            {},
+            callback
+        );
+};
+
+
+aesopData.AdminSaveChangesPreferredSubList = function (callGroupItem, callback) {
+    aesopData.ServerCall('/Location/PreferredSubstitutes/Save',
+            false,
+            { callGroupItemJson: callGroupItem },
+            callback
+        );
+};
+
+aesopData.GetPreferredSubsDefaultsInstitution = function(instId, callback) {
+    aesopData.ServerCall('/Location/PreferredSubstitutes/ListDefaultsJSON',
+           false,
+           { instId: instId },
+           callback
+       );
+};
+
+aesopData.GetExcludedSubsDefaultsInstitution = function (instId, callback) {
+    aesopData.ServerCall('/Location/ExcludedSubstitutes/ListDefaultsJSON',
+           false,
+           { instId: instId },
+           callback
+       );
+};
+
+aesopData.GetPreferredSubsDefaultsEmployee = function (callback) {
+    aesopData.ServerCall('/Employee/PreferredSubstitutes/ListDefaultsJSON',
+           false,
+           { },
+           callback
+       );
+};
+
+aesopData.SaveListDefault = function (instId,defaultString, callback) {
+    aesopData.ServerCall('/Location/PreferredSubstitutes/SaveListDefault',
+            false,
+            { instId:instId,defaultString: defaultString },
+            callback
+        );
+};
+
+aesopData.RemoveSubstitutesFromInstitutionPreferenceList = function (instId, subIds, isGlobal, callback) {
+    aesopData.ServerCall('/Location/PreferredSubstitutes/Delete',
+            isGlobal,
+            { instId: instId, subIds: subIds },
+            callback
+    );
+};
+
+aesopData.RemoveSubstitutesFromInstitutionExcludedList = function (instId, subIds, isGlobal, callback) {
+    aesopData.ServerCall('/Location/ExcludedSubstitutes/Delete',
+            isGlobal,
+            { instId: instId, subIds: subIds },
+            callback
+    );
+};
+
+aesopData.RemoveSubstitutesFromEmployeePreferenceList = function (workId, subIds, isGlobal, callback) {
+    aesopData.ServerCall('/Employee/PreferredSubstitutes/Delete',
+            isGlobal,
+            { workId: workId, subIds: subIds },
+            callback
+    );
+};
+
+aesopData.SaveLocationPreferredSubsListReordered = function (callGroupItems, callback) {
+    aesopData.ServerCall('/Location/PreferredSubstitutes/SaveListReordered',
+            false,
+            { callGroupItemsJson: callGroupItems },
+            callback
+        );
+};
+
+aesopData.SaveEmployeePreferredSubsListReordered = function (callGroupItems, callback) {
+    aesopData.ServerCall('/Employee/PreferredSubstitutes/SaveListReordered',
+            false,
+            { callGroupItemsJson: callGroupItems },
+            callback
+        );
+};
+
+aesopData.GetFileList = function(absrId,callback) {
+    $.ajax({
+        url: '/AbsenceRequest/Files/List',
+        type: "POST",
+        data: {
+            absrId: absrId
+        },
+        success: callback
+    });
+};
+
+
+aesopData.ServerCall = function(path, global, dataObj, successCallBack) {
+    $.ajax({
+        url: path,
+        type: "POST",
+        global: global,
+        data: dataObj,
+        success: successCallBack
+    });
+};
+
+
+aesopData.GetReportResultData = function(controller, filterData, callback, errorFn) {
+    $.ajax({
+        url: '/Reports/' + controller + '/GetData',
+        type: "POST",
+        //dataType: "html",
+        data: {
+            FilterSelections: filterData
+        },
+        success: callback,
+        error: errorFn
+    });
+};
+
+aesopData.GetAbsenceBasedReportResultData = function(controllerMethod, filterData, callback, errorFn) {
+    $.ajax({
+        url: '/Reports/Absence/' + controllerMethod,
+        type: "POST",
+        //dataType: "html",
+        data: {
+            FilterSelections: filterData
+        },
+        success: callback,
+        error: errorFn
+    });
+};
+
+aesopData.GetAbsenceBasedReportPartialView = function (controllerMethod, filterData, callback, errorFn) {
+    $.ajax({
+        url: '/Reports/Absence/' + controllerMethod,
+        global: false,
+        type: "POST",
+        dataType: "html",
+        data: {
+            FilterSelections: filterData
+        },
+        success: callback,
+        error: errorFn
+    });
+};
+
+
+aesopData.GetReportWriterConfigList = function (data, callback, errorFn) {
+    $.ajax({
+        url: "/Reports/ReportWriter/ListConfigs",
+        global: false,
+        type: "POST",
+        dataType: "html",
+        data: data,
+        success: callback,
+        error: errorFn
+    });
+};
+
+
+aesopData.GetReportWriterExecutions = function (data, callback, errorFn) {
+    $.ajax({
+        url: "/Reports/ReportWriter/ListExecutions",
+        global: false,
+        type: "POST",
+        dataType: "html",
+        data: data,
+        success: callback,
+        error: errorFn
+    });
+};
+
+
+aesopData.GetAbsenceInteractiveSummaryPartialView = function (filterData, groupBy, calculateByPercentOfDay, callback, errorFn) {
+    $.ajax({
+        url: '/Reports/AbsenceInteractive/ListSummary',
+        global: false,
+        type: "POST",
+        dataType: "html",
+        data: {
+            FilterSelections: filterData,
+            groupBy: groupBy, 
+            calculateByPercentOfDay: calculateByPercentOfDay
+        },
+        success: callback,
+        error: errorFn
+    });
+};
+
+aesopData.GetAbsenceInteractiveDetailPartialView = function (filterData, calculateByPercentOfDay, callback, errorFn) {
+    $.ajax({
+        url: '/Reports/AbsenceInteractive/ListDetails',
+        global: false,
+        type: "POST",
+        dataType: "html",
+        data: {
+            FilterSelections: filterData,
+            calculateByPercentOfDay: calculateByPercentOfDay
+        },
+        success: callback,
+        error: errorFn
+    });
+};
+
+aesopData.StartAbsenceInteractiveDownloadDetails = function(filterData, emailTo, configId, callback, errorFn) {
+    $.ajax({
+        url: '/Reports/AbsenceInteractive/DownloadDetails',
+        global: false,
+        type: "POST",
+        dataType: "json",
+        data: {
+            FilterSelections: filterData,
+            emailTo: emailTo,
+            reportConfigId: configId
+        },
+        success: callback,
+        error: errorFn
+    });
+};
+
+aesopData.CancelReportExecution = function (executionId,callback) {
+    $.ajax({
+        url: '/Reports/ReportWriter/CancelExecution',
+        global: false,
+        type: "POST",
+        dataType: "json",
+        data: {
+            executionId: executionId
+        },
+        success: callback
+    });
+};
+
+aesopData.ListConfigsJSON = function (callback, errorFn) {
+    $.ajax({
+        url: '/Reports/ReportWriter/ListConfigsJSON',
+        global: false,
+        type: "GET",
+        data: {
+            reportTypesString: "1"
+        },
+        dataType: "json",
+        success: callback,
+        error: errorFn
+    });
+};
+
+
+
+aesopData.ExecutionStatusJSON = function (configId,callback, errorFn) {
+    $.ajax({
+        url: '/Reports/ReportWriter/ExecutionStatusJSON',
+        global: false,
+        type: "GET",
+        data: {
+            id: configId
+        },
+        dataType: "json",
+        success: callback,
+        error: errorFn
+    });
+};
+
+aesopData.CheckReportWriterExecutionStatus = function (id, callback, errorFn) {
+    $.ajax({
+        url: '/Reports/ReportWriter/ExecutionStatusJson/',
+        global: false,
+        type: "POST",
+        dataType: "json",
+        data: {
+            id: id
+        },
+        success: callback,
+        error: errorFn
+    });
+};
+
+aesopData.GetReportConfigList = function (types) {
+    $.ajax({
+        url: '/Reports/ReportWriter/ListConfigsJson/',
+        global: false,
+        type: "POST",
+        dataType: "json",
+        data: {
+            reportTypes : types
+        },
+        success: callback,
+        error: errorFn
+    });
+};
+
+
+aesopData.GetWebsiteTour = function (path, callback, errorFn) {
+    $.ajax({
+        url: '/WebsiteTour/Get/',
+        global: false,
+        type: "POST",
+        dataType: "json",
+        data: {
+            path: path
+        },
+        success: callback,
+        error: errorFn
+    });
+};
+
+
+aesopData.LogWebsiteTour = function (id, lastStep, completed, callback, errorFn) {
+    $.ajax({
+        url: '/WebsiteTour/Log/',
+        global: false,
+        type: "POST",
+        dataType: "json",
+        data: {
+            id: id,
+            lastStep: lastStep,
+            completed: completed
+        },
+        success: callback,
+        error: errorFn
+    });
+};
+
+aesopData.GetAdUrl = function () {
+    return $.ajax({
+        type: 'GET',
+        url: '/Marketing/GetAdUrl',
+        global: false
+    }).then(function (result) {
+        if (window.sessionStorage) {
+            window.sessionStorage.setItem('reviveData', JSON.stringify(result.Data));
+        }
+        return result.Data;
+    }, function() {
+        if (window.sessionStorage && window.sessionStorage.getItem('reviveData')) {
+            window.sessionStorage.removeItem('reviveData');
+        }
+    });
+}
+
+
+aesopData.SetInitialized = function (maxNotificationId, callback) {
+    $.post("/Initialized/SetInitialized", {});
+};
+

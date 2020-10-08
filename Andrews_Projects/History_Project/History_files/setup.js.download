@@ -1,0 +1,113 @@
+﻿var cfg = window.siteConfig;
+
+
+var flAuth = new Fl.Auth({
+    identityGatewayBaseUri: cfg.identityGatewayBaseUri,
+    clientId: cfg.clientId,
+    productId: cfg.productId,
+    silentRenewUri: cfg.baseUri + 'node_modules/util-idm-authjs/dist/fl-auth-silentrenew.html',
+    signoutRedirectUri: cfg.baseUri + cfg.signOutRoute,
+    redirectUri: cfg.baseUri + 'Login/Signin',
+    clockSkewSeconds: cfg.clockSkewSeconds
+});
+
+
+
+function init() {
+    if (typeof (flAuth) === 'undefined') {
+        throw new Error('flAuth has not been loaded/configured');
+    }
+
+    return Q.Promise(function (resolve, reject) {
+        flAuth.ready().then(function () {
+            if (!flAuth.isAuthenticated) {
+                flAuth.authenticate({ returnUrl: location.href, productId: cfg.productId });
+                return;
+            } else {
+                var flAuthSession = new Fl.AuthSession(flAuth);
+                flAuthSession.startListening();
+                //document.getElementById('pre-loader').style.display = "none";
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    });
+}
+
+
+function isAnyImpersonationGoingOn() {
+    var deferred = Q.defer();
+    
+    var impersonating = inAppImpersonationActive(window.siteConfig.isImpersonatingCookieName);
+    if (impersonating)
+        deferred.resolve(impersonating);
+
+    if (typeof (flAuth) === 'undefined') {
+        deferred.resolve(false);
+    }
+
+    flAuth.ready().then(function () {
+        if (!flAuth.isAuthenticated)
+            deferred.resolve(false);
+       
+        flAuth.profile.then(function(profile) {
+            impersonating = flAuth.isImpersonating != null || isIdmAdministrator(profile);
+            if (impersonating)
+                deferred.resolve(impersonating);
+
+            deferred.resolve(false);
+        });
+    });
+
+    return deferred.promise;
+}
+
+//Determine if we are using IDM and if so do we allow the current user to edit their language
+function determineLanguageEditability() {
+    if (typeof flAuth !== 'undefined') {
+        flAuth.ready().then(function () {
+            flAuth.profile.then(function (profile) {
+                if (flAuth.isImpersonating == null && isIdmAdministrator(profile)) {
+                    //CS Users need to be able to edit the language for everyone, but not when they are FLID Impersonating
+                    $("#editableLanguage").show();
+                    $("#readOnlyLanguage").hide();
+                } else if (profile.claims && profile.claims.idp.toLowerCase() === 'frontline') {
+                    //Only Frontline Account Users will be blocked from changing the language in Aesop, because we will
+                    //source that information from their Frontline Account Profile in Account Settings
+                    $("#editableLanguage").hide();
+                    $("#readOnlyLanguage").show();
+                } else {
+                    //Everyone else (External Auth or Passthru) needs to be able to edit the language in Aesop
+                    $("#editableLanguage").show();
+                    $("#readOnlyLanguage").hide();
+                }
+            });
+        });
+    } else {
+        //Fallback if we do not have flAuth, allow language editing within Aesop
+        $("#editableLanguage").show();
+        $("#readOnlyLanguage").hide();
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------
+//copying some functions from the sidekick files so isAnyImpersonationGoingOn() fx works. can't find a better, more consolidated place to put this stuff right now.
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------
+function inAppImpersonationActive(isImpersonatingCookieName) {
+    var cookieRegex = /{("originalUser":"[0|4|7]-\d+"),("impersonatedUser":"[2-5]-\d+"),"startedFrom":"(AM|TA)"}/;
+    var cookieval = getCookie(isImpersonatingCookieName);
+    return cookieval !== null && cookieRegex.test(cookieval);
+}
+
+function getCookie(name) {
+    function escape(s) { return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1'); };
+    var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
+    return match ? match[1] : null;
+}
+
+function isIdmAdministrator(profile) {
+    return typeof profile.Roles !== 'undefined' && profile.Roles.indexOf('IdmAdministrator') >= 0;
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------

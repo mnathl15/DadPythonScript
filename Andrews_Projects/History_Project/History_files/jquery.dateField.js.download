@@ -1,0 +1,67 @@
+﻿/***********************************
+    Depends on DateJS Library
+************************************/
+$.fn.dateField = function (options) {
+    var settings = {
+        format: Date.CultureInfo.formatPatterns.shortDate,
+        size: 10,
+        parseoninit: true,
+        onerror: null,
+        showdatepicker: true,
+        buttonText: '',
+        showOn: 'button',
+        associatedField: null,
+        associatedMinDays: null,
+        associatedMaxDays: null
+    };
+
+    if (options) {
+        jQuery.extend(settings, options);
+    };
+
+    return this.each(function () {
+        if (!$(this).data("isDateField")) {
+            $(this).data("isDateField", true);
+            $(this).attr("size", settings["size"]);
+            $(this).bind("change", function (e) {
+                try {
+                    var val = $(this).val().replace(/\s/g, "");
+                    if (val == "") return;
+
+                    var dt = Date.parse(val);     // DateJS parse method
+                    if (dt == null) {
+                        if (settings["onerror"]) {
+                            return settings["onerror"](this, e);
+                        }
+                    }
+                    $(this).val(dt.toString(settings["format"]));
+                }
+                catch (e) {
+                    if (settings["onerror"]) {
+                        return settings["onerror"](this, e);
+                    }
+                }
+            });
+        }
+
+        var associatedField = $(settings.associatedField);
+        if (settings.showdatepicker) {
+            $(this).datepicker(settings);
+            $(this).bind("change", function (e) {
+                var val = $(this).val().replace(/\s/g, "");
+                if (val == "") return;
+                var dt = Date.parse(val);     // DateJS parse method
+                if (dt == null) return;
+
+                if (settings.associatedMinDays != null) {
+                    associatedField.datepicker("option", "minDate", dt.clone().addDays(settings.associatedMinDays));
+                }
+                if (settings.associatedMaxDays != null) {
+                    associatedField.datepicker("option", "maxDate", dt.clone().addDays(settings.associatedMaxDays));
+                }
+            });
+        }
+
+        $(this).trigger("change");
+    });
+};

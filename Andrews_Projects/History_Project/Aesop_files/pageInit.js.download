@@ -1,0 +1,54 @@
+﻿$(function () {
+    $(document).ajaxStart(function () {
+        $("#working").show();
+    }).ajaxStop(function () {
+        $("#working").hide();
+    });
+
+    //$('#accountBox').dropdown();
+    
+    $('#accountBox').hover(function () {
+        $(this).find(".dropdown").stop(true, true).slideDown(100).addClass('over');
+    }, function () {
+        $(this).find(".dropdown").stop(true, true).slideUp(100).addClass('over');
+    });
+    
+
+
+    $.ajaxSetup({
+        statusCode: {
+            401: function () {
+                location.reload();
+            }
+        }
+    });
+    
+});
+
+$(document).ajaxSuccess(function (event, xhr, options) {
+    try {
+        
+        if (xhr.responseText.length === 0) return;
+       
+        var json = jQuery.parseJSON(xhr.responseText);
+        if (json.sessionExpired) {
+            window.location = json.redirectTo;
+        }
+    } catch (e) { }
+});
+
+// Handle Session Timed Out and next request is ajax
+//$(document).ajaxError(function (xhr, props) {
+//    if (props.status === 401) {
+//        location.reload();
+//    }
+//});
+
+
+
+
+function dismissBanner(which) {
+    $(which).hide();
+    aesopData.BlockAd($("#AdvertisementId").val());
+}
+

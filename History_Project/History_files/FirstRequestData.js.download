@@ -1,0 +1,253 @@
+﻿var firstRequestData = {
+
+    //Allow external scripts to check first request dialog status
+    //  Assign onClose function to execute upon dialog close/dismiss
+    isDisplayed: false,
+    onClose: function () {
+        if (typeof (flAuth) !== 'undefined') {
+            flAuth.ready().then(function() {
+                if (flAuth.isAuthenticated) {
+                    aesopData.SetInitialized();
+                }
+            });
+        } else {
+            aesopData.SetInitialized();
+        }
+    },
+    closed: function () {
+        firstRequestData.isDisplayed = false;
+        firstRequestData.onClose();
+    },
+    shown: function () {
+        firstRequestData.isDisplayed = true;
+    },
+    
+    functionQueue: [],
+    curNotificationIndex: 0,
+    showNextDialog: function () {
+        if (firstRequestData.functionQueue.length == 0) {
+            firstRequestData.closed();
+            return;
+        }
+        var item = firstRequestData.functionQueue.shift();
+        item.fn(item.data);
+    },
+
+    // EULA
+    showEulas: function (data) {
+        var buttonOpts = {};
+        buttonOpts["Accept"] = firstRequestData.acceptEulas;
+
+        $.dialog(data, {
+            closeOnEscape: false,
+            dialogClass: "hideTitle",
+            width: 820,
+            modal: true,
+            buttons: buttonOpts,
+            close: firstRequestData.showNextDialog
+        });
+
+        $(".eulaText").scrollTop(0);
+        firstRequestData.shown();
+    },
+
+    acceptEulas: function (evt) {
+        var dialog = $(this);
+        dialog.find("form").ajaxSubmit({
+            success: function (data) {
+                dialog.dialog("close");
+                firstRequestData.closed();
+            }
+        });
+    },
+
+    // Web Alerts
+    showWebAlerts: function (data) {
+        var buttonOpts = {};
+        buttonOpts[RRDismiss] = function () {
+            $(this).dialog("close");
+            firstRequestData.closed();
+        };
+
+        $.dialog(data, {
+            title: RRImportantNotification,
+            width: 960,
+            modal: true,
+            buttons: buttonOpts,
+            close: firstRequestData.showNextDialog
+        });
+        
+        firstRequestData.shown();
+    },
+
+    // Notifications
+    showNotifications: function (data) {
+        var notifications = firstRequestData.notifications;
+        var buttons = [];
+        var confirmButtonClass = "confirm positiveDefault";
+        buttons.push({ text: RRPrevious, "class": "previous hidden", click: firstRequestData.showPrevNotification });
+        if (notifications.length > 1) {
+            buttons.push({ text: RRNext, "class": "next", click: firstRequestData.showNextNotification });
+            confirmButtonClass = confirmButtonClass; // + " hidden";
+        }
+        buttons.push({ text: RRConfirm, "class": confirmButtonClass, click: firstRequestData.confirmNotifications });
+
+        $.dialog(data, {
+            dialogClass: "hideTitle",
+            width: 960,
+            height: 'auto',
+            modal: true,
+            buttons: buttons,
+            open: function (evt) { firstRequestData.showNotification($(evt.target)); },
+            close: firstRequestData.showNextDialog
+        });
+        
+        firstRequestData.shown();
+    },
+    showPrevNotification: function (evt) {
+        if (firstRequestData.curNotificationIndex == 0) return;
+        firstRequestData.curNotificationIndex--;
+        firstRequestData.showNotification($(this));
+    },
+    showNextNotification: function (evt, ui) {
+        var lastNotificationIndex = firstRequestData.notifications.length - 1;
+        if (firstRequestData.curNotificationIndex >= lastNotificationIndex) return;
+        firstRequestData.curNotificationIndex++;
+        firstRequestData.showNotification($(this));
+    },
+    showNotification: function (dialog) {
+        var n = firstRequestData.notifications[firstRequestData.curNotificationIndex];
+        var ct = firstRequestData.notifications.length;
+        var index = firstRequestData.curNotificationIndex;
+        var buttons = dialog.siblings(".ui-dialog-buttonpane:first");
+        buttons.find("button.previous").toggleClass("hidden", index == 0);
+        buttons.find("button.next").toggleClass("hidden", index == (ct - 1));
+        buttons.find("button.confirm").toggleClass("hidden", index < (ct - 1));
+        dialog.find(".notificationMessage").hide();
+        dialog.find("#nType" + n.type).show();
+
+        switch (n.type) {
+            case 1:
+            case 3:
+            case 4:
+                if (!n.parsed) {
+                    n.date = Date.parse(n.date);
+                    caldata.parseJob(n.vacancy, "njob", caldata.Tenants);
+                }
+                n.parsed = true;
+                dialog.find(".notificationTimeSheetTable").addClass("hidden");
+                dialog.find(".notificationJobTable").removeClass("hidden");
+                dialog.find(".notificationMessage .date").text(n.date.toString(Date.CultureInfo.formatPatterns.longDate + " " + Date.CultureInfo.formatPatterns.shortTime));
+                var tbl = dialog.find(".notificationJobTable .jobList");
+                calendarview.buildJobGrid(tbl, [n.vacancy]);
+                break;
+            case 2:
+                dialog.find(".notificationMessage .headerMsg").text(new Date(n.vacancy.StartDate).toString(Date.CultureInfo.formatPatterns.longDate) + " - " + new Date(n.vacancy.EndDate).toString(Date.CultureInfo.formatPatterns.longDate));
+                dialog.find(".notificationJobTable").addClass("hidden");
+                dialog.find(".notificationTimeSheetTable").removeClass("hidden");
+                dialog.find("#tblTimeSheet").find("tbody").has("tr.detail").remove();
+                for (var i = 0; i < n.vacancy.TimeSheetRows.length; i++) {
+                    var element = dialog.find("#timeSheetTempl tbody").clone();
+                    element.find(".actualDate").text(new Date(n.vacancy.TimeSheetRows[i].ActualDate).toString(Date.CultureInfo.formatPatterns.longDate));
+                    element.find(".timeSheetTimes").text(n.vacancy.TimeSheetRows[i].TimeSheetTimes);
+                    element.find(".location").text(n.vacancy.TimeSheetRows[i].Location);
+                    element.find(".district").text(n.vacancy.TimeSheetRows[i].District);
+                    element.find("tr").removeClass("hidden");
+                    element.appendTo(dialog.find("#tblTimeSheet"));
+                }
+                break;
+            default:
+                break;
+        }
+       
+
+    },
+    confirmNotifications: function () {
+        aesopData.ConfirmNotifications($("#MaxNotificationId").val());
+        $(this).dialog("close");
+        firstRequestData.closed();
+    },
+
+    // Mos Suggestions
+    showMosSuggestions: function (data) {
+        var mosId = $("#MosId").val();
+        var buttons = []
+        buttons.push({ text: RRMaybeLater, click: function () { $(this).dialog("close"); firstRequestData.closed(); } });
+        if (mosId > 0) {
+            buttons.push({ text: RRGoToDistrictList, className: "positive", click: function () { window.location = "/Substitute/Districts/List"; } });
+            buttons.push({ text: RRAddAllDistricts, className: "positiveDefault", click: firstRequestData.addAllMosSuggestions });
+        } else {
+            buttons.push({ text: RRCreateMOSPinButton, className: "positiveDefault", click: function () { window.location = "/Substitute/Districts/List"; } });
+        }
+
+        $.dialog(data, {
+            title: RRAdditionalDistricts,
+            width: 500,
+            modal: true,
+            buttons: buttons,
+            close: firstRequestData.showNextDialog
+        });
+        
+        firstRequestData.shown();
+    },
+    addAllMosSuggestions: function (evt) {
+        var subIds = [];
+        var tenantIds = [];
+        var dialog = $(this);
+
+        dialog.find("li").each(function() {
+            subIds.push($(this).attr("subId"));
+            tenantIds.push($(this).attr("tenantId"));
+        });
+
+        aesopData.AddKnownMosDistricts(subIds.toString(), tenantIds.toString(), function () {
+            if (typeof (flAuth) !== 'undefined') {
+                flAuth.ready().then(function() {
+                    //only do this if we are not in Passthru
+                    flAuth.profile.then(function(profile) {
+                        var isPassThru = profile.claims.idp.toLowerCase() === window.siteConfig.passThroughProvider.toLowerCase();
+                        dialog.dialog("close");
+                        firstRequestData.closed();
+                        if (!isPassThru) {
+                            //DE15714 - Add an item to session storage to signify we need to tell Sidekick to clear it's cache if we don't end up on the correct url
+                            sessionStorage.setItem("skClearCache", "1");
+                            var url = window.siteConfig.startWorkflowUrl + '?userKey=' + sidekickData.user.userKey + '&reauth=true&url=' + encodeURIComponent('/Substitute/Districts/List?AccountsMerged=true');
+                            flAuth.authenticate({ returnUrl: url, productId: window.siteConfig.productId });
+                        } else {
+                            window.location.reload();
+                        }
+                    });
+                });
+            } else {
+                window.location.reload();
+                dialog.dialog("close");
+                firstRequestData.closed();
+            }
+        });
+    }
+
+};
+
+$(function () {
+    var eulas = $("#FirstRequestData .eulas").children("div");
+    if (eulas.length > 0) {
+        firstRequestData.functionQueue.push({ fn: firstRequestData.showEulas, data: eulas });
+    }
+
+    var webAlerts = $("#FirstRequestData .webAlerts").children();
+    if (webAlerts.length > 0) {
+        firstRequestData.functionQueue.push({ fn: firstRequestData.showWebAlerts, data: webAlerts });
+    }
+
+    var notifications = $("#FirstRequestData .notifications").children("div");
+    if (notifications.length > 0) {
+        firstRequestData.functionQueue.push({ fn: firstRequestData.showNotifications, data: notifications });
+    }
+
+    var mosSuggestions = $("#FirstRequestData .mosSuggestions").children("div");
+    if (mosSuggestions.length > 0) {
+        firstRequestData.functionQueue.push({ fn: firstRequestData.showMosSuggestions, data: mosSuggestions });
+    }
+
+    firstRequestData.showNextDialog();
+});

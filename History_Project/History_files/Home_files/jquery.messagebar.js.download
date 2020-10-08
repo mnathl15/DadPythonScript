@@ -1,0 +1,58 @@
+/*!
+ * jQuery Display Message Plugin
+ *
+ * Copyright 2010, Andrey Voev
+ * http://www.andreyvoev.com
+ *
+ * Date: Fri Dec 12 16:12 2010 -0800
+ */
+
+(function ($) {
+
+    $.fn.displayMessage = function (message, options) {
+
+        // Default configuration properties.
+        var defaults = {
+            background: '',
+            color: '',
+            speedIn: 'fast',
+            speedOut: 'slow',
+            skin: 'custom',
+            cssClass: '',
+            position: 'fixed', // relative, absolute, fixed
+            autohide: false,
+            closeText: ''
+        }
+
+        var options = $.extend(defaults, options);
+        $(this).hide();
+        $(this).removeClass().empty();
+        return this.each(function () {
+
+            var sticky = (options.sticky == false) ? 'relative' : 'absolute';
+            $(this).addClass('messagebar messagebar-skin-' + options.skin + '_bar ' + options.cssClass).css('position', options.position).css('background-color', options.background);
+            $(this).append('<div class="messagebar_inner messagebar-skin-' + options.skin + '_inner "><span class="messagebar_text messagebar-skin-' + options.skin + '_text"></span><a href="#" id="close" class="messagebar_close messagebar-skin-' + options.skin + '_close">' + options.closeText + '</a></div>').css('color', options.color);
+            $(this).find('span').html(message);
+
+            $(this).slideDown(options.speedIn, function () {
+
+                var close_button = $(this).find(".messagebar_close");
+
+                if (options.autohide === true) options.autohide = 5000;
+                if (options.autohide > 0) {
+                    $(this).delay(options.autohide).slideUp(options.speedOut);
+                }
+
+                close_button.bind("click", function (event) {
+                    event.preventDefault();
+
+                    $(this).parent().parent().clearQueue().slideUp(options.speedOut);
+                    
+                });
+
+            });
+
+        });
+
+    };
+})(jQuery);

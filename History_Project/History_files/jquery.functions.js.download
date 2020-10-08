@@ -1,0 +1,659 @@
+﻿// Name:    jQuery.dialog()
+//
+// Summary: Uses jQuery UI dialog, but creates its own container element on the fly and adds some settings
+//
+// Comments:
+// settings includes all settings supported by jquery UI dialog
+// Additional settings:
+// - formSuccess : function(dialogElement, settings, responseData, xhr, $form) return bool
+//      - function fired after a form is submitted and a response is returned
+//      - return true to continue with default form success behavior, false to skip it
+//      - responseData is expected to be a json object { Html : string, Data : object, IsValid : bool, MessageList : object[] }
+// - skipDefaultFormSuccess : bool
+//      - default = false
+//      - if true the default function for form success will always be skipped
+// - writeMessagesToPage : function(messages : object[] { Message : string, MessageType : string }
+//   closeOnUnfocus : bool
+//        default = false
+//        if true the dialog will close when something outside of it is clicked. 
+//        (requires jquery.ba-outside-event.min.js)
+jQuery.extend({
+    dialog: function (html, settings, messages) {
+        if (!settings) settings = {};
+        var openFunction = settings.open;
+        settings.open = function (event, ui) {
+            if (openFunction) openFunction(event, ui);
+
+            var height = $(this).height();
+            var maxHeight = $(this).dialog("option", "maxHeight");
+            if (maxHeight && height > maxHeight) $(this).height(maxHeight);
+
+            // close on unfocus
+            if (settings.closeOnUnfocus) {
+                if ($(this).dialog("option", "modal")) {
+                    var dialog = $(this);
+                    $(this).parents(".ui-dialog").next(".ui-widget-overlay").bind("click", function () { dialog.dialog("close"); });
+                }
+                else {
+                    $(this).bind("clickoutside", function () { $(this).dialog("close"); });
+                }
+
+            }
+        }
+
+        if (settings.resizable == null) settings.resizable = false;
+
+        var dialogEl = $("<div></div>");
+        dialogEl
+            .html(html)
+            .appendTo(document.body)
+            .dialog(settings)
+            .bind("dialogclose", function () { $(this).remove(); });
+
+        return dialogEl;
+        //            .find("form").ajaxForm({
+        //                success: function (data, statusText, xhr, $form) {
+        //                    var result = true;
+        //                    var formSuccess = settings.formSuccess;
+        //                    if (formSuccess)
+        //                        result = formSuccess(dialogEl, settings, data, statusText, xhr, $form);
+
+        //                    if (result && !settings.skipDefaultFormSuccess) {
+        //                        if (data.Html) {
+        //                            $.dialog(data.Html, settings, data.MessageList);
+        //                        }
+        //                        else {
+        //                            var writeMessagesToPage = settings.writeMessagesToPage;
+        //                            if (writeMessagesToPage) {
+        //                                writeMessagesToPage(data.MessageList);
+        //                            }
+        //                            else {
+        //                                defaultWriteMessagesToPage(data.MessageList);
+        //                            }
+        //                        }
+        //                        $(dialogEl).dialog("close");
+        //                    }
+        //                }
+        //            });
+    }
+});
+
+// Name:    jQuery.DictionarySize(obj)
+//
+// Summary: Treats the object as a dictionary/associative array.  Returns the number of keys/properties
+//
+// Comments:
+//
+jQuery.extend({
+    DictionarySize : function (obj) {
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
+    }
+});
+
+// Name:    jQuery.RemoveById(Array, id)
+//
+// Summary: Removes the first element that it finds in the array that has an Id that matches the argument
+//
+// Comments:
+// Tries to match id to id, Id, or ID properties
+// Returns the element that was removed
+jQuery.extend({
+    RemoveById: function (array, id) {
+        if (!$.isArray(array)) return;
+        for (var i = 0; i < array.length; i++) {
+            if ((array[i].Id && array[i].Id.toString() == id)
+             || (array[i].id && array[i].id.toString() == id)
+             || (array[i].ID && array[i].ID.toString() == id)
+             )
+                return array.splice(i, 1)[0];
+        }
+    }
+});
+
+//#region General Purpose
+var DateFormats = {
+    DayMonth: "M/d",
+    MonthYear: "M/yyyy",
+    DayMonthYear: "M/d/yyyy",
+    TimeFormat: "h:mm tt"
+};
+
+function minutesToHHMM(minutes, nullValue) {
+    if (minutes) {
+        var hrs = minutes / 60;
+        var remainder = hrs % 60;
+        if (hrs < 10) hrs = "0" + hrs;
+        if (remainder < 10) remainder = "0" + remainder;
+        return hrs + ":" + remainder;
+    }
+    else {
+        return nullValue ? nullValue : "00:00";
+    }
+}
+
+function mapLink(city, state, zip, street1, country) {
+    var mapBase = "http://maps.google.com/maps?daddr=";
+    if (!city || city == "" || !state || state == "") return false;
+    var addr = "";
+    if (street1 && street1 != "") addr = addr + street1.replace(/\s/g, "+") + "+";
+    if (city && city != "") addr = addr + city.replace(/\s/g, "+") + "+";
+    if (state && state != "") addr = addr + state.replace(/\s/g, "+") + "+";
+    if (zip  && zip != "") addr = addr + zip.replace(/\s/g, "+") + "+";
+    return mapBase + addr;
+}
+
+var sort_by = function (fieldsArg, descending) {
+
+    return function (obj1, obj2) {
+        var fields = fieldsArg;
+        if (!$.isArray(fieldsArg)) {
+            fields = new Array(fields);
+        }
+
+        for (var i = 0; i < fields.length; i++) {
+            var a = obj1;
+            var b = obj2;
+            var field = fields[i];
+            var reverse = descending ? -1 : 1;
+            var primer = null;
+
+            if (field.field) {
+                reverse = field.desc ? -1 : 1;
+                primer = field.primer;
+                field = field.field;
+            }
+
+            var fieldAr = field.split(".");
+
+            for (var j = 0; j < fieldAr.length; j++) {
+                a = a[fieldAr[j]];
+                b = b[fieldAr[j]];
+            }
+
+            if (primer != null && typeof (primer) != 'undefined') {
+                a = primer(a);
+                b = primer(b);
+            }
+
+            if (a < b) return reverse * -1;
+            if (a > b) return reverse * 1;
+        }
+        return 0;
+
+    }
+}
+
+function topMessage(message, cssClass, autoHide) {
+    $("#messageBar").displayMessage(message, { cssClass: cssClass, autohide: autoHide, closeText: dismissTxt });
+}
+
+function addMessagesToDialog(dialog, messages) {
+    var errList = $(dialog).find("ul.messages");
+    if (errList.length == 0) {
+        errList = $("<ul class='messages'></ul>");
+        $(dialog).prepend(errList);
+    }
+    errList.children().remove();
+    for (var i = 0; i < messages.length; i++) {
+        var item = $("<li/>");
+        item.html(messages[i].Message);
+        item.addClass("MessageType" + messages[i].MessageType);
+        errList.append(item);
+    }
+}
+
+// Add array functionality to old browsers
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function (searchElement /*, fromIndex */) {
+        if (this == null) {
+            throw new TypeError();
+        }
+        var t = Object(this);
+        var len = t.length >>> 0;
+        if (len === 0) {
+            return -1;
+        }
+        var n = 0;
+        if (arguments.length > 1) {
+            n = Number(arguments[1]);
+            if (n != n) { // shortcut for verifying if it's NaN
+                n = 0;
+            } else if (n != 0 && n != Infinity && n != -Infinity) {
+                n = (n > 0 || -1) * Math.floor(Math.abs(n));
+            }
+        }
+        if (n >= len) {
+            return -1;
+        }
+        var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+        for (; k < len; k++) {
+            if (k in t && t[k] === searchElement) {
+                return k;
+            }
+        }
+        return -1;
+    }
+}
+
+if (!Array.prototype.forEach) {
+    Array.prototype.forEach = function (fun /*, thisArg */) {
+        "use strict";
+
+        if (this === void 0 || this === null)
+            throw new TypeError();
+
+        var t = Object(this);
+        var len = t.length >>> 0;
+        if (typeof fun !== "function")
+            throw new TypeError();
+
+        var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+        for (var i = 0; i < len; i++) {
+            if (i in t)
+                fun.call(thisArg, t[i], i, t);
+        }
+    };
+}
+
+
+(function ($) {
+    $.fn.limit = function (options) {
+        var defaults = {
+            limit: 200,
+            showRemainingMessage: false,
+            message: '{0} characters remaining',
+            alertClass: false
+        }
+        var options = $.extend(defaults, options);
+        
+        return this.each(function () {
+            $(this).keyup(function () {
+                var messageSelector = ".countMsg";
+                if ($(this).val().length > characters) {
+                    $(this).val($(this).val().substr(0, characters));
+                    $(this).trigger("change");
+                }
+                if (options.showRemainingMessage != false) {
+                    if(options.showRemainingMessage !== true) {
+                        messageSelector = options.showRemainingMessage;
+                    }
+                    var remaining = characters - $(this).val().length;
+                    var message = options.message.replace("{0}", remaining);
+                    $(this).siblings(messageSelector).html(message);
+                    if (remaining <= 10) {
+                        $(this).siblings(messageSelector).addClass(options.alertClass);
+                    }
+                    else {
+                        $(this).siblings(messageSelector).removeClass(options.alertClass);
+                    }
+                }
+            });
+            
+            var characters = options.limit;
+            if (options.showRemainingMessage === true) {
+                $(this).after("<div class='countMsg'></div>");
+            }
+            $(this).trigger("keyup");
+        });
+    };
+})(jQuery);
+
+
+(function ($) {
+    $.fn.toggleSwitch = function (options) {
+        var settings = {
+            on: { text: 'ON', cssClass: 'green' },
+            off: { text: 'OFF', cssClass: 'black' },
+            easing: "linear"
+        };
+        
+            if (options) {
+                jQuery.extend(settings.on, options.on);
+                jQuery.extend(settings.off, options.off);
+                options.on = undefined;
+                options.off = undefined;
+                jQuery.extend(settings, options);
+            };
+            
+            var service = {
+                element: this,
+                on: settings.on,
+                off: settings.off,
+                easing: settings.easing,
+                callback: (typeof (settings.callback) == "function") ? settings.callback : function () { }
+            };
+            
+            function setCheckedState(keepCurrentState, animateTime) {
+                var inputCheckElement = $(service.element);
+                var spanEl = $(this);
+                
+                var newCheckedState = keepCurrentState ? inputCheckElement.is(":checked") : !inputCheckElement.is(":checked");
+                
+                // visual for switch
+                var newBackgroundPosition = newCheckedState ? "0px" : "-56px";
+                animateTime = animateTime === undefined ? 200 : animateTime;
+                spanEl.find(".background").animate({ left: newBackgroundPosition }, animateTime, service.easing);
+                
+                // data and checked state
+                spanEl.attr("data-status", newCheckedState);
+                inputCheckElement.prop("checked", newCheckedState);
+                
+                // trigger callback and change
+                service.callback.call(this);
+                $(inputCheckElement).trigger("change");
+            }
+        
+            function setDisabledState() {
+                var inputCheckElement = $(service.element);
+                var spanEl = $(this);
+                
+                var disabled = inputCheckElement.prop("disabled");
+                if (disabled) {
+                    var txt = inputCheckElement.is(":checked") ? spanEl.prop("data-onText") : spanEl.prop("data-offText");
+                    // check if this span already exists before adding another one
+                    var prevSpan = spanEl.prev("span.switchDisabled:first");
+                    if (prevSpan.length > 0) {
+                        prevSpan.text(txt);
+                    }
+                    else {
+                        var disabledSpan = $("<span class='switchDisabled' />").text(txt);
+                        spanEl.before(disabledSpan);
+                    }
+                    spanEl.hide();
+                } else {
+                    spanEl.prev("span.switchDisabled:first").remove();
+                    spanEl.show();
+                }
+            }
+    
+            $(service.element).each(function () {
+
+                if ($(this).prev("span.switch").length > 0) {
+                    setCheckedState.call($(this).prev("span.switch"), true);
+                    setDisabledState.call($(this).prev("span.switch"));
+                    return false;
+                }
+
+                // Insert switch
+                var span = $('<span class="switch">' +
+                    '<span class="background">' +
+                    '<span class="textLeft ' + service.on.cssClass + '">' + service.on.text + '</span>' +
+                    '<span class="textRight ' + service.off.cssClass + '">' + service.off.text + '</span>' +
+                    '</span>' +
+                    '<span class="mask"></span>' +
+                    '</span>');
+                span.prop("data-onText", service.on.text);
+                span.prop("data-offText", service.off.text);
+                $(this).before(span);
+
+                // Hide checkbox
+                $(this).hide();
+
+                setCheckedState.call(span, true, 0);
+                span.click(function () { setCheckedState.call(this); } );
+
+
+            });
+
+
+        };
+    })(jQuery);
+//#endregion
+
+(function ($) {
+    $.fn.checkboxSpan = function (options) {
+        var settings = {
+            spanClassName: "ui-checkImage",
+            checkedClassName: "ui-checked",
+            uncheckedClassName: "ui-unchecked",
+            imageClassName: '',
+            checkedImageClassName: '',
+            uncheckedImageClassName: '',
+            checkedText: '',
+            uncheckedText: '',
+            click: null
+        };
+
+        if (options) {
+            jQuery.extend(settings, options);
+        };
+
+        function setCheckedState(keepCurrentState) {
+            var spanEl = $(this);
+            var inputCheckElement = $(spanEl.prop("data-checkbox"));
+
+            var newCheckedState = keepCurrentState ? inputCheckElement.is(":checked") : !inputCheckElement.is(":checked");
+            spanEl.toggleClass(settings.checkedClassName, newCheckedState);
+            spanEl.toggleClass(settings.uncheckedClassName, !newCheckedState);
+            var imgSpan = spanEl.find(".checkbox-span-image");
+            imgSpan.toggleClass(settings.checkedImageClassName, newCheckedState);
+            imgSpan.toggleClass(settings.uncheckedImageClassName, !newCheckedState);
+
+            spanEl.find(".checkbox-span-text").html(newCheckedState ? settings.checkedText : settings.uncheckedText);
+
+            // data and checked state
+            inputCheckElement.prop("checked", newCheckedState);
+
+            // trigger callback and change
+            if (typeof settings.click == "function") {
+                settings.click.call(this);
+            }
+            $(inputCheckElement).trigger("change");
+        }
+
+        $(this).each(function () {
+            var checkboxEl = this;
+            if (checkboxEl.isCheckSpan) {
+                setCheckedState.call($(this).prev("span.checkboxSpan"), true);
+                return false;
+            }
+            
+            checkboxEl.isCheckSpan = true;
+
+            // Insert switch
+            
+            var span = $('<span class="checkbox-span ' + settings.spanClassName + '"><span class="checkbox-span-image ' + settings.imageClassName + '"></span><span class="checkbox-span-text"></span></span>');
+            
+            $(checkboxEl).before(span);
+            span.prop("data-checkbox", checkboxEl);
+
+            // Hide checkbox
+            $(checkboxEl).hide();
+
+            setCheckedState.call(span, true, 0);
+            span.click(function () { setCheckedState.call(span); });
+
+        });
+    };
+})(jQuery);
+
+
+
+
+
+
+(function ($) {
+    $.fn.expandCollapse = function (options) {
+        var settings = {
+            spanClassName: "ui-checkImage",
+            expandClassName: "ui-expand",
+            collapseClassName: "ui-collapse",
+            imageClassName: '',
+            expandImageClassName: '',
+            collapseImageClassName: '',
+            checkedText: '',
+            uncheckedText: '',
+            click: null
+        };
+
+        if (options) {
+            jQuery.extend(settings, options);
+        };
+
+        function setCheckedState(keepCurrentState) {
+            var spanEl = $(this);
+            var inputCheckElement = $(spanEl.prop("data-checkbox"));
+
+            var newCheckedState = keepCurrentState ? inputCheckElement.is(":checked") : !inputCheckElement.is(":checked");
+            spanEl.toggleClass(settings.expandClassName, newCheckedState);
+            spanEl.toggleClass(settings.collapseClassName, !newCheckedState);
+            var imgSpan = spanEl.find(".checkbox-span-image");
+            imgSpan.toggleClass(settings.expandImageClassName, newCheckedState);
+            imgSpan.toggleClass(settings.collapseImageClassName, !newCheckedState);
+            spanEl.find(".checkbox-span-text").html(newCheckedState ? settings.checkedText : settings.uncheckedText);
+
+            // data and checked state
+            inputCheckElement.prop("checked", newCheckedState);
+
+            // trigger callback and change
+            if (typeof settings.click == "function") {
+                settings.click.call(this);
+            }
+            $(inputCheckElement).trigger("change");
+        }
+
+        $(this).each(function () {
+            var checkboxEl = this;
+            if (checkboxEl.isCheckSpan) {
+                setCheckedState.call($(this).prev("span.checkboxSpan"), true);
+                return false;
+            }
+
+            checkboxEl.isCheckSpan = true;
+
+            // Insert switch
+
+            var span = $('<span class="checkbox-span ' + settings.spanClassName + '"><span class="checkbox-span-image ' + settings.imageClassName + '"></span><span class="checkbox-span-text"></span></span>');
+
+            $(checkboxEl).before(span);
+            span.prop("data-checkbox", checkboxEl);
+
+            // Hide checkbox
+            $(checkboxEl).hide();
+
+            setCheckedState.call(span, true, 0);
+            span.click(function () { setCheckedState.call(span); });
+
+        });
+    };
+})(jQuery);
+
+
+
+
+Object.identical = function (a, b, sortArrays) {
+
+    /* Requires ECMAScript 5 functions:
+           - Array.isArray()
+           - Object.keys()
+           - Array.prototype.forEach()
+           - JSON.stringify()
+    */
+
+    function sort(object) {
+
+        if (sortArrays === true && Array.isArray(object)) {
+            return object.sort();
+        }
+        else if (typeof object !== "object" || object === null) {
+            return object;
+        }
+
+        var result = [];
+
+        Object.keys(object).sort().forEach(function (key) {
+            result.push({
+                key: key,
+                value: sort(object[key])
+            });
+        });
+
+        return result;
+    }
+
+    return JSON.stringify(sort(a)) === JSON.stringify(sort(b));
+};
+
+
+
+(function ($) {
+    $.fn.extend({
+        center: function (options) {
+            var options = $.extend({ // Default values
+                inside: window, // element, center into window
+                transition: 0, // millisecond, transition time
+                minX: 0, // pixel, minimum left element value
+                minY: 0, // pixel, minimum top element value
+                withScrolling: true, // booleen, take care of the scrollbar (scrollTop)
+                vertical: true, // booleen, center vertical
+                horizontal: true // booleen, center horizontal
+            }, options);
+            return this.each(function () {
+                var props = { position: 'absolute' };
+                if (options.vertical) {
+                    var top = ($(options.inside).height() - $(this).outerHeight()) / 2;
+                    if (options.withScrolling) top += $(options.inside).scrollTop() || 0;
+                    top = (top > options.minY ? top : options.minY);
+                    $.extend(props, { top: top + 'px' });
+                }
+                if (options.horizontal) {
+                    var left = ($(options.inside).width() - $(this).outerWidth()) / 2;
+                    if (options.withScrolling) left += $(options.inside).scrollLeft() || 0;
+                    left = (left > options.minX ? left : options.minX);
+                    $.extend(props, { left: left + 'px' });
+                }
+                if (options.transition > 0) $(this).animate(props, options.transition);
+                else $(this).css(props);
+                return $(this);
+            });
+        }
+    });
+})(jQuery);
+
+(function ($) {
+    $.fn.dropdown = function(e) {
+        var trigger = $(this);
+        var dd = $(this).children('ul');
+        var tw = trigger.outerWidth();
+
+        //trigger.css({ 'width': tw + 'px' });
+        dd.css({ 'width': tw + 'px' });
+
+        dd.children('li:last-child').addClass('last');
+
+        trigger.hover(function() {
+            clearTimeout($.data(this, 'timer'));
+            dd.stop(true, true).slideDown(100).addClass('over');
+        }, function() {
+            $.data(this, 'timer', setTimeout($.proxy(function() {
+                dd.stop(true, true).slideUp(100).removeClass('over');
+            }, this, 200)));
+        });
+
+    };
+})(jQuery);
+
+
+(function ($) {
+    $.fn.togglePreloader = function (mainDivSelector, preloadDivSelector, spinner) {        
+        //return;
+        //$(preloadDivSelector).hide(400, "swing", function () {
+           // $(mainDivSelector).removeClass('preloadContainer');
+        // });
+        $(preloadDivSelector).hide();
+        $(mainDivSelector).removeClass('preloadContainer');
+        if (spinner && spinner.stop) {
+            spinner.stop();
+        }
+        //setTimeout(function () {
+        //    $(preloadDivSelector).hide();
+        //    $(mainDivSelector).removeClass('preloadContainer');
+        //},2000);
+
+    };
+})(jQuery);
+

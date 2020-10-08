@@ -1,0 +1,744 @@
+﻿
+
+.hasDatepicker.transparentActive .ui-state-active,
+.hasDatepicker.transparentDays .ui-state-default,
+.hasDatepicker.transparentOtherMonth .ui-datepicker-other-month a {
+    background: transparent;
+}
+
+/*#region Months */
+#months .hasDatepicker {
+    display: inline-block;
+    margin: 11px;
+    float: left;
+}
+
+
+    #months .hasDatepicker .ui-datepicker-header {
+        display: block;
+        width: 100%;
+    }
+
+        #months .hasDatepicker .ui-datepicker-header a {
+            display: none;
+        }
+
+#months .ui-datepicker-title {
+    text-align: left;
+}
+
+#months .ui-datepicker .ui-datepicker-calendar .ui-state-active {
+    background: #f3f3f3;
+}
+
+#months .padForExtraWeek .ui-datepicker-calendar {
+    margin-bottom: 41px;
+}
+
+.contentTabs ul .nwd,
+.calendarPopout.nwd .calendarPopoutHeader,
+#months .nwd a {
+    background-color: #CCC !important;
+    color: #555;
+}
+
+.contentTabs ul .nwdsys,
+.calendarPopout.nwdsys .calendarPopoutHeader,
+#months .nwdsys a {
+    background-color: #FFCC33 !important;
+}
+
+#months .nwd.ui-datepicker-week-end a {
+    color: #EEE;
+}
+
+.contentTabs ul .av,
+.calendarPopout.av .calendarPopoutHeader,
+#months .av a {
+    background-color: #3A875D !important;
+    color: #fff;
+}
+
+.colorIdentifier .InServiceDay,
+.contentTabs ul .InServiceDay,
+.calendarPopout.InServiceDay .calendarPopoutHeader,
+#months .InServiceDay a {
+    background-color: #FFE599 !important;
+    color: #555;
+}
+
+.colorIdentifier .CloseAndInServiceDay,
+.contentTabs ul .CloseAndInServiceDay,
+.calendarPopout.CloseAndInServiceDay .calendarPopoutHeader,
+#months .CloseAndInServiceDay a {
+    background-image: url(images/closed-service-bg.png) !important;
+    background-repeat: repeat;
+    color: #555;
+}
+
+
+
+.colorIdentifier .work,
+.contentTabs ul .work,
+.calendarPopout.work .calendarPopoutHeader,
+#months .work a {
+    background-color: #bcd8f7 !important;
+    color: #3A3A3A;
+}
+
+.contentTabs ul .pastDisabled,
+#months .pastDisabled a {
+    color: #CCC;
+}
+
+.colorIdentifier .ClosedDay,
+.contentTabs ul .ClosedDay,
+.calendarPopout.ClosedDay .calendarPopoutHeader,
+#months .ClosedDay a {
+    background-color: #ffd7c2 !important;
+    color: #555;
+}
+
+
+.deniedPop {
+    font-size: 12px;
+    font-weight: bold;
+    color: #999;
+}
+
+.contentTabs ul .denied,
+.calendarPopout.denied .calendarPopoutHeader,
+#months .denied a {
+    color: #999;
+}
+
+.colorIdentifier .workfilled,
+.contentTabs ul .workfilled,
+.calendarPopout.workfilled .calendarPopoutHeader,
+#months .workfilled a {
+    background-color: #ADDFBD !important;
+    color: #3A3A3A;
+}
+
+
+
+.contentTabs ul .legend {
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 15px;
+    line-height: 15px;
+    margin-right: 10px;
+    margin-bottom: -1px;
+    padding: 5px 8px 3px;
+}
+
+
+#monthContainer > div {
+    float: left;
+}
+
+#monthsNavLeft,
+#monthsNavRight {
+    width: 40px;
+    height: 86px;
+    border: 1px solid #AAA;
+    margin: 90px 10px 0px 10px;
+    cursor: pointer;
+    background: -webkit-gradient(linear, left top, right top, from(#FFFFFF), to(#DDD));
+    background: -moz-linear-gradient(top, #FFFFFF, #DDDDDD);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType =1, startColorstr='#FFFFFF', endColorstr='#DDDDDD');
+}
+
+#monthsNavLeft {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    margin-left: 0px;
+}
+
+#monthsNavRight {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-right: 0px;
+}
+
+    #monthsNavLeft a,
+    #monthsNavRight a {
+        display: block;
+        height: 86px;
+        width: 20px;
+        margin: 18px 10px;
+        background: url(images/aesop-icons.png) no-repeat;
+    }
+
+#monthsNavLeft a {
+    background-position: -45px 0px;
+}
+
+#monthsNavRight a {
+    background-position: -60px 0px;
+}
+
+#monthsNavLeft.disabled,
+#monthsNavRight.disabled {
+    opacity: 0.5;
+    cursor: auto;
+}
+
+    #monthsNavLeft.disabled a,
+    #monthsNavRight.disabled a {
+    }
+
+/*#endregion */
+
+/*#region JobList */
+
+#tblTimeSheet .jobList th, .jobList .detail td:first-child {
+    border-left: 1px solid #DDD;
+}
+
+#tblTimeSheet .jobList th, .jobList .detail td {
+    border-bottom: 1px solid #DDD;
+}
+
+table.jobList {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.jobList th {
+    padding: 7px 10px;
+    text-align: left;
+}
+
+.jobList th,
+.jobList .detail td {
+    border-right: 1px solid #DDD;
+}
+
+.jobList .detail td {
+    padding: 15px 10px;
+}
+
+.jobList .noData td,
+.jobList .summary td {
+    padding: 10px 7px;
+    border-top: none;
+}
+
+.jobList .summary td {
+    box-shadow: inset 0px 0px 10px #ABC;
+}
+
+
+.jobList .summary {
+    background: #e9edf0;
+}
+
+    .jobList .summary div > span {
+        display: inline-block;
+        padding: 7px inherit;
+        margin-right: 10px;
+    }
+
+    .jobList .summary .conf,
+    .jobList .summary .status {
+        color: #789;
+        text-transform: uppercase;
+    }
+
+        .jobList .summary .conf > a.confRef {
+            color: #036;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .jobList .summary .status,
+        .jobList .summary .status > .name {
+            font-weight: normal;
+            font-size: 12px;
+        }
+
+    .jobList .summary .title,
+    .jobList .tenantName {
+        color: #777;
+    }
+
+    .jobList .summary .reportTo {
+        margin-left: 10px;
+    }
+
+.jobList .detail td {
+    /*background: #FFF;*/
+}
+
+.jobList .detail.closed-day td,
+.jobList .detail.closed-day td span {
+    color: #AAA;
+    font-style: italic;
+    text-decoration: line-through;
+}
+
+.jobList .nwdsys td {
+    background: #FFCC33;
+}
+
+.jobList .multiEndDate,
+.jobList .multiEndDateSeparator,
+.jobList .multiAccept {
+    display: none;
+}
+
+.job.multiday.collapsed .multiEndDate,
+.job.multiday.collapsed .multiEndDateSeparator,
+.job.multiday .multiAccept {
+    display: inline;
+}
+
+.job.multiday.expanded .multiEndDate,
+.job.multiday.expanded .multiEndDateSeparator,
+.job.multiday.collapsed tr.detail.multiDetail {
+    display: none;
+}
+
+
+.availableJobs .job.multiday.collapsed .acceptButton,
+.availableJobs .showDetailsButton,
+.availableJobs .hideDetailsButton,
+.availableJobs .cancelButton,
+.availableJobs .leaveFeedbackButton,
+.availableJobs .feedback,
+.availableJobs .filesIcon,
+.availableJobs .conf,
+.availableJobs .jobList .conf,
+.availableJobs .reportTo,
+.availableJobs .notesIcon {
+    display: none;
+}
+
+
+.notificationJobTable .job.multiday.collapsed .acceptButton,
+.notificationJobTable .jobList .showDetailsButton,
+.notificationJobTable .jobList .hideDetailsButton,
+.notificationJobTable .jobList .cancelButton,
+.notificationJobTable .jobList .filesIcon,
+.notificationJobTable .jobList .reportTo,
+.notificationJobTable .jobList .rejectButton,
+.notificationJobTable .jobList .acceptButton,
+.notificationJobTable .jobList .leaveFeedbackButton,
+.notificationJobTable .jobList .feedback {
+    display: none;
+}
+
+.acceptedJobs .showDetailsButton,
+.acceptedJobs .hideDetailsButton,
+.acceptedJobs .rejectButton,
+.acceptedJobs .acceptButton,
+.acceptedJobs .notesIcon {
+    display: none;
+}
+
+
+
+.absenceList .showDetailsButton,
+.absenceList .hideDetailsButton,
+.absenceList .rejectButton {
+    display: none;
+}
+
+    .absenceList .showDetailsButton > span,
+    .absenceList .hideDetailsButton > span {
+        padding-left: 18px !important;
+        text-indent: -9999px;
+        width: 0px;
+    }
+
+.job .cancelButton,
+.job .cancelDayButton,
+.job .assignBtn {
+    display: none;
+}
+
+.jobList a.cancelDayButton {
+    padding: 0px 5px;
+}
+
+.jobList a.filterTenants {
+    padding: 0px 5px;
+    border: 0px;
+}
+
+    .jobList a.filterTenants span {
+        padding: 0px 0px 0px 15px;
+    }
+
+
+.scheduledJobs .job.multiday .canCancelDetail .cancelDayButton,
+.scheduledJobs .job.canCancel .cancelButton,
+.scheduledJobs .job.canAssign .assignBtn,
+.pastJobs .leaveFeedbackButton,
+.pastJobs .feedback,
+.acceptedJobs .notesIcon.hasNotes,
+.availableJobs .notesIcon.hasNotes {
+    display: inline-block;
+}
+
+.scheduledAbsences .job.canCancel .cancelButton,
+.scheduledAbsences .job.canAssign .assignBtn,
+.pastAbsences .leaveFeedbackButton,
+.pastAbsences .feedback {
+    display: inline-block;
+}
+
+.feedback span {
+    font-size: 12px;
+    display: none;
+}
+
+
+
+.sub .feedbackaboutme,
+.sub .feedbackfromme {
+    margin-top: 9px;
+    display: block;
+}
+
+#feedbackFromMe .feedbackfromme span,
+#feedbackAboutMe .feedbackaboutme span {
+    display: block;
+}
+
+#feedbackFromMe .feedbackaboutme,
+#feedbackAboutMe .feedbackfromme {
+    display: none;
+}
+
+.job.multiday.collapsed .showDetailsButton,
+.job.multiday.expanded .hideDetailsButton {
+    display: inline-block;
+}
+
+.jobList .summary .icon {
+    height: 14px;
+    padding: 7px 0px;
+    margin-right: 5px;
+}
+
+.job .multidayIcon, .job .approverIcon {
+    display: none;
+}
+
+.job.multiday .multidayIcon, .job.approver .approverIcon {
+    display: inline-block;
+}
+
+
+.job .durationIcon {
+    padding: 5px 0 5px 30px;
+    background-repeat: no-repeat;
+}
+.job .durationName {
+    font-size: 12px;
+}
+
+.jobList .date {
+    display: table-cell; /* Override to adjust for .date style in global css (DE415) */
+    width: 180px;
+    position: static;  /* Another override to adjust for .date style in global css (IE DE2220) */
+}
+
+.jobList .dow {
+    width: 30px;
+}
+
+.jobList .times {
+    width: 135px;
+}
+
+.jobList td.reason {
+    font-weight: bold;
+}
+
+.jobList .duration {
+    width: 110px;
+}
+
+.jobList .nonpay {
+    width: 55px;
+}
+
+.jobList .more {
+    width: 60px;
+    border-right: 0px;
+}
+
+.nwd .times {
+    width: 150px;
+}
+
+.jobList td.more {
+    padding: 5px;
+    text-align: center;
+    border-right: 0px;
+}
+
+.files li a {
+    padding: 3px 20px;
+    margin: 6px 0px;
+    display: block;
+}
+
+.listheader {
+    padding: 5px;
+    background: #DDD;
+}
+
+#leaveFeedback,
+#feedbackAboutMe {
+    width: 950px;
+}
+
+.jobList .feedback {
+    margin: -5px 0 0 5px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+    .jobList .feedback .rateit {
+        display: block;
+    }
+
+/*#endregion jobList */
+
+#AddNwd label.main {
+    width: 75px;
+    text-align: right;
+    display: inline-block;
+}
+
+#jobTemplate, #nwdTemplate {
+    display: none;
+}
+
+
+/*#region Calendar Popouts */
+.calendarPopout {
+    width: 300px;
+    background: white;
+    display: none;
+}
+
+.calendarPopout,
+.calendarPopoutHeader,
+.calendarPopoutFooter {
+    border-radius: 4px;
+}
+
+.calendarPopoutHeader,
+.calendarPopoutFooter {
+    background: #DDD;
+}
+
+.calendarPopoutHeader {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    position: relative;
+}
+
+    .calendarPopoutHeader .scrollButtons {
+        position: absolute;
+        top: 10px;
+        left: 5px;
+    }
+
+    .calendarPopoutHeader .calendarPopoutClose {
+        position: absolute;
+        top: 10px;
+        right: 5px;
+    }
+
+.availableJobsPopout,
+.historyPopout,
+.scheduledPopout,
+.jobPopout,
+.nwdPopout,
+.nodataPopout,
+.deniedPop,
+.closeAndInserviceDayPopout {
+    display: none;
+}
+
+.calendarPopout.availableJobs .availableJobsPopout,
+.calendarPopout.availableJobs .jobPopout,
+.calendarPopout.pastJobs .historyPopout,
+.calendarPopout.scheduledJobs .scheduledPopout,
+.calendarPopout.acceptedJobs .jobPopout,
+.calendarPopout.nwdList .nwdPopout,
+.calendarPopout.noData .nodataPopout,
+.calendarPopout.deniedData .deniedPop,
+.calendarPopout.closedandinservice .closeAndInserviceDayPopout {
+    display: block;
+}
+
+.calendarPopout.noData.past .addNwdButton,
+.calendarPopout.noData.past .future,
+.calendarPopout.noData .past,
+.calendarPopout.noData .pastDisabled {
+    display: none;
+}
+
+
+.removeNwdButtonShow {
+    display: block;
+}
+
+
+.calendarPopout.noData.past .past {
+    display: block;
+}
+
+.calendarPopout.noData.pastDisabled .past {
+    display: none;
+}
+
+.calendarPopout.noData.pastDisabled .pastDisabled {
+    display: block;
+}
+
+.calendarPopoutFooter {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    padding: 5px;
+    text-align: right;
+}
+
+.calendarPopoutBody {
+    height: auto !important;
+    min-height: 100px;
+    height: 100px;
+    padding: 10px;
+}
+
+    .calendarPopoutBody div {
+        margin-bottom: 5px;
+    }
+
+    .calendarPopoutBody.verticalScroll {
+        max-height: 250px;
+        overflow-y: scroll;
+    }
+
+.calendarPopout .multidayInfo {
+    display: none;
+}
+
+.calendarPopout .multiday .multidayInfo {
+    display: block;
+}
+
+.calendarPopoutBody .multidayInfo .date,
+.calendarPopoutBody .title {
+    margin-left: 10px;
+}
+
+.calendarPopoutBody .title,
+.calendarPopoutBody .district {
+    color: #777;
+}
+
+.calendarPopoutBody .conf a.confRef {
+    text-decoration: underline;
+}
+
+.ui-tooltip-calendarPopout {
+    background: #3a3a3a;
+    border-radius: 10px;
+}
+
+    .ui-tooltip-calendarPopout .ui-tooltip-content {
+        padding: 8px;
+        border: 0px;
+    }
+
+.calendarPopoutBody .conf,
+.calendarPopoutBody .multidayText,
+.calendarPopoutBody .durationText {
+    font-weight: bold;
+}
+
+.calendarPopoutBody.multiday .durationText {
+    font-weight: normal;
+}
+
+.calendarPopoutBody .multidayIcon {
+    position: relative;
+    top: -4px !important;
+    margin-right: 2px;
+    margin-left: -2px !important;
+}
+
+.calendarPopout .scrollButtons {
+    display: none;
+}
+
+.calendarPopout.multiple .scrollButtons {
+    display: block;
+}
+
+.calendarPopout .itemType {
+    font-weight: bold;
+}
+
+.calendarPopout .bottomBorder {
+    border-bottom: 1px solid #DDD;
+    padding-bottom: 5px;
+}
+
+
+.calendarPopout .scrollButtons a {
+    display: inline-block;
+    position: relative;
+    top: 1px;
+}
+
+.calendarPopout .scrollButtons span {
+    font-weight: normal;
+}
+
+.calendarPopout .scrollButtons a,
+.calendarPopout .scrollButtons span {
+    margin-right: -2px;
+    margin-left: -2px;
+}
+/*#endregion calendarPopouts*/
+
+
+table.table-delete-absr tr td textarea{
+    width: 200px;
+    height: 100px;
+}
+
+table.table-delete-absr tr td .notes-characters-left {
+    color: #999;
+    font-size: 11px !important;
+    font-weight: normal;
+    line-height: 135%;
+    margin-top: 5px;
+    text-align: right;
+}
+
+
+.cancel-message,.cancel-text {
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+.subCancelReasons {
+    width: 267px;
+}
+.label-split-CancelReason {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
